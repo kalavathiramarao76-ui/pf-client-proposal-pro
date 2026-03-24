@@ -1,5 +1,3 @@
-use client;
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
@@ -19,6 +17,11 @@ const ClientDatabasePage = () => {
   const [phone, setPhone] = useState('');
   const [isNewClient, setIsNewClient] = useState(false);
   const [editedClient, setEditedClient] = useState<Client | null>(null);
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    phone: '',
+  });
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -27,17 +30,47 @@ const ClientDatabasePage = () => {
     }
   }, []);
 
-  const handleAddClient = () => {
-    const newClient: Client = {
-      id: Date.now(),
-      name,
-      email,
-      phone,
+  const validateForm = () => {
+    const newErrors = {
+      name: '',
+      email: '',
+      phone: '',
     };
-    setClients([...clients, newClient]);
-    setName('');
-    setEmail('');
-    setPhone('');
+
+    if (!name) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+      newErrors.email = 'Invalid email address';
+    }
+
+    if (!phone) {
+      newErrors.phone = 'Phone is required';
+    } else if (!/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
+      newErrors.phone = 'Invalid phone number (use XXX-XXX-XXXX format)';
+    }
+
+    setErrors(newErrors);
+
+    return Object.values(newErrors).every((error) => error === '');
+  };
+
+  const handleAddClient = () => {
+    if (validateForm()) {
+      const newClient: Client = {
+        id: Date.now(),
+        name,
+        email,
+        phone,
+      };
+      setClients([...clients, newClient]);
+      setName('');
+      setEmail('');
+      setPhone('');
+    }
   };
 
   const handleEditClient = (client: Client) => {
@@ -49,16 +82,18 @@ const ClientDatabasePage = () => {
   };
 
   const handleUpdateClient = () => {
-    if (editedClient) {
-      const updatedClients = clients.map((client) =>
-        client.id === editedClient.id ? { ...editedClient, name, email, phone } : client
-      );
-      setClients(updatedClients);
-      setEditedClient(null);
-      setIsNewClient(true);
-      setName('');
-      setEmail('');
-      setPhone('');
+    if (validateForm()) {
+      if (editedClient) {
+        const updatedClients = clients.map((client) =>
+          client.id === editedClient.id ? { ...editedClient, name, email, phone } : client
+        );
+        setClients(updatedClients);
+        setEditedClient(null);
+        setIsNewClient(true);
+        setName('');
+        setEmail('');
+        setPhone('');
+      }
     }
   };
 
@@ -79,18 +114,21 @@ const ClientDatabasePage = () => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Name"
             />
+            {errors.name && <div className="text-red-500">{errors.name}</div>}
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
             />
+            {errors.email && <div className="text-red-500">{errors.email}</div>}
             <Input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Phone"
             />
+            {errors.phone && <div className="text-red-500">{errors.phone}</div>}
             {isNewClient ? (
               <Button onClick={handleAddClient}>Add Client</Button>
             ) : (
@@ -98,31 +136,12 @@ const ClientDatabasePage = () => {
             )}
           </div>
         ) : (
-          <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
+          <Table
+            clients={clients}
+            handleEditClient={handleEditClient}
+            handleDeleteClient={handleDeleteClient}
+          />
         )}
-        <Table>
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Phone</th>
-              <th className="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {clients.map((client) => (
-              <tr key={client.id}>
-                <td className="px-4 py-2">{client.name}</td>
-                <td className="px-4 py-2">{client.email}</td>
-                <td className="px-4 py-2">{client.phone}</td>
-                <td className="px-4 py-2">
-                  <Button onClick={() => handleEditClient(client)}>Edit</Button>
-                  <Button onClick={() => handleDeleteClient(client.id)}>Delete</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
       </div>
     </Layout>
   );

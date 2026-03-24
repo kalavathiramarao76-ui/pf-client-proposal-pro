@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Head from 'next/head';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 
 const faqs = [
@@ -37,34 +38,41 @@ const FAQPage = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-6 lg:p-8">
-      <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions</h1>
-      {faqs.map((faq, index) => (
-        <div key={index} className="mb-4">
-          <button
-            className="flex justify-between w-full text-left p-4 bg-gray-100 dark:bg-gray-800 rounded-lg"
-            onClick={() => handleToggle(index)}
-          >
-            <span className="text-lg font-medium">{faq.question}</span>
-            <AiOutlineArrowRight
-              className={`text-lg transition-transform ${
-                expanded === faq.question ? 'rotate-90' : ''
-              }`}
-            />
-          </button>
-          {expanded === faq.question && (
-            <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mt-2">
-              <p className="text-lg">{faq.answer}</p>
-            </div>
-          )}
-        </div>
-      ))}
-      <Link
-        href="/contact"
-        className="block w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mt-4"
-      >
-        Can't find what you're looking for? Contact us
-      </Link>
+    <div>
+      <Head>
+        <title>Proposal Studio FAQ - Frequently Asked Questions</title>
+        <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking" />
+      </Head>
+      <div className="max-w-5xl mx-auto p-4 md:p-6 lg:p-8">
+        <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions</h1>
+        {faqs.map((faq, index) => (
+          <div key={index} className="mb-4">
+            <button
+              className="flex justify-between w-full text-left p-4 bg-gray-100 dark:bg-gray-800 rounded-lg"
+              onClick={() => handleToggle(index)}
+            >
+              <span className="text-lg font-medium">{faq.question}</span>
+              <AiOutlineArrowRight
+                className={`text-lg transition-transform ${
+                  expanded === faq.question ? 'rotate-90' : ''
+                }`}
+              />
+            </button>
+            {expanded === faq.question && (
+              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mt-2">
+                <p className="text-lg">{faq.answer}</p>
+              </div>
+            )}
+          </div>
+        ))}
+        <Link
+          href="/contact"
+          className="block w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mt-4"
+        >
+          Can't find what you're looking for? Contact us
+        </Link>
+      </div>
     </div>
   );
 };

@@ -5,10 +5,48 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { localStorage } from '../utils/localStorage';
 import DashboardLayout from '../components/DashboardLayout';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const DashboardPage = () => {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [proposalData, setProposalData] = useState({
+    labels: ['January', 'February', 'March', 'April', 'May'],
+    datasets: [
+      {
+        label: 'Proposals Created',
+        data: [10, 20, 30, 40, 50],
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      },
+      {
+        label: 'Proposals Approved',
+        data: [5, 10, 15, 20, 25],
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1,
+      },
+    ],
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -39,6 +77,24 @@ const DashboardPage = () => {
         ) : (
           <p className="text-lg">You are not logged in</p>
         )}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Proposal Analytics</h2>
+          <Line
+            data={proposalData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                title: {
+                  display: true,
+                  text: 'Proposal Creation and Approval Trend',
+                },
+              },
+            }}
+          />
+        </div>
         <div className="mt-8">
           <Link
             href="/proposal-templates"
