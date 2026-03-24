@@ -47,6 +47,23 @@ const DashboardPage = () => {
       },
     ],
   });
+  const [chartOptions, setChartOptions] = useState({
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Proposal Creation and Approval Trend',
+      },
+    },
+  });
+  const [chartType, setChartType] = useState('line');
+  const [datasetVisibility, setDatasetVisibility] = useState({
+    'Proposals Created': true,
+    'Proposals Approved': true,
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -59,6 +76,19 @@ const DashboardPage = () => {
     localStorage.removeItem('user');
     router.push('/');
   };
+
+  const handleChartTypeChange = (event) => {
+    setChartType(event.target.value);
+  };
+
+  const handleDatasetVisibilityChange = (datasetLabel) => {
+    setDatasetVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [datasetLabel]: !prevVisibility[datasetLabel],
+    }));
+  };
+
+  const filteredDatasets = proposalData.datasets.filter((dataset) => datasetVisibility[dataset.label]);
 
   return (
     <DashboardLayout>
@@ -81,21 +111,37 @@ const DashboardPage = () => {
         </div>
         <div className="mt-8 bg-white rounded shadow-md p-4 w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
           <h2 className="text-2xl font-bold mb-4 text-center">Proposal Analytics</h2>
-          <Line
-            data={proposalData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                title: {
-                  display: true,
-                  text: 'Proposal Creation and Approval Trend',
-                },
-              },
-            }}
-          />
+          <div className="flex flex-col mb-4">
+            <label className="text-lg mb-2">Chart Type:</label>
+            <select value={chartType} onChange={handleChartTypeChange}>
+              <option value="line">Line</option>
+              <option value="bar">Bar</option>
+            </select>
+          </div>
+          <div className="flex flex-col mb-4">
+            <label className="text-lg mb-2">Dataset Visibility:</label>
+            {proposalData.datasets.map((dataset) => (
+              <div key={dataset.label}>
+                <input
+                  type="checkbox"
+                  checked={datasetVisibility[dataset.label]}
+                  onChange={() => handleDatasetVisibilityChange(dataset.label)}
+                />
+                <span className="ml-2">{dataset.label}</span>
+              </div>
+            ))}
+          </div>
+          {chartType === 'line' ? (
+            <Line
+              data={{
+                labels: proposalData.labels,
+                datasets: filteredDatasets,
+              }}
+              options={chartOptions}
+            />
+          ) : (
+            <div>Bar chart is not implemented yet</div>
+          )}
         </div>
         <div className="mt-8 text-center">
           <Link

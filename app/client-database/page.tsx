@@ -23,6 +23,8 @@ const ClientDatabasePage = () => {
     phone: '',
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -104,54 +106,91 @@ const ClientDatabasePage = () => {
   };
 
   const filteredClients = clients.filter((client) =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+    client.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const paginatedClients = filteredClients.slice(
+    (pageNumber - 1) * itemsPerPage,
+    pageNumber * itemsPerPage
+  );
+
+  const handlePageChange = (pageNumber: number) => {
+    setPageNumber(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (itemsPerPage: number) => {
+    setItemsPerPage(itemsPerPage);
+    setPageNumber(1);
+  };
 
   return (
     <Layout>
-      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
-        <h1 className="text-3xl font-bold mb-4">Client Database</h1>
-        <div className="flex justify-between mb-4">
+      <div>
+        <h1>Client Database</h1>
+        <div>
           <Input
-            type="search"
-            placeholder="Search by name or email"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+          />
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+          />
+          <Input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone"
           />
           <Button onClick={handleAddClient}>Add Client</Button>
         </div>
-        <Table
-          clients={filteredClients}
-          handleEditClient={handleEditClient}
-          handleDeleteClient={handleDeleteClient}
-        />
-        {(isNewClient || editedClient) && (
-          <div>
-            <Input
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Input
-              type="text"
-              placeholder="Phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-            {isNewClient && <Button onClick={handleAddClient}>Add Client</Button>}
-            {editedClient && (
-              <Button onClick={handleUpdateClient}>Update Client</Button>
-            )}
-          </div>
-        )}
+        <div>
+          <Input
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search clients"
+          />
+        </div>
+        <Table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedClients.map((client) => (
+              <tr key={client.id}>
+                <td>{client.name}</td>
+                <td>{client.email}</td>
+                <td>{client.phone}</td>
+                <td>
+                  <Button onClick={() => handleEditClient(client)}>Edit</Button>
+                  <Button onClick={() => handleDeleteClient(client.id)}>Delete</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <div>
+          <Button onClick={() => handlePageChange(pageNumber - 1)}>Previous</Button>
+          <span>
+            Page {pageNumber} of {Math.ceil(filteredClients.length / itemsPerPage)}
+          </span>
+          <Button onClick={() => handlePageChange(pageNumber + 1)}>Next</Button>
+          <select value={itemsPerPage} onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}>
+            <option value={5}>5 items per page</option>
+            <option value={10}>10 items per page</option>
+            <option value={20}>20 items per page</option>
+          </select>
+        </div>
       </div>
     </Layout>
   );

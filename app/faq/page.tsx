@@ -42,7 +42,7 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
@@ -50,30 +50,19 @@ const FAQPage = () => {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
+        <meta name="twitter:site" content="@ProposalStudio" />
+        <meta name="robots" content="index, follow" />
+        <meta name="author" content="Proposal Studio" />
+        <meta name="copyright" content="2024 Proposal Studio" />
+        <meta name="revised" content="2024-01-01" />
       </Head>
-      <div className="max-w-5xl mx-auto p-4 md:p-6 lg:p-8">
-        <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions</h1>
-        {faqs.map((faq, index) => (
-          <div key={index} className="mb-4">
-            <button
-              className="flex justify-between w-full text-left p-4 bg-gray-100 dark:bg-gray-800 rounded-lg"
-              onClick={() => handleToggle(index)}
-            >
-              <span className="text-lg font-medium">{faq.question}</span>
-              <AiOutlineArrowRight
-                className={`text-lg transition-transform ${
-                  expanded === faq.question ? 'rotate-90' : ''
-                }`}
-              />
-            </button>
-            {expanded === faq.question && (
-              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                <p className="text-lg">{faq.answer}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {faqs.map((faq, index) => (
+        <div key={index}>
+          <h2>{faq.question}</h2>
+          <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Read more</span>}</p>
+          {expanded === faq.question && <p onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Less</p>}
+        </div>
+      ))}
     </div>
   );
 };
