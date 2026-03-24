@@ -22,6 +22,7 @@ const ClientDatabasePage = () => {
     email: '',
     phone: '',
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -102,45 +103,54 @@ const ClientDatabasePage = () => {
     setClients(filteredClients);
   };
 
+  const filteredClients = clients.filter((client) =>
+    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Layout>
       <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
         <h1 className="text-3xl font-bold mb-4">Client Database</h1>
-        {isNewClient || editedClient ? (
-          <div className="flex flex-col mb-4">
+        <div className="flex justify-between mb-4">
+          <Input
+            type="search"
+            placeholder="Search by name or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Button onClick={handleAddClient}>Add Client</Button>
+        </div>
+        <Table
+          clients={filteredClients}
+          handleEditClient={handleEditClient}
+          handleDeleteClient={handleDeleteClient}
+        />
+        {(isNewClient || editedClient) && (
+          <div>
             <Input
               type="text"
+              placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
             />
-            {errors.name && <div className="text-red-500">{errors.name}</div>}
             <Input
               type="email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
             />
-            {errors.email && <div className="text-red-500">{errors.email}</div>}
             <Input
-              type="tel"
+              type="text"
+              placeholder="Phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="Phone"
             />
-            {errors.phone && <div className="text-red-500">{errors.phone}</div>}
-            {isNewClient ? (
-              <Button onClick={handleAddClient}>Add Client</Button>
-            ) : (
+            {isNewClient && <Button onClick={handleAddClient}>Add Client</Button>}
+            {editedClient && (
               <Button onClick={handleUpdateClient}>Update Client</Button>
             )}
           </div>
-        ) : (
-          <Table
-            clients={clients}
-            handleEditClient={handleEditClient}
-            handleDeleteClient={handleDeleteClient}
-          />
         )}
       </div>
     </Layout>

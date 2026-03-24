@@ -42,7 +42,14 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates" />
+        <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
+        <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
+        <meta property="og:url" content="https://www.proposalstudio.com/faq" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
+        <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
       </Head>
       <div className="max-w-5xl mx-auto p-4 md:p-6 lg:p-8">
         <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions</h1>
@@ -60,18 +67,12 @@ const FAQPage = () => {
               />
             </button>
             {expanded === faq.question && (
-              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mt-2">
+              <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
                 <p className="text-lg">{faq.answer}</p>
               </div>
             )}
           </div>
         ))}
-        <Link
-          href="/contact"
-          className="block w-full text-center p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mt-4"
-        >
-          Can't find what you're looking for? Contact us
-        </Link>
       </div>
     </div>
   );

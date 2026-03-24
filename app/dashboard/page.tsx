@@ -62,23 +62,25 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-3xl font-bold mb-4">Welcome to Proposal Studio</h1>
-        {user ? (
-          <div>
-            <p className="text-lg">You are logged in as {user.name}</p>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <p className="text-lg">You are not logged in</p>
-        )}
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Proposal Analytics</h2>
+      <div className="flex flex-col items-center justify-center h-screen p-4">
+        <div className="bg-white rounded shadow-md p-4 w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
+          <h1 className="text-3xl font-bold mb-4 text-center">Welcome to Proposal Studio</h1>
+          {user ? (
+            <div className="text-center">
+              <p className="text-lg">You are logged in as {user.name}</p>
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <p className="text-lg text-center">You are not logged in</p>
+          )}
+        </div>
+        <div className="mt-8 bg-white rounded shadow-md p-4 w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
+          <h2 className="text-2xl font-bold mb-4 text-center">Proposal Analytics</h2>
           <Line
             data={proposalData}
             options={{
@@ -95,7 +97,7 @@ const DashboardPage = () => {
             }}
           />
         </div>
-        <div className="mt-8">
+        <div className="mt-8 text-center">
           <Link
             href="/proposal-templates"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
