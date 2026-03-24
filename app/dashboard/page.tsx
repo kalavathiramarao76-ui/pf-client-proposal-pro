@@ -120,9 +120,8 @@ const DashboardPage = () => {
     };
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    router.push('/login');
+  const handleLogoClick = () => {
+    router.push('/');
   };
 
   const handleChartTypeChange = (event) => {
@@ -137,59 +136,74 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
-        <div className="flex flex-row justify-center mb-4">
-          <select value={chartType} onChange={handleChartTypeChange} className="mr-4">
-            <option value="line">Line Chart</option>
-            <option value="bar">Bar Chart</option>
-            <option value="pie">Pie Chart</option>
-          </select>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                name="Proposals Created"
-                checked={datasetVisibility['Proposals Created']}
-                onChange={handleDatasetVisibilityChange}
-              />
-              Proposals Created
-            </label>
-            <label className="ml-4">
-              <input
-                type="checkbox"
-                name="Proposals Approved"
-                checked={datasetVisibility['Proposals Approved']}
-                onChange={handleDatasetVisibilityChange}
-              />
-              Proposals Approved
-            </label>
+      <div className="flex flex-col h-screen">
+        <header className="bg-white py-4">
+          <div className="container mx-auto flex justify-between items-center">
+            <Link href="/" className="text-lg font-bold">
+              Proposal Studio
+            </Link>
+            <button onClick={handleLogoClick} className="text-lg font-bold">
+              Logo
+            </button>
           </div>
-        </div>
-        {chartType === 'line' && (
-          <Line
-            data={realTimeProposalData}
-            options={chartOptions}
-            datasetVisibility={datasetVisibility}
-          />
-        )}
-        {chartType === 'bar' && (
-          <Bar
-            data={realTimeProposalData}
-            options={chartOptions}
-            datasetVisibility={datasetVisibility}
-          />
-        )}
-        {chartType === 'pie' && (
-          <Pie
-            data={realTimeProposalData}
-            options={chartOptions}
-            datasetVisibility={datasetVisibility}
-          />
-        )}
-        <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogout}>
-          Logout
-        </button>
+        </header>
+        <main className="flex-1 overflow-y-auto">
+          <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+            <div className="flex flex-col md:flex-row justify-center mb-4">
+              <select
+                value={chartType}
+                onChange={handleChartTypeChange}
+                className="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4 p-2 border border-gray-400 rounded"
+              >
+                <option value="line">Line Chart</option>
+                <option value="bar">Bar Chart</option>
+                <option value="pie">Pie Chart</option>
+              </select>
+              <div className="flex flex-col w-full md:w-1/2">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="Proposals Created"
+                    checked={datasetVisibility['Proposals Created']}
+                    onChange={handleDatasetVisibilityChange}
+                  />
+                  Proposals Created
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="Proposals Approved"
+                    checked={datasetVisibility['Proposals Approved']}
+                    onChange={handleDatasetVisibilityChange}
+                  />
+                  Proposals Approved
+                </label>
+              </div>
+            </div>
+            {chartType === 'line' && (
+              <Line
+                data={realTimeProposalData}
+                options={chartOptions}
+                datasetVisibility={datasetVisibility}
+              />
+            )}
+            {chartType === 'bar' && (
+              <Bar
+                data={realTimeProposalData}
+                options={chartOptions}
+                datasetVisibility={datasetVisibility}
+              />
+            )}
+            {chartType === 'pie' && (
+              <Pie
+                data={realTimeProposalData}
+                options={chartOptions}
+                datasetVisibility={datasetVisibility}
+              />
+            )}
+          </div>
+        </main>
       </div>
     </DashboardLayout>
   );

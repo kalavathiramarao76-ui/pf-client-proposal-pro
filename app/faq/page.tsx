@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { AiOutlineArrowRight } from 'react-icons/ai';
+import Image from 'next/image';
 
 const faqs = [
   {
@@ -42,7 +43,7 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
@@ -50,24 +51,18 @@ const FAQPage = () => {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
-        <meta name="robots" content="index, follow" />
-        <meta name="revised" content="2024-01-01" />
-        <meta name="author" content="Proposal Studio" />
-        <meta name="copyright" content="2024 Proposal Studio" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="twitter:image" content="https://www.proposalstudio.com/faq-image.jpg" />
       </Head>
+      <h1>Proposal Studio FAQ</h1>
+      <Image src="/faq-image.jpg" alt="Proposal Studio FAQ" width={800} height={400} />
       {faqs.map((faq, index) => (
         <div key={index}>
-          <button onClick={() => handleToggle(index)} className="flex justify-between w-full p-4 text-lg font-medium text-left border border-gray-200 rounded-lg hover:bg-gray-100">
-            <span>{faq.question}</span>
-            <AiOutlineArrowRight className={expanded === faq.question ? 'rotate-90' : ''} />
+          <h2>{faq.question}</h2>
+          <button onClick={() => handleToggle(index)}>
+            {expanded === faq.question ? 'Hide' : 'Show'} Answer
+            <AiOutlineArrowRight />
           </button>
-          {expanded === faq.question && (
-            <div className="p-4 bg-gray-100 border border-gray-200 rounded-lg">
-              <p className="text-lg">{faq.answer}</p>
-            </div>
-          )}
+          {expanded === faq.question && <p>{faq.answer}</p>}
         </div>
       ))}
     </div>

@@ -26,6 +26,8 @@ const ClientDatabasePage = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [formSubmissionError, setFormSubmissionError] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortField, setSortField] = useState<'name' | 'email' | 'phone'>('name');
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -103,112 +105,110 @@ const ClientDatabasePage = () => {
           setName('');
           setEmail('');
           setPhone('');
-          setFormSubmissionError('');
-        } else {
-          setErrors(validationErrors);
-          setFormSubmissionError('Please fill out all required fields');
         }
-      } else {
-        setFormSubmissionError('Please fill out all required fields');
       }
     } catch (error) {
-      setFormSubmissionError('Error adding client: ' + error.message);
+      setFormSubmissionError('Failed to add client');
     }
   };
 
-  const handleEditClient = (client: Client) => {
-    try {
-      const validationErrors = validateClientData(client);
-      if (Object.values(validationErrors).every((error) => error === '')) {
-        setEditedClient(client);
-        setIsNewClient(false);
-        setName(client.name);
-        setEmail(client.email);
-        setPhone(client.phone);
-        setFormSubmissionError('');
+  const filteredClients = clients.filter((client) => {
+    const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
+    return clientString.includes(searchTerm.toLowerCase());
+  });
+
+  const sortedClients = filteredClients.sort((a, b) => {
+    if (sortField === 'name') {
+      if (sortOrder === 'asc') {
+        return a.name.localeCompare(b.name);
       } else {
-        setErrors(validationErrors);
-        setFormSubmissionError('Please fill out all required fields');
+        return b.name.localeCompare(a.name);
       }
-    } catch (error) {
-      setFormSubmissionError('Error editing client: ' + error.message);
+    } else if (sortField === 'email') {
+      if (sortOrder === 'asc') {
+        return a.email.localeCompare(b.email);
+      } else {
+        return b.email.localeCompare(a.email);
+      }
+    } else if (sortField === 'phone') {
+      if (sortOrder === 'asc') {
+        return a.phone.localeCompare(b.phone);
+      } else {
+        return b.phone.localeCompare(a.phone);
+      }
     }
+    return 0;
+  });
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
-  const handleUpdateClient = () => {
-    try {
-      if (validateForm()) {
-        if (editedClient) {
-          const updatedClient: Client = {
-            id: editedClient.id,
-            name,
-            email,
-            phone,
-          };
-          const validationErrors = validateClientData(updatedClient);
-          if (Object.values(validationErrors).every((error) => error === '')) {
-            const updatedClients = clients.map((client) => {
-              if (client.id === editedClient.id) {
-                return updatedClient;
-              }
-              return client;
-            });
-            setClients(updatedClients);
-            setIsNewClient(false);
-            setName('');
-            setEmail('');
-            setPhone('');
-            setFormSubmissionError('');
-          } else {
-            setErrors(validationErrors);
-            setFormSubmissionError('Please fill out all required fields');
-          }
-        }
-      } else {
-        setFormSubmissionError('Please fill out all required fields');
-      }
-    } catch (error) {
-      setFormSubmissionError('Error updating client: ' + error.message);
+  const handleSort = (field: 'name' | 'email' | 'phone') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
     }
   };
 
   return (
     <Layout>
-      <Table
-        clients={clients}
-        handleEditClient={handleEditClient}
-        searchTerm={searchTerm}
-        pageNumber={pageNumber}
-        itemsPerPage={itemsPerPage}
+      <h1>Client Database</h1>
+      <Input
+        type="search"
+        value={searchTerm}
+        onChange={handleSearch}
+        placeholder="Search clients"
       />
+      <Table>
+        <thead>
+          <tr>
+            <th>
+              <button onClick={() => handleSort('name')}>Name</button>
+              {sortField === 'name' && sortOrder === 'asc' ? ' ↑' : sortField === 'name' && sortOrder === 'desc' ? ' ↓' : ''}
+            </th>
+            <th>
+              <button onClick={() => handleSort('email')}>Email</button>
+              {sortField === 'email' && sortOrder === 'asc' ? ' ↑' : sortField === 'email' && sortOrder === 'desc' ? ' ↓' : ''}
+            </th>
+            <th>
+              <button onClick={() => handleSort('phone')}>Phone</button>
+              {sortField === 'phone' && sortOrder === 'asc' ? ' ↑' : sortField === 'phone' && sortOrder === 'desc' ? ' ↓' : ''}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage).map((client) => (
+            <tr key={client.id}>
+              <td>{client.name}</td>
+              <td>{client.email}</td>
+              <td>{client.phone}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <Button onClick={handleAddClient}>Add Client</Button>
       <form>
         <Input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(event) => setName(event.target.value)}
           placeholder="Name"
-          error={errors.name}
         />
         <Input
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(event) => setEmail(event.target.value)}
           placeholder="Email"
-          error={errors.email}
         />
         <Input
           type="text"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(event) => setPhone(event.target.value)}
           placeholder="Phone"
-          error={errors.phone}
         />
-        {isNewClient ? (
-          <Button onClick={handleAddClient}>Add Client</Button>
-        ) : (
-          <Button onClick={handleUpdateClient}>Update Client</Button>
-        )}
-        {formSubmissionError && <p style={{ color: 'red' }}>{formSubmissionError}</p>}
       </form>
     </Layout>
   );
