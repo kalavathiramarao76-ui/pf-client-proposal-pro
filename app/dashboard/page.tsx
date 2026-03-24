@@ -148,107 +148,41 @@ const DashboardPage = () => {
       },
     },
   ]);
-  const [filter, setFilter] = useState({
-    status: '',
-    dateRange: '',
-  });
-  const [sortedData, setSortedData] = useState(proposalData);
-
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
-    const filteredData = proposalData.datasets.filter((dataset) => {
-      if (name === 'status') {
-        return dataset.label.includes(value);
-      } else if (name === 'dateRange') {
-        return dataset.data.includes(value);
-      }
-    });
-    setSortedData(filteredData);
-  };
-
-  const handleSortChange = (event) => {
-    const { name, value } = event.target;
-    const sortedData = proposalData.datasets.sort((a, b) => {
-      if (name === 'label') {
-        return a.label.localeCompare(b.label);
-      } else if (name === 'data') {
-        return a.data[0] - b.data[0];
-      }
-    });
-    setSortedData(sortedData);
-  };
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col md:flex-row justify-center items-center md:space-x-4 space-y-4 md:space-y-0">
-        <div className="w-full md:w-1/2 xl:w-1/3 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">Proposal Creation Trend</h2>
-          <Line
-            data={sortedData}
-            options={chartOptions}
-            className="h-64"
-          />
+      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
+        <div className="flex flex-wrap justify-center mb-4">
+          {widgets.map((widget) => (
+            <div
+              key={widget.id}
+              className="w-full lg:w-1/3 xl:w-1/4 p-6 bg-white rounded-lg shadow-md mb-4 lg:mb-0 lg:mr-4"
+            >
+              <h2 className="text-lg font-bold mb-2">{widget.title}</h2>
+              {widget.type === 'line' && (
+                <Line
+                  options={chartOptions}
+                  data={widget.data}
+                  className="h-64"
+                />
+              )}
+              {widget.type === 'bar' && (
+                <Bar
+                  options={chartOptions}
+                  data={widget.data}
+                  className="h-64"
+                />
+              )}
+              {widget.type === 'pie' && (
+                <Pie
+                  options={chartOptions}
+                  data={widget.data}
+                  className="h-64"
+                />
+              )}
+            </div>
+          ))}
         </div>
-        <div className="w-full md:w-1/2 xl:w-1/3 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">Proposal Approval Trend</h2>
-          <Bar
-            data={sortedData}
-            options={chartOptions}
-            className="h-64"
-          />
-        </div>
-        <div className="w-full md:w-1/2 xl:w-1/3 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-lg font-bold mb-4">Proposal Status</h2>
-          <Pie
-            data={widgets[2].data}
-            options={chartOptions}
-            className="h-64"
-          />
-        </div>
-      </div>
-      <div className="flex flex-col md:flex-row justify-center items-center md:space-x-4 space-y-4 md:space-y-0">
-        <select
-          name="status"
-          value={filter.status}
-          onChange={handleFilterChange}
-          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
-        >
-          <option value="">Select Status</option>
-          <option value="Proposals Created">Proposals Created</option>
-          <option value="Proposals Approved">Proposals Approved</option>
-        </select>
-        <select
-          name="dateRange"
-          value={filter.dateRange}
-          onChange={handleFilterChange}
-          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
-        >
-          <option value="">Select Date Range</option>
-          <option value="January">January</option>
-          <option value="February">February</option>
-          <option value="March">March</option>
-          <option value="April">April</option>
-          <option value="May">May</option>
-        </select>
-        <select
-          name="label"
-          value=""
-          onChange={handleSortChange}
-          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
-        >
-          <option value="">Sort By Label</option>
-          <option value="label">Label</option>
-        </select>
-        <select
-          name="data"
-          value=""
-          onChange={handleSortChange}
-          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
-        >
-          <option value="">Sort By Data</option>
-          <option value="data">Data</option>
-        </select>
       </div>
     </DashboardLayout>
   );

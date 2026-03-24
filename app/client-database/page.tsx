@@ -100,81 +100,112 @@ const ClientDatabasePage = () => {
           phone,
         };
 
-        setClients([...clients, newClient]);
+        setClients((prevClients) => [...prevClients, newClient]);
         setName('');
         setEmail('');
         setPhone('');
-        setIsNewClient(false);
       }
     } catch (error) {
-      setFormSubmissionError('Error adding client');
+      setFormSubmissionError('Failed to add client');
     }
   };
 
-  const handleImportClients = () => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.json';
-    fileInput.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            const importedClients: Client[] = JSON.parse(reader.result as string);
-            setClients(importedClients);
-          } catch (error) {
-            console.error('Error importing clients:', error);
-          }
-        };
-        reader.readAsText(file);
+  const handleEditClient = (client: Client) => {
+    try {
+      if (validateClientData(client)) {
+        setClients((prevClients) =>
+          prevClients.map((prevClient) => (prevClient.id === client.id ? client : prevClient))
+        );
       }
-    };
-    fileInput.click();
+    } catch (error) {
+      setFormSubmissionError('Failed to edit client');
+    }
   };
 
-  const handleExportClients = () => {
-    const json = JSON.stringify(clients, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'clients.json';
-    a.click();
+  const handleDeleteClient = (clientId: number) => {
+    try {
+      setClients((prevClients) => prevClients.filter((client) => client.id !== clientId));
+    } catch (error) {
+      setFormSubmissionError('Failed to delete client');
+    }
+  };
+
+  const filteredClients = clients.filter((client) => {
+    const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
+    return clientString.includes(searchTerm.toLowerCase());
+  });
+
+  const sortedClients = filteredClients.sort((a, b) => {
+    if (sortField === 'name') {
+      if (sortOrder === 'asc') {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.name.localeCompare(a.name);
+      }
+    } else if (sortField === 'email') {
+      if (sortOrder === 'asc') {
+        return a.email.localeCompare(b.email);
+      } else {
+        return b.email.localeCompare(a.email);
+      }
+    } else if (sortField === 'phone') {
+      if (sortOrder === 'asc') {
+        return a.phone.localeCompare(b.phone);
+      } else {
+        return b.phone.localeCompare(a.phone);
+      }
+    }
+    return 0;
+  });
+
+  const paginatedClients = sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleSort = (field: 'name' | 'email' | 'phone') => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
   };
 
   return (
     <Layout>
       <h1>Client Database</h1>
+      <Input
+        type="search"
+        value={searchTerm}
+        onChange={handleSearch}
+        placeholder="Search clients"
+      />
+      <Table>
+        <thead>
+          <tr>
+            <th onClick={() => handleSort('name')}>Name</th>
+            <th onClick={() => handleSort('email')}>Email</th>
+            <th onClick={() => handleSort('phone')}>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedClients.map((client) => (
+            <tr key={client.id}>
+              <td>{client.name}</td>
+              <td>{client.email}</td>
+              <td>{client.phone}</td>
+              <td>
+                <Button onClick={() => handleEditClient(client)}>Edit</Button>
+                <Button onClick={() => handleDeleteClient(client.id)}>Delete</Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
       <Button onClick={handleAddClient}>Add Client</Button>
-      <Button onClick={handleImportClients}>Import Clients</Button>
-      <Button onClick={handleExportClients}>Export Clients</Button>
-      <Table
-        data={clients}
-        columns={[
-          { name: 'Name', selector: (row) => row.name },
-          { name: 'Email', selector: (row) => row.email },
-          { name: 'Phone', selector: (row) => row.phone },
-        ]}
-      />
-      <Input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Name"
-      />
-      <Input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
-      <Input
-        type="text"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        placeholder="Phone"
-      />
     </Layout>
   );
 };
