@@ -25,6 +25,7 @@ const ClientDatabasePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [formSubmissionError, setFormSubmissionError] = useState('');
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -62,136 +63,112 @@ const ClientDatabasePage = () => {
   };
 
   const handleAddClient = () => {
-    if (validateForm()) {
-      const newClient: Client = {
-        id: Date.now(),
-        name,
-        email,
-        phone,
-      };
-      setClients([...clients, newClient]);
-      setName('');
-      setEmail('');
-      setPhone('');
+    try {
+      if (validateForm()) {
+        const newClient: Client = {
+          id: Date.now(),
+          name,
+          email,
+          phone,
+        };
+        setClients([...clients, newClient]);
+        setName('');
+        setEmail('');
+        setPhone('');
+        setFormSubmissionError('');
+      } else {
+        setFormSubmissionError('Please fill out all required fields');
+      }
+    } catch (error) {
+      setFormSubmissionError('Error adding client: ' + error.message);
     }
   };
 
   const handleEditClient = (client: Client) => {
-    setEditedClient(client);
-    setIsNewClient(false);
-    setName(client.name);
-    setEmail(client.email);
-    setPhone(client.phone);
+    try {
+      setEditedClient(client);
+      setIsNewClient(false);
+      setName(client.name);
+      setEmail(client.email);
+      setPhone(client.phone);
+      setFormSubmissionError('');
+    } catch (error) {
+      setFormSubmissionError('Error editing client: ' + error.message);
+    }
   };
 
   const handleUpdateClient = () => {
-    if (validateForm()) {
-      if (editedClient) {
-        const updatedClients = clients.map((client) =>
-          client.id === editedClient.id ? { ...editedClient, name, email, phone } : client
-        );
-        setClients(updatedClients);
-        setEditedClient(null);
-        setIsNewClient(true);
-        setName('');
-        setEmail('');
-        setPhone('');
+    try {
+      if (validateForm()) {
+        if (editedClient) {
+          const updatedClients = clients.map((client) =>
+            client.id === editedClient.id ? { ...editedClient, name, email, phone } : client
+          );
+          setClients(updatedClients);
+          setEditedClient(null);
+          setIsNewClient(true);
+          setName('');
+          setEmail('');
+          setPhone('');
+          setFormSubmissionError('');
+        } else {
+          setFormSubmissionError('No client selected for update');
+        }
+      } else {
+        setFormSubmissionError('Please fill out all required fields');
       }
+    } catch (error) {
+      setFormSubmissionError('Error updating client: ' + error.message);
     }
   };
 
   const handleDeleteClient = (id: number) => {
-    const filteredClients = clients.filter((client) => client.id !== id);
-    setClients(filteredClients);
-  };
-
-  const filteredClients = clients.filter((client) =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const paginatedClients = filteredClients.slice(
-    (pageNumber - 1) * itemsPerPage,
-    pageNumber * itemsPerPage
-  );
-
-  const handlePageChange = (pageNumber: number) => {
-    setPageNumber(pageNumber);
-  };
-
-  const handleItemsPerPageChange = (itemsPerPage: number) => {
-    setItemsPerPage(itemsPerPage);
-    setPageNumber(1);
+    try {
+      const filteredClients = clients.filter((client) => client.id !== id);
+      setClients(filteredClients);
+      setFormSubmissionError('');
+    } catch (error) {
+      setFormSubmissionError('Error deleting client: ' + error.message);
+    }
   };
 
   return (
     <Layout>
-      <div>
-        <h1>Client Database</h1>
-        <div>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
-          />
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-          />
-          <Input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone"
-          />
+      <h1>Client Database</h1>
+      <form>
+        <Input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          error={errors.name}
+        />
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          error={errors.email}
+        />
+        <Input
+          type="text"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Phone"
+          error={errors.phone}
+        />
+        {isNewClient ? (
           <Button onClick={handleAddClient}>Add Client</Button>
-        </div>
-        <div>
-          <Input
-            type="search"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search clients"
-          />
-        </div>
-        <Table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedClients.map((client) => (
-              <tr key={client.id}>
-                <td>{client.name}</td>
-                <td>{client.email}</td>
-                <td>{client.phone}</td>
-                <td>
-                  <Button onClick={() => handleEditClient(client)}>Edit</Button>
-                  <Button onClick={() => handleDeleteClient(client.id)}>Delete</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <div>
-          <Button onClick={() => handlePageChange(pageNumber - 1)}>Previous</Button>
-          <span>
-            Page {pageNumber} of {Math.ceil(filteredClients.length / itemsPerPage)}
-          </span>
-          <Button onClick={() => handlePageChange(pageNumber + 1)}>Next</Button>
-          <select value={itemsPerPage} onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}>
-            <option value={5}>5 items per page</option>
-            <option value={10}>10 items per page</option>
-            <option value={20}>20 items per page</option>
-          </select>
-        </div>
-      </div>
+        ) : (
+          <Button onClick={handleUpdateClient}>Update Client</Button>
+        )}
+        {formSubmissionError && <p style={{ color: 'red' }}>{formSubmissionError}</p>}
+      </form>
+      <Table
+        clients={clients}
+        handleEditClient={handleEditClient}
+        handleDeleteClient={handleDeleteClient}
+      />
     </Layout>
   );
 };

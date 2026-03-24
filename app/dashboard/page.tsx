@@ -16,6 +16,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import axios from 'axios';
 
 ChartJS.register(
   CategoryScale,
@@ -47,6 +48,23 @@ const DashboardPage = () => {
       },
     ],
   });
+  const [realTimeProposalData, setRealTimeProposalData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Proposals Created',
+        data: [],
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1,
+      },
+      {
+        label: 'Proposals Approved',
+        data: [],
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1,
+      },
+    ],
+  });
   const [chartOptions, setChartOptions] = useState({
     responsive: true,
     plugins: {
@@ -70,6 +88,36 @@ const DashboardPage = () => {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    const fetchRealTimeData = async () => {
+      try {
+        const response = await axios.get('/api/proposal-analytics');
+        const data = response.data;
+        setRealTimeProposalData({
+          labels: data.labels,
+          datasets: [
+            {
+              label: 'Proposals Created',
+              data: data.proposalsCreated,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.1,
+            },
+            {
+              label: 'Proposals Approved',
+              data: data.proposalsApproved,
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.1,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchRealTimeData();
+    const intervalId = setInterval(fetchRealTimeData, 10000);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -88,7 +136,7 @@ const DashboardPage = () => {
     }));
   };
 
-  const filteredDatasets = proposalData.datasets.filter((dataset) => datasetVisibility[dataset.label]);
+  const filteredDatasets = realTimeProposalData.datasets.filter((dataset) => datasetVisibility[dataset.label]);
 
   return (
     <DashboardLayout>
@@ -109,47 +157,26 @@ const DashboardPage = () => {
             <p className="text-lg text-center">You are not logged in</p>
           )}
         </div>
-        <div className="mt-8 bg-white rounded shadow-md p-4 w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
-          <h2 className="text-2xl font-bold mb-4 text-center">Proposal Analytics</h2>
-          <div className="flex flex-col mb-4">
-            <label className="text-lg mb-2">Chart Type:</label>
-            <select value={chartType} onChange={handleChartTypeChange}>
-              <option value="line">Line</option>
-              <option value="bar">Bar</option>
-            </select>
-          </div>
-          <div className="flex flex-col mb-4">
-            <label className="text-lg mb-2">Dataset Visibility:</label>
-            {proposalData.datasets.map((dataset) => (
-              <div key={dataset.label}>
-                <input
-                  type="checkbox"
-                  checked={datasetVisibility[dataset.label]}
-                  onChange={() => handleDatasetVisibilityChange(dataset.label)}
-                />
-                <span className="ml-2">{dataset.label}</span>
-              </div>
-            ))}
-          </div>
-          {chartType === 'line' ? (
-            <Line
-              data={{
-                labels: proposalData.labels,
-                datasets: filteredDatasets,
-              }}
-              options={chartOptions}
-            />
-          ) : (
-            <div>Bar chart is not implemented yet</div>
-          )}
+        <div className="mt-4">
+          <Line options={chartOptions} data={realTimeProposalData} />
         </div>
-        <div className="mt-8 text-center">
-          <Link
-            href="/proposal-templates"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Create a new proposal
-          </Link>
+        <div className="mt-4">
+          <select value={chartType} onChange={handleChartTypeChange}>
+            <option value="line">Line</option>
+            <option value="bar">Bar</option>
+          </select>
+        </div>
+        <div className="mt-4">
+          {realTimeProposalData.datasets.map((dataset) => (
+            <div key={dataset.label}>
+              <input
+                type="checkbox"
+                checked={datasetVisibility[dataset.label]}
+                onChange={() => handleDatasetVisibilityChange(dataset.label)}
+              />
+              <span>{dataset.label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </DashboardLayout>

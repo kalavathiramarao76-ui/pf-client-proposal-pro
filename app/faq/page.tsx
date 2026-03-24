@@ -42,7 +42,7 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
@@ -50,17 +50,24 @@ const FAQPage = () => {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="twitter:site" content="@ProposalStudio" />
+        <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
         <meta name="robots" content="index, follow" />
+        <meta name="revisit-after" content="1 days" />
         <meta name="author" content="Proposal Studio" />
         <meta name="copyright" content="2024 Proposal Studio" />
-        <meta name="revised" content="2024-01-01" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       {faqs.map((faq, index) => (
         <div key={index}>
-          <h2>{faq.question}</h2>
-          <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Read more</span>}</p>
-          {expanded === faq.question && <p onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Less</p>}
+          <div>
+            <h3>{faq.question}</h3>
+            <button onClick={() => handleToggle(index)}>
+              <AiOutlineArrowRight />
+            </button>
+          </div>
+          {expanded === faq.question && (
+            <p>{faq.answer}</p>
+          )}
         </div>
       ))}
     </div>
