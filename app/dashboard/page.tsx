@@ -148,96 +148,107 @@ const DashboardPage = () => {
       },
     },
   ]);
+  const [filter, setFilter] = useState({
+    status: '',
+    dateRange: '',
+  });
+  const [sortedData, setSortedData] = useState(proposalData);
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const data = await getRealTimeData();
-      if (data) {
-        setRealTimeProposalData({
-          labels: data.labels,
-          datasets: [
-            {
-              label: 'Proposals Created',
-              data: data.proposalsCreated,
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.1,
-            },
-            {
-              label: 'Proposals Approved',
-              data: data.proposalsApproved,
-              borderColor: 'rgb(255, 99, 132)',
-              tension: 0.1,
-            },
-          ],
-        });
+  const handleFilterChange = (event) => {
+    const { name, value } = event.target;
+    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+    const filteredData = proposalData.datasets.filter((dataset) => {
+      if (name === 'status') {
+        return dataset.label.includes(value);
+      } else if (name === 'dateRange') {
+        return dataset.data.includes(value);
       }
-    };
-    fetchInitialData();
-  }, []);
+    });
+    setSortedData(filteredData);
+  };
 
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      const data = await getRealTimeData();
-      if (data) {
-        setRealTimeProposalData({
-          labels: data.labels,
-          datasets: [
-            {
-              label: 'Proposals Created',
-              data: data.proposalsCreated,
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.1,
-            },
-            {
-              label: 'Proposals Approved',
-              data: data.proposalsApproved,
-              borderColor: 'rgb(255, 99, 132)',
-              tension: 0.1,
-            },
-          ],
-        });
+  const handleSortChange = (event) => {
+    const { name, value } = event.target;
+    const sortedData = proposalData.datasets.sort((a, b) => {
+      if (name === 'label') {
+        return a.label.localeCompare(b.label);
+      } else if (name === 'data') {
+        return a.data[0] - b.data[0];
       }
-    }, cacheDuration);
-    return () => clearInterval(intervalId);
-  }, []);
+    });
+    setSortedData(sortedData);
+  };
 
   return (
     <DashboardLayout>
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <h1>Proposal Studio Dashboard</h1>
-          </div>
+      <div className="flex flex-col md:flex-row justify-center items-center md:space-x-4 space-y-4 md:space-y-0">
+        <div className="w-full md:w-1/2 xl:w-1/3 p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-lg font-bold mb-4">Proposal Creation Trend</h2>
+          <Line
+            data={sortedData}
+            options={chartOptions}
+            className="h-64"
+          />
         </div>
-        <div className="row">
-          {widgets.map((widget) => (
-            <div key={widget.id} className="col-md-4">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">{widget.title}</h5>
-                  {widget.type === 'line' && (
-                    <Line
-                      options={chartOptions}
-                      data={widget.data}
-                    />
-                  )}
-                  {widget.type === 'bar' && (
-                    <Bar
-                      options={chartOptions}
-                      data={widget.data}
-                    />
-                  )}
-                  {widget.type === 'pie' && (
-                    <Pie
-                      options={chartOptions}
-                      data={widget.data}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="w-full md:w-1/2 xl:w-1/3 p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-lg font-bold mb-4">Proposal Approval Trend</h2>
+          <Bar
+            data={sortedData}
+            options={chartOptions}
+            className="h-64"
+          />
         </div>
+        <div className="w-full md:w-1/2 xl:w-1/3 p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-lg font-bold mb-4">Proposal Status</h2>
+          <Pie
+            data={widgets[2].data}
+            options={chartOptions}
+            className="h-64"
+          />
+        </div>
+      </div>
+      <div className="flex flex-col md:flex-row justify-center items-center md:space-x-4 space-y-4 md:space-y-0">
+        <select
+          name="status"
+          value={filter.status}
+          onChange={handleFilterChange}
+          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
+        >
+          <option value="">Select Status</option>
+          <option value="Proposals Created">Proposals Created</option>
+          <option value="Proposals Approved">Proposals Approved</option>
+        </select>
+        <select
+          name="dateRange"
+          value={filter.dateRange}
+          onChange={handleFilterChange}
+          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
+        >
+          <option value="">Select Date Range</option>
+          <option value="January">January</option>
+          <option value="February">February</option>
+          <option value="March">March</option>
+          <option value="April">April</option>
+          <option value="May">May</option>
+        </select>
+        <select
+          name="label"
+          value=""
+          onChange={handleSortChange}
+          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
+        >
+          <option value="">Sort By Label</option>
+          <option value="label">Label</option>
+        </select>
+        <select
+          name="data"
+          value=""
+          onChange={handleSortChange}
+          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700 rounded-lg border border-gray-200"
+        >
+          <option value="">Sort By Data</option>
+          <option value="data">Data</option>
+        </select>
       </div>
     </DashboardLayout>
   );

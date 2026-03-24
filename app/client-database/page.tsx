@@ -99,198 +99,82 @@ const ClientDatabasePage = () => {
           email,
           phone,
         };
+
         setClients([...clients, newClient]);
         setName('');
         setEmail('');
         setPhone('');
+        setIsNewClient(false);
       }
     } catch (error) {
       setFormSubmissionError('Error adding client');
     }
   };
 
-  const handleEditClient = (client: Client) => {
-    setEditedClient(client);
-    setName(client.name);
-    setEmail(client.email);
-    setPhone(client.phone);
+  const handleImportClients = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const importedClients: Client[] = JSON.parse(reader.result as string);
+            setClients(importedClients);
+          } catch (error) {
+            console.error('Error importing clients:', error);
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    fileInput.click();
   };
 
-  const handleUpdateClient = () => {
-    try {
-      if (validateForm()) {
-        const updatedClients = clients.map((client) =>
-          client.id === editedClient?.id ? { ...editedClient, name, email, phone } : client
-        );
-        setClients(updatedClients);
-        setEditedClient(null);
-        setName('');
-        setEmail('');
-        setPhone('');
-      }
-    } catch (error) {
-      setFormSubmissionError('Error updating client');
-    }
+  const handleExportClients = () => {
+    const json = JSON.stringify(clients, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'clients.json';
+    a.click();
   };
-
-  const handleDeleteClient = (clientId: number) => {
-    try {
-      const updatedClients = clients.filter((client) => client.id !== clientId);
-      setClients(updatedClients);
-    } catch (error) {
-      setFormSubmissionError('Error deleting client');
-    }
-  };
-
-  const filteredClients = clients.filter((client) =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.phone.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const sortedClients = filteredClients.sort((a, b) => {
-    if (sortField === 'name') {
-      if (sortOrder === 'asc') {
-        return a.name.localeCompare(b.name);
-      } else {
-        return b.name.localeCompare(a.name);
-      }
-    } else if (sortField === 'email') {
-      if (sortOrder === 'asc') {
-        return a.email.localeCompare(b.email);
-      } else {
-        return b.email.localeCompare(a.email);
-      }
-    } else if (sortField === 'phone') {
-      if (sortOrder === 'asc') {
-        return a.phone.localeCompare(b.phone);
-      } else {
-        return b.phone.localeCompare(a.phone);
-      }
-    }
-    return 0;
-  });
-
-  const paginatedClients = sortedClients.slice(
-    (pageNumber - 1) * itemsPerPage,
-    pageNumber * itemsPerPage
-  );
 
   return (
     <Layout>
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold">Client Database</h1>
-        <Button onClick={handleAddClient}>Add Client</Button>
-      </div>
-      <div className="flex justify-between mb-4">
-        <Input
-          type="search"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search clients"
-        />
-        <select
-          value={sortField}
-          onChange={(e) => setSortField(e.target.value as 'name' | 'email' | 'phone')}
-        >
-          <option value="name">Name</option>
-          <option value="email">Email</option>
-          <option value="phone">Phone</option>
-        </select>
-        <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
-          {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-        </button>
-      </div>
-      <Table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedClients.map((client) => (
-            <tr key={client.id}>
-              <td>{client.name}</td>
-              <td>{client.email}</td>
-              <td>{client.phone}</td>
-              <td>
-                <Button onClick={() => handleEditClient(client)}>Edit</Button>
-                <Button onClick={() => handleDeleteClient(client.id)}>Delete</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <div className="flex justify-between mb-4">
-        <button
-          onClick={() => setPageNumber(pageNumber - 1)}
-          disabled={pageNumber === 1}
-        >
-          Previous
-        </button>
-        <span>
-          Page {pageNumber} of {Math.ceil(sortedClients.length / itemsPerPage)}
-        </span>
-        <button
-          onClick={() => setPageNumber(pageNumber + 1)}
-          disabled={pageNumber === Math.ceil(sortedClients.length / itemsPerPage)}
-        >
-          Next
-        </button>
-      </div>
-      {isNewClient && (
-        <div>
-          <h2>Add Client</h2>
-          <form>
-            <label>
-              Name:
-              <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-              {errors.name && <div className="text-red-500">{errors.name}</div>}
-            </label>
-            <label>
-              Email:
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              {errors.email && <div className="text-red-500">{errors.email}</div>}
-            </label>
-            <label>
-              Phone:
-              <Input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              {errors.phone && <div className="text-red-500">{errors.phone}</div>}
-            </label>
-            <Button type="submit" onClick={handleAddClient}>
-              Add Client
-            </Button>
-          </form>
-        </div>
-      )}
-      {editedClient && (
-        <div>
-          <h2>Edit Client</h2>
-          <form>
-            <label>
-              Name:
-              <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-              {errors.name && <div className="text-red-500">{errors.name}</div>}
-            </label>
-            <label>
-              Email:
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              {errors.email && <div className="text-red-500">{errors.email}</div>}
-            </label>
-            <label>
-              Phone:
-              <Input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              {errors.phone && <div className="text-red-500">{errors.phone}</div>}
-            </label>
-            <Button type="submit" onClick={handleUpdateClient}>
-              Update Client
-            </Button>
-          </form>
-        </div>
-      )}
+      <h1>Client Database</h1>
+      <Button onClick={handleAddClient}>Add Client</Button>
+      <Button onClick={handleImportClients}>Import Clients</Button>
+      <Button onClick={handleExportClients}>Export Clients</Button>
+      <Table
+        data={clients}
+        columns={[
+          { name: 'Name', selector: (row) => row.name },
+          { name: 'Email', selector: (row) => row.email },
+          { name: 'Phone', selector: (row) => row.phone },
+        ]}
+      />
+      <Input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+      />
+      <Input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <Input
+        type="text"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder="Phone"
+      />
     </Layout>
   );
 };
