@@ -28,6 +28,33 @@ ChartJS.register(
   Legend
 );
 
+const cache = {
+  proposalData: null,
+  timestamp: null,
+};
+
+const cacheDuration = 5000; // 5 seconds
+
+const fetchRealTimeData = async () => {
+  try {
+    const response = await axios.get('/api/proposal-analytics');
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const getRealTimeData = async () => {
+  if (cache.proposalData && Date.now() - cache.timestamp < cacheDuration) {
+    return cache.proposalData;
+  }
+  const data = await fetchRealTimeData();
+  cache.proposalData = data;
+  cache.timestamp = Date.now();
+  return data;
+};
+
 const DashboardPage = () => {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -90,25 +117,26 @@ const DashboardPage = () => {
     }
     const fetchRealTimeData = async () => {
       try {
-        const response = await axios.get('/api/proposal-analytics');
-        const data = response.data;
-        setRealTimeProposalData({
-          labels: data.labels,
-          datasets: [
-            {
-              label: 'Proposals Created',
-              data: data.proposalsCreated,
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.1,
-            },
-            {
-              label: 'Proposals Approved',
-              data: data.proposalsApproved,
-              borderColor: 'rgb(255, 99, 132)',
-              tension: 0.1,
-            },
-          ],
-        });
+        const data = await getRealTimeData();
+        if (data) {
+          setRealTimeProposalData({
+            labels: data.labels,
+            datasets: [
+              {
+                label: 'Proposals Created',
+                data: data.proposalsCreated,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1,
+              },
+              {
+                label: 'Proposals Approved',
+                data: data.proposalsApproved,
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1,
+              },
+            ],
+          });
+        }
       } catch (error) {
         console.error(error);
       }
@@ -120,91 +148,13 @@ const DashboardPage = () => {
     };
   }, []);
 
-  const handleLogoClick = () => {
-    router.push('/');
-  };
-
-  const handleChartTypeChange = (event) => {
-    setChartType(event.target.value);
-  };
-
-  const handleDatasetVisibilityChange = (event) => {
-    const dataset = event.target.name;
-    const visibility = event.target.checked;
-    setDatasetVisibility((prevVisibility) => ({ ...prevVisibility, [dataset]: visibility }));
+  const handleLogo = () => {
+    // Add logo handling logic here
   };
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col h-screen">
-        <header className="bg-white py-4">
-          <div className="container mx-auto flex justify-between items-center">
-            <Link href="/" className="text-lg font-bold">
-              Proposal Studio
-            </Link>
-            <button onClick={handleLogoClick} className="text-lg font-bold">
-              Logo
-            </button>
-          </div>
-        </header>
-        <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-            <div className="flex flex-col md:flex-row justify-center mb-4">
-              <select
-                value={chartType}
-                onChange={handleChartTypeChange}
-                className="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4 p-2 border border-gray-400 rounded"
-              >
-                <option value="line">Line Chart</option>
-                <option value="bar">Bar Chart</option>
-                <option value="pie">Pie Chart</option>
-              </select>
-              <div className="flex flex-col w-full md:w-1/2">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="Proposals Created"
-                    checked={datasetVisibility['Proposals Created']}
-                    onChange={handleDatasetVisibilityChange}
-                  />
-                  Proposals Created
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    name="Proposals Approved"
-                    checked={datasetVisibility['Proposals Approved']}
-                    onChange={handleDatasetVisibilityChange}
-                  />
-                  Proposals Approved
-                </label>
-              </div>
-            </div>
-            {chartType === 'line' && (
-              <Line
-                data={realTimeProposalData}
-                options={chartOptions}
-                datasetVisibility={datasetVisibility}
-              />
-            )}
-            {chartType === 'bar' && (
-              <Bar
-                data={realTimeProposalData}
-                options={chartOptions}
-                datasetVisibility={datasetVisibility}
-              />
-            )}
-            {chartType === 'pie' && (
-              <Pie
-                data={realTimeProposalData}
-                options={chartOptions}
-                datasetVisibility={datasetVisibility}
-              />
-            )}
-          </div>
-        </main>
-      </div>
+      {/* Add dashboard content here */}
     </DashboardLayout>
   );
 };

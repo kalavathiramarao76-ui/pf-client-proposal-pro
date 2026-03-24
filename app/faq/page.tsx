@@ -43,7 +43,7 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
@@ -51,20 +51,21 @@ const FAQPage = () => {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="twitter:image" content="https://www.proposalstudio.com/faq-image.jpg" />
+        <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
       </Head>
       <h1>Proposal Studio FAQ</h1>
-      <Image src="/faq-image.jpg" alt="Proposal Studio FAQ" width={800} height={400} />
-      {faqs.map((faq, index) => (
-        <div key={index}>
-          <h2>{faq.question}</h2>
-          <button onClick={() => handleToggle(index)}>
-            {expanded === faq.question ? 'Hide' : 'Show'} Answer
-            <AiOutlineArrowRight />
-          </button>
-          {expanded === faq.question && <p>{faq.answer}</p>}
-        </div>
-      ))}
+      <p>Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals.</p>
+      <ul>
+        {faqs.map((faq, index) => (
+          <li key={index}>
+            <button onClick={() => handleToggle(index)}>
+              {faq.question}
+              <AiOutlineArrowRight />
+            </button>
+            {expanded === faq.question && <p>{faq.answer}</p>}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

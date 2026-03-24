@@ -99,16 +99,49 @@ const ClientDatabasePage = () => {
           email,
           phone,
         };
-        const validationErrors = validateClientData(newClient);
-        if (Object.values(validationErrors).every((error) => error === '')) {
-          setClients([...clients, newClient]);
-          setName('');
-          setEmail('');
-          setPhone('');
-        }
+
+        setClients([...clients, newClient]);
+        setName('');
+        setEmail('');
+        setPhone('');
       }
     } catch (error) {
-      setFormSubmissionError('Failed to add client');
+      setFormSubmissionError('Error adding client');
+    }
+  };
+
+  const handleEditClient = (client: Client) => {
+    setEditedClient(client);
+    setIsNewClient(false);
+    setName(client.name);
+    setEmail(client.email);
+    setPhone(client.phone);
+  };
+
+  const handleUpdateClient = () => {
+    try {
+      if (validateForm()) {
+        const updatedClients = clients.map((client) =>
+          client.id === editedClient?.id ? { ...client, name, email, phone } : client
+        );
+        setClients(updatedClients);
+        setEditedClient(null);
+        setIsNewClient(false);
+        setName('');
+        setEmail('');
+        setPhone('');
+      }
+    } catch (error) {
+      setFormSubmissionError('Error updating client');
+    }
+  };
+
+  const handleDeleteClient = (clientId: number) => {
+    try {
+      const updatedClients = clients.filter((client) => client.id !== clientId);
+      setClients(updatedClients);
+    } catch (error) {
+      setFormSubmissionError('Error deleting client');
     }
   };
 
@@ -140,76 +173,118 @@ const ClientDatabasePage = () => {
     return 0;
   });
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleSort = (field: 'name' | 'email' | 'phone') => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
+  const paginatedClients = sortedClients.slice(
+    (pageNumber - 1) * itemsPerPage,
+    pageNumber * itemsPerPage
+  );
 
   return (
     <Layout>
       <h1>Client Database</h1>
-      <Input
-        type="search"
-        value={searchTerm}
-        onChange={handleSearch}
-        placeholder="Search clients"
-      />
+      <div>
+        <Input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search clients"
+        />
+        <Button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+          Sort by {sortField} ({sortOrder})
+        </Button>
+        <select
+          value={sortField}
+          onChange={(e) => setSortField(e.target.value as 'name' | 'email' | 'phone')}
+        >
+          <option value="name">Name</option>
+          <option value="email">Email</option>
+          <option value="phone">Phone</option>
+        </select>
+        <select
+          value={itemsPerPage}
+          onChange={(e) => setItemsPerPage(Number(e.target.value))}
+        >
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+        </select>
+      </div>
       <Table>
         <thead>
           <tr>
-            <th>
-              <button onClick={() => handleSort('name')}>Name</button>
-              {sortField === 'name' && sortOrder === 'asc' ? ' ↑' : sortField === 'name' && sortOrder === 'desc' ? ' ↓' : ''}
-            </th>
-            <th>
-              <button onClick={() => handleSort('email')}>Email</button>
-              {sortField === 'email' && sortOrder === 'asc' ? ' ↑' : sortField === 'email' && sortOrder === 'desc' ? ' ↓' : ''}
-            </th>
-            <th>
-              <button onClick={() => handleSort('phone')}>Phone</button>
-              {sortField === 'phone' && sortOrder === 'asc' ? ' ↑' : sortField === 'phone' && sortOrder === 'desc' ? ' ↓' : ''}
-            </th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage).map((client) => (
+          {paginatedClients.map((client) => (
             <tr key={client.id}>
               <td>{client.name}</td>
               <td>{client.email}</td>
               <td>{client.phone}</td>
+              <td>
+                <Button onClick={() => handleEditClient(client)}>Edit</Button>
+                <Button onClick={() => handleDeleteClient(client.id)}>Delete</Button>
+              </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <Button onClick={handleAddClient}>Add Client</Button>
-      <form>
-        <Input
-          type="text"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Name"
-        />
-        <Input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Email"
-        />
-        <Input
-          type="text"
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          placeholder="Phone"
-        />
-      </form>
+      <div>
+        <Button onClick={() => setIsNewClient(true)}>Add Client</Button>
+        {isNewClient && (
+          <div>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name"
+            />
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+            />
+            <Input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone"
+            />
+            <Button onClick={handleAddClient}>Add</Button>
+          </div>
+        )}
+        {editedClient && (
+          <div>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name"
+            />
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+            />
+            <Input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone"
+            />
+            <Button onClick={handleUpdateClient}>Update</Button>
+          </div>
+        )}
+      </div>
+      <div>
+        <Button onClick={() => setPageNumber(pageNumber - 1)}>Previous</Button>
+        <span>Page {pageNumber}</span>
+        <Button onClick={() => setPageNumber(pageNumber + 1)}>Next</Button>
+      </div>
     </Layout>
   );
 };
