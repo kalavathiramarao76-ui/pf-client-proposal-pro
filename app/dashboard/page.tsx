@@ -153,33 +153,52 @@ const DashboardPage = () => {
     <DashboardLayout>
       <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
         <div className="flex flex-wrap justify-center mb-4">
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+            <div className="bg-white rounded shadow-md p-4">
+              <h2 className="text-lg font-bold mb-2">Total Proposals</h2>
+              <p className="text-3xl font-bold">100</p>
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+            <div className="bg-white rounded shadow-md p-4">
+              <h2 className="text-lg font-bold mb-2">Approved Proposals</h2>
+              <p className="text-3xl font-bold">50</p>
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+            <div className="bg-white rounded shadow-md p-4">
+              <h2 className="text-lg font-bold mb-2">Rejected Proposals</h2>
+              <p className="text-3xl font-bold">20</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-wrap justify-center mb-4">
           {widgets.map((widget) => (
-            <div
-              key={widget.id}
-              className="w-full lg:w-1/3 xl:w-1/4 p-6 bg-white rounded-lg shadow-md mb-4 lg:mb-0 lg:mr-4"
-            >
-              <h2 className="text-lg font-bold mb-2">{widget.title}</h2>
-              {widget.type === 'line' && (
-                <Line
-                  options={chartOptions}
-                  data={widget.data}
-                  className="h-64"
-                />
-              )}
-              {widget.type === 'bar' && (
-                <Bar
-                  options={chartOptions}
-                  data={widget.data}
-                  className="h-64"
-                />
-              )}
-              {widget.type === 'pie' && (
-                <Pie
-                  options={chartOptions}
-                  data={widget.data}
-                  className="h-64"
-                />
-              )}
+            <div key={widget.id} className="w-full lg:w-1/2 xl:w-1/2 p-6">
+              <div className="bg-white rounded shadow-md p-4">
+                <h2 className="text-lg font-bold mb-2">{widget.title}</h2>
+                {widget.type === 'line' && (
+                  <Line
+                    options={chartOptions}
+                    data={widget.data}
+                    className="h-64"
+                  />
+                )}
+                {widget.type === 'bar' && (
+                  <Bar
+                    options={chartOptions}
+                    data={widget.data}
+                    className="h-64"
+                  />
+                )}
+                {widget.type === 'pie' && (
+                  <Pie
+                    options={chartOptions}
+                    data={widget.data}
+                    className="h-64"
+                  />
+                )}
+              </div>
             </div>
           ))}
         </div>

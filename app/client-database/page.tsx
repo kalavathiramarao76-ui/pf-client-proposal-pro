@@ -99,8 +99,7 @@ const ClientDatabasePage = () => {
           email,
           phone,
         };
-
-        setClients((prevClients) => [...prevClients, newClient]);
+        setClients([...clients, newClient]);
         setName('');
         setEmail('');
         setPhone('');
@@ -110,58 +109,8 @@ const ClientDatabasePage = () => {
     }
   };
 
-  const handleEditClient = (client: Client) => {
-    try {
-      if (validateClientData(client)) {
-        setClients((prevClients) =>
-          prevClients.map((prevClient) => (prevClient.id === client.id ? client : prevClient))
-        );
-      }
-    } catch (error) {
-      setFormSubmissionError('Failed to edit client');
-    }
-  };
-
-  const handleDeleteClient = (clientId: number) => {
-    try {
-      setClients((prevClients) => prevClients.filter((client) => client.id !== clientId));
-    } catch (error) {
-      setFormSubmissionError('Failed to delete client');
-    }
-  };
-
-  const filteredClients = clients.filter((client) => {
-    const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
-    return clientString.includes(searchTerm.toLowerCase());
-  });
-
-  const sortedClients = filteredClients.sort((a, b) => {
-    if (sortField === 'name') {
-      if (sortOrder === 'asc') {
-        return a.name.localeCompare(b.name);
-      } else {
-        return b.name.localeCompare(a.name);
-      }
-    } else if (sortField === 'email') {
-      if (sortOrder === 'asc') {
-        return a.email.localeCompare(b.email);
-      } else {
-        return b.email.localeCompare(a.email);
-      }
-    } else if (sortField === 'phone') {
-      if (sortOrder === 'asc') {
-        return a.phone.localeCompare(b.phone);
-      } else {
-        return b.phone.localeCompare(a.phone);
-      }
-    }
-    return 0;
-  });
-
-  const paginatedClients = sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage);
-
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+    setSearchTerm(event.target.value.toLowerCase());
   };
 
   const handleSort = (field: 'name' | 'email' | 'phone') => {
@@ -173,22 +122,64 @@ const ClientDatabasePage = () => {
     }
   };
 
+  const filteredClients = clients.filter((client) => {
+    const clientData = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
+    return clientData.includes(searchTerm);
+  });
+
+  const sortedClients = filteredClients.sort((a, b) => {
+    if (sortField === 'name') {
+      return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    } else if (sortField === 'email') {
+      return sortOrder === 'asc' ? a.email.localeCompare(b.email) : b.email.localeCompare(a.email);
+    } else {
+      return sortOrder === 'asc' ? a.phone.localeCompare(b.phone) : b.phone.localeCompare(a.phone);
+    }
+  });
+
+  const paginatedClients = sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage);
+
   return (
     <Layout>
       <h1>Client Database</h1>
-      <Input
-        type="search"
-        value={searchTerm}
-        onChange={handleSearch}
-        placeholder="Search clients"
-      />
+      <div>
+        <Input
+          type="search"
+          value={searchTerm}
+          onChange={handleSearch}
+          placeholder="Search clients"
+        />
+        <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
+      </div>
+      {isNewClient && (
+        <div>
+          <Input
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Name"
+          />
+          <Input
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="Email"
+          />
+          <Input
+            type="text"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            placeholder="Phone"
+          />
+          <Button onClick={handleAddClient}>Add Client</Button>
+        </div>
+      )}
       <Table>
         <thead>
           <tr>
             <th onClick={() => handleSort('name')}>Name</th>
             <th onClick={() => handleSort('email')}>Email</th>
             <th onClick={() => handleSort('phone')}>Phone</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -197,15 +188,15 @@ const ClientDatabasePage = () => {
               <td>{client.name}</td>
               <td>{client.email}</td>
               <td>{client.phone}</td>
-              <td>
-                <Button onClick={() => handleEditClient(client)}>Edit</Button>
-                <Button onClick={() => handleDeleteClient(client.id)}>Delete</Button>
-              </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <Button onClick={handleAddClient}>Add Client</Button>
+      <div>
+        <Button onClick={() => setPageNumber(pageNumber - 1)}>Previous</Button>
+        <span>Page {pageNumber}</span>
+        <Button onClick={() => setPageNumber(pageNumber + 1)}>Next</Button>
+      </div>
     </Layout>
   );
 };
