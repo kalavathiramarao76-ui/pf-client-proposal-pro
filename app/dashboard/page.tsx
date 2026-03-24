@@ -210,29 +210,33 @@ const DashboardPage = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-6">
-            <Line
-              options={chartOptions}
-              data={realTimeProposalData}
-              className="chart"
-            />
-          </div>
-          <div className="col-md-6">
-            <Bar
-              options={chartOptions}
-              data={realTimeProposalData}
-              className="chart"
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6">
-            <Pie
-              options={chartOptions}
-              data={widgets[2].data}
-              className="chart"
-            />
-          </div>
+          {widgets.map((widget) => (
+            <div key={widget.id} className="col-md-4">
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title">{widget.title}</h5>
+                  {widget.type === 'line' && (
+                    <Line
+                      options={chartOptions}
+                      data={widget.data}
+                    />
+                  )}
+                  {widget.type === 'bar' && (
+                    <Bar
+                      options={chartOptions}
+                      data={widget.data}
+                    />
+                  )}
+                  {widget.type === 'pie' && (
+                    <Pie
+                      options={chartOptions}
+                      data={widget.data}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </DashboardLayout>

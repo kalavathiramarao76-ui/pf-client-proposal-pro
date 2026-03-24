@@ -7,23 +7,23 @@ import Image from 'next/image';
 const faqs = [
   {
     question: 'What is Proposal Studio?',
-    answer: 'Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease.',
+    answer: 'Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease. Our proposal management software is designed to streamline the proposal process, making it easier for businesses to win new clients and grow their revenue.',
   },
   {
     question: 'What features does Proposal Studio offer?',
-    answer: 'Proposal Studio offers customizable proposal templates, a client database, proposal analytics and tracking, integration with popular payment gateways, collaboration tools for teams, and branding and white-labeling options.',
+    answer: 'Proposal Studio offers a range of features, including customizable proposal templates, a client database, proposal analytics and tracking, integration with popular payment gateways, collaboration tools for teams, and branding and white-labeling options. Our proposal builder and generator tools make it easy to create professional-looking proposals in minutes.',
   },
   {
     question: 'How do I get started with Proposal Studio?',
-    answer: 'To get started with Proposal Studio, simply sign up for an account and explore our features and templates. You can also contact our support team if you have any questions or need assistance.',
+    answer: 'To get started with Proposal Studio, simply sign up for an account and explore our features and templates. You can also contact our support team if you have any questions or need assistance. We offer a free trial, so you can try our proposal software before committing to a paid plan.',
   },
   {
     question: 'Is Proposal Studio suitable for my business?',
-    answer: 'Proposal Studio is designed for freelancers and creators who want to streamline their proposal process and increase their chances of winning new clients. If you fit this description, then Proposal Studio is likely a good fit for your business.',
+    answer: 'Proposal Studio is designed for freelancers and creators who want to streamline their proposal process and increase their chances of winning new clients. If you fit this description, then Proposal Studio is likely a good fit for your business. Our proposal management software is scalable, so it can grow with your business, and we offer a range of pricing plans to suit different needs and budgets.',
   },
   {
     question: 'How much does Proposal Studio cost?',
-    answer: 'Please visit our pricing page to learn more about our pricing plans and to find the one that best suits your needs.',
+    answer: 'Please visit our pricing page to learn more about our pricing plans and to find the one that best suits your needs. We offer a range of plans, including a free trial, so you can try our proposal software before committing to a paid plan.',
   },
 ];
 
@@ -42,26 +42,26 @@ const FAQPage = () => {
     <div>
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
-        <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial, proposal studio for freelancers, proposal studio for businesses, proposal studio for entrepreneurs" />
+        <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals. Learn about our proposal management software, features, pricing, and more." />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial, proposal studio for freelancers, proposal studio for businesses, proposal studio for entrepreneurs, proposal management software, proposal builder software, proposal generator software" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta property="og:keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial, proposal studio for freelancers, proposal studio for businesses, proposal studio for entrepreneurs" />
+        <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals. Learn about our proposal management software, features, pricing, and more." />
+        <meta property="og:url" content="https://www.proposalstudio.com/faq" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="twitter:keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial, proposal studio for freelancers, proposal studio for businesses, proposal studio for entrepreneurs" />
+        <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals. Learn about our proposal management software, features, pricing, and more." />
       </Head>
-      <h1>Proposal Studio FAQ - Frequently Asked Questions</h1>
-      <h2>General Questions</h2>
-      <ul>
-        {faqs.map((faq, index) => (
-          <li key={index}>
-            <h3>{faq.question}</h3>
-            <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Read more</span>}</p>
-            {expanded === faq.question && <p>{faq.answer}</p>}
-          </li>
-        ))}
-      </ul>
+      <h1>Proposal Studio FAQ</h1>
+      <p>Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals.</p>
+      {faqs.map((faq, index) => (
+        <div key={index}>
+          <h2>{faq.question}</h2>
+          <p>{expanded === faq.question ? faq.answer : faq.answer.substring(0, 150) + '...'}</p>
+          {expanded !== faq.question && <button onClick={() => handleToggle(index)}>Read more <AiOutlineArrowRight /></button>}
+          {expanded === faq.question && <button onClick={() => handleToggle(index)}>Read less <AiOutlineArrowRight /></button>}
+        </div>
+      ))}
     </div>
   );
 };

@@ -99,53 +99,54 @@ const ClientDatabasePage = () => {
           email,
           phone,
         };
-
-        setClients((prevClients) => [...prevClients, newClient]);
+        setClients([...clients, newClient]);
         setName('');
         setEmail('');
         setPhone('');
       }
     } catch (error) {
-      setFormSubmissionError('Failed to add client');
+      setFormSubmissionError('Error adding client');
     }
   };
 
   const handleEditClient = (client: Client) => {
     setEditedClient(client);
-    setIsNewClient(false);
     setName(client.name);
     setEmail(client.email);
     setPhone(client.phone);
   };
 
   const handleUpdateClient = () => {
-    if (editedClient) {
-      const updatedClient: Client = {
-        id: editedClient.id,
-        name,
-        email,
-        phone,
-      };
-
-      setClients((prevClients) =>
-        prevClients.map((client) => (client.id === editedClient.id ? updatedClient : client))
-      );
-      setEditedClient(null);
-      setIsNewClient(false);
-      setName('');
-      setEmail('');
-      setPhone('');
+    try {
+      if (validateForm()) {
+        const updatedClients = clients.map((client) =>
+          client.id === editedClient?.id ? { ...editedClient, name, email, phone } : client
+        );
+        setClients(updatedClients);
+        setEditedClient(null);
+        setName('');
+        setEmail('');
+        setPhone('');
+      }
+    } catch (error) {
+      setFormSubmissionError('Error updating client');
     }
   };
 
   const handleDeleteClient = (clientId: number) => {
-    setClients((prevClients) => prevClients.filter((client) => client.id !== clientId));
+    try {
+      const updatedClients = clients.filter((client) => client.id !== clientId);
+      setClients(updatedClients);
+    } catch (error) {
+      setFormSubmissionError('Error deleting client');
+    }
   };
 
-  const filteredClients = clients.filter((client) => {
-    const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
-    return clientString.includes(searchTerm.toLowerCase());
-  });
+  const filteredClients = clients.filter((client) =>
+    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.phone.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const sortedClients = filteredClients.sort((a, b) => {
     if (sortField === 'name') {
@@ -177,64 +178,35 @@ const ClientDatabasePage = () => {
 
   return (
     <Layout>
-      <h1>Client Database</h1>
-      <Input
-        type="search"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search clients"
-      />
+      <div className="flex justify-between mb-4">
+        <h1 className="text-2xl font-bold">Client Database</h1>
+        <Button onClick={handleAddClient}>Add Client</Button>
+      </div>
+      <div className="flex justify-between mb-4">
+        <Input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search clients"
+        />
+        <select
+          value={sortField}
+          onChange={(e) => setSortField(e.target.value as 'name' | 'email' | 'phone')}
+        >
+          <option value="name">Name</option>
+          <option value="email">Email</option>
+          <option value="phone">Phone</option>
+        </select>
+        <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+          {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+        </button>
+      </div>
       <Table>
         <thead>
           <tr>
-            <th>
-              <Button
-                onClick={() => setSortField('name')}
-                className={sortField === 'name' ? 'active' : ''}
-              >
-                Name
-              </Button>
-              {sortField === 'name' && (
-                <Button
-                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                  className={sortOrder === 'asc' ? 'asc' : 'desc'}
-                >
-                  {sortOrder === 'asc' ? '↑' : '↓'}
-                </Button>
-              )}
-            </th>
-            <th>
-              <Button
-                onClick={() => setSortField('email')}
-                className={sortField === 'email' ? 'active' : ''}
-              >
-                Email
-              </Button>
-              {sortField === 'email' && (
-                <Button
-                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                  className={sortOrder === 'asc' ? 'asc' : 'desc'}
-                >
-                  {sortOrder === 'asc' ? '↑' : '↓'}
-                </Button>
-              )}
-            </th>
-            <th>
-              <Button
-                onClick={() => setSortField('phone')}
-                className={sortField === 'phone' ? 'active' : ''}
-              >
-                Phone
-              </Button>
-              {sortField === 'phone' && (
-                <Button
-                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                  className={sortOrder === 'asc' ? 'asc' : 'desc'}
-                >
-                  {sortOrder === 'asc' ? '↑' : '↓'}
-                </Button>
-              )}
-            </th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -252,49 +224,72 @@ const ClientDatabasePage = () => {
           ))}
         </tbody>
       </Table>
-      <div>
-        <Button onClick={() => setPageNumber(pageNumber - 1)}>Previous</Button>
+      <div className="flex justify-between mb-4">
+        <button
+          onClick={() => setPageNumber(pageNumber - 1)}
+          disabled={pageNumber === 1}
+        >
+          Previous
+        </button>
         <span>
           Page {pageNumber} of {Math.ceil(sortedClients.length / itemsPerPage)}
         </span>
-        <Button onClick={() => setPageNumber(pageNumber + 1)}>Next</Button>
+        <button
+          onClick={() => setPageNumber(pageNumber + 1)}
+          disabled={pageNumber === Math.ceil(sortedClients.length / itemsPerPage)}
+        >
+          Next
+        </button>
       </div>
-      <div>
-        <Input
-          type="number"
-          value={itemsPerPage}
-          onChange={(e) => setItemsPerPage(parseInt(e.target.value))}
-          placeholder="Items per page"
-        />
-      </div>
-      {isNewClient || editedClient ? (
+      {isNewClient && (
         <div>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
-          />
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-          />
-          <Input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone"
-          />
-          {isNewClient ? (
-            <Button onClick={handleAddClient}>Add Client</Button>
-          ) : (
-            <Button onClick={handleUpdateClient}>Update Client</Button>
-          )}
+          <h2>Add Client</h2>
+          <form>
+            <label>
+              Name:
+              <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+              {errors.name && <div className="text-red-500">{errors.name}</div>}
+            </label>
+            <label>
+              Email:
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              {errors.email && <div className="text-red-500">{errors.email}</div>}
+            </label>
+            <label>
+              Phone:
+              <Input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              {errors.phone && <div className="text-red-500">{errors.phone}</div>}
+            </label>
+            <Button type="submit" onClick={handleAddClient}>
+              Add Client
+            </Button>
+          </form>
         </div>
-      ) : (
-        <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
+      )}
+      {editedClient && (
+        <div>
+          <h2>Edit Client</h2>
+          <form>
+            <label>
+              Name:
+              <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+              {errors.name && <div className="text-red-500">{errors.name}</div>}
+            </label>
+            <label>
+              Email:
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              {errors.email && <div className="text-red-500">{errors.email}</div>}
+            </label>
+            <label>
+              Phone:
+              <Input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              {errors.phone && <div className="text-red-500">{errors.phone}</div>}
+            </label>
+            <Button type="submit" onClick={handleUpdateClient}>
+              Update Client
+            </Button>
+          </form>
+        </div>
       )}
     </Layout>
   );
