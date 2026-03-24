@@ -62,6 +62,32 @@ const ClientDatabasePage = () => {
     return Object.values(newErrors).every((error) => error === '');
   };
 
+  const validateClientData = (client: Client) => {
+    const newErrors = {
+      name: '',
+      email: '',
+      phone: '',
+    };
+
+    if (!client.name) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!client.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(client.email)) {
+      newErrors.email = 'Invalid email address';
+    }
+
+    if (!client.phone) {
+      newErrors.phone = 'Phone is required';
+    } else if (!/^\d{3}-\d{3}-\d{4}$/.test(client.phone)) {
+      newErrors.phone = 'Invalid phone number (use XXX-XXX-XXXX format)';
+    }
+
+    return newErrors;
+  };
+
   const handleAddClient = () => {
     try {
       if (validateForm()) {
@@ -71,11 +97,17 @@ const ClientDatabasePage = () => {
           email,
           phone,
         };
-        setClients([...clients, newClient]);
-        setName('');
-        setEmail('');
-        setPhone('');
-        setFormSubmissionError('');
+        const validationErrors = validateClientData(newClient);
+        if (Object.values(validationErrors).every((error) => error === '')) {
+          setClients([...clients, newClient]);
+          setName('');
+          setEmail('');
+          setPhone('');
+          setFormSubmissionError('');
+        } else {
+          setErrors(validationErrors);
+          setFormSubmissionError('Please fill out all required fields');
+        }
       } else {
         setFormSubmissionError('Please fill out all required fields');
       }
@@ -86,12 +118,18 @@ const ClientDatabasePage = () => {
 
   const handleEditClient = (client: Client) => {
     try {
-      setEditedClient(client);
-      setIsNewClient(false);
-      setName(client.name);
-      setEmail(client.email);
-      setPhone(client.phone);
-      setFormSubmissionError('');
+      const validationErrors = validateClientData(client);
+      if (Object.values(validationErrors).every((error) => error === '')) {
+        setEditedClient(client);
+        setIsNewClient(false);
+        setName(client.name);
+        setEmail(client.email);
+        setPhone(client.phone);
+        setFormSubmissionError('');
+      } else {
+        setErrors(validationErrors);
+        setFormSubmissionError('Please fill out all required fields');
+      }
     } catch (error) {
       setFormSubmissionError('Error editing client: ' + error.message);
     }
@@ -101,18 +139,30 @@ const ClientDatabasePage = () => {
     try {
       if (validateForm()) {
         if (editedClient) {
-          const updatedClients = clients.map((client) =>
-            client.id === editedClient.id ? { ...editedClient, name, email, phone } : client
-          );
-          setClients(updatedClients);
-          setEditedClient(null);
-          setIsNewClient(true);
-          setName('');
-          setEmail('');
-          setPhone('');
-          setFormSubmissionError('');
-        } else {
-          setFormSubmissionError('No client selected for update');
+          const updatedClient: Client = {
+            id: editedClient.id,
+            name,
+            email,
+            phone,
+          };
+          const validationErrors = validateClientData(updatedClient);
+          if (Object.values(validationErrors).every((error) => error === '')) {
+            const updatedClients = clients.map((client) => {
+              if (client.id === editedClient.id) {
+                return updatedClient;
+              }
+              return client;
+            });
+            setClients(updatedClients);
+            setIsNewClient(false);
+            setName('');
+            setEmail('');
+            setPhone('');
+            setFormSubmissionError('');
+          } else {
+            setErrors(validationErrors);
+            setFormSubmissionError('Please fill out all required fields');
+          }
         }
       } else {
         setFormSubmissionError('Please fill out all required fields');
@@ -122,19 +172,15 @@ const ClientDatabasePage = () => {
     }
   };
 
-  const handleDeleteClient = (id: number) => {
-    try {
-      const filteredClients = clients.filter((client) => client.id !== id);
-      setClients(filteredClients);
-      setFormSubmissionError('');
-    } catch (error) {
-      setFormSubmissionError('Error deleting client: ' + error.message);
-    }
-  };
-
   return (
     <Layout>
-      <h1>Client Database</h1>
+      <Table
+        clients={clients}
+        handleEditClient={handleEditClient}
+        searchTerm={searchTerm}
+        pageNumber={pageNumber}
+        itemsPerPage={itemsPerPage}
+      />
       <form>
         <Input
           type="text"
@@ -164,11 +210,6 @@ const ClientDatabasePage = () => {
         )}
         {formSubmissionError && <p style={{ color: 'red' }}>{formSubmissionError}</p>}
       </form>
-      <Table
-        clients={clients}
-        handleEditClient={handleEditClient}
-        handleDeleteClient={handleDeleteClient}
-      />
     </Layout>
   );
 };

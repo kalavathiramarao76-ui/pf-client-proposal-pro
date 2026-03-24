@@ -15,7 +15,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Line, Bar, Pie } from 'react-chartjs-2';
 import axios from 'axios';
 
 ChartJS.register(
@@ -122,62 +122,74 @@ const DashboardPage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    router.push('/');
+    router.push('/login');
   };
 
   const handleChartTypeChange = (event) => {
     setChartType(event.target.value);
   };
 
-  const handleDatasetVisibilityChange = (datasetLabel) => {
-    setDatasetVisibility((prevVisibility) => ({
-      ...prevVisibility,
-      [datasetLabel]: !prevVisibility[datasetLabel],
-    }));
+  const handleDatasetVisibilityChange = (event) => {
+    const dataset = event.target.name;
+    const visibility = event.target.checked;
+    setDatasetVisibility((prevVisibility) => ({ ...prevVisibility, [dataset]: visibility }));
   };
-
-  const filteredDatasets = realTimeProposalData.datasets.filter((dataset) => datasetVisibility[dataset.label]);
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col items-center justify-center h-screen p-4">
-        <div className="bg-white rounded shadow-md p-4 w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
-          <h1 className="text-3xl font-bold mb-4 text-center">Welcome to Proposal Studio</h1>
-          {user ? (
-            <div className="text-center">
-              <p className="text-lg">You are logged in as {user.name}</p>
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <p className="text-lg text-center">You are not logged in</p>
-          )}
-        </div>
-        <div className="mt-4">
-          <Line options={chartOptions} data={realTimeProposalData} />
-        </div>
-        <div className="mt-4">
-          <select value={chartType} onChange={handleChartTypeChange}>
-            <option value="line">Line</option>
-            <option value="bar">Bar</option>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
+        <div className="flex flex-row justify-center mb-4">
+          <select value={chartType} onChange={handleChartTypeChange} className="mr-4">
+            <option value="line">Line Chart</option>
+            <option value="bar">Bar Chart</option>
+            <option value="pie">Pie Chart</option>
           </select>
-        </div>
-        <div className="mt-4">
-          {realTimeProposalData.datasets.map((dataset) => (
-            <div key={dataset.label}>
+          <div>
+            <label>
               <input
                 type="checkbox"
-                checked={datasetVisibility[dataset.label]}
-                onChange={() => handleDatasetVisibilityChange(dataset.label)}
+                name="Proposals Created"
+                checked={datasetVisibility['Proposals Created']}
+                onChange={handleDatasetVisibilityChange}
               />
-              <span>{dataset.label}</span>
-            </div>
-          ))}
+              Proposals Created
+            </label>
+            <label className="ml-4">
+              <input
+                type="checkbox"
+                name="Proposals Approved"
+                checked={datasetVisibility['Proposals Approved']}
+                onChange={handleDatasetVisibilityChange}
+              />
+              Proposals Approved
+            </label>
+          </div>
         </div>
+        {chartType === 'line' && (
+          <Line
+            data={realTimeProposalData}
+            options={chartOptions}
+            datasetVisibility={datasetVisibility}
+          />
+        )}
+        {chartType === 'bar' && (
+          <Bar
+            data={realTimeProposalData}
+            options={chartOptions}
+            datasetVisibility={datasetVisibility}
+          />
+        )}
+        {chartType === 'pie' && (
+          <Pie
+            data={realTimeProposalData}
+            options={chartOptions}
+            datasetVisibility={datasetVisibility}
+          />
+        )}
+        <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </DashboardLayout>
   );
