@@ -150,119 +150,89 @@ const DashboardPage = () => {
   ]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    const fetchRealTimeData = async () => {
-      try {
-        const data = await getRealTimeData();
-        if (data) {
-          setRealTimeProposalData({
-            labels: data.labels,
-            datasets: [
-              {
-                label: 'Proposals Created',
-                data: data.proposalsCreated,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1,
-              },
-              {
-                label: 'Proposals Approved',
-                data: data.proposalsApproved,
-                borderColor: 'rgb(255, 99, 132)',
-                tension: 0.1,
-              },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error(error);
+    const fetchInitialData = async () => {
+      const data = await getRealTimeData();
+      if (data) {
+        setRealTimeProposalData({
+          labels: data.labels,
+          datasets: [
+            {
+              label: 'Proposals Created',
+              data: data.proposalsCreated,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.1,
+            },
+            {
+              label: 'Proposals Approved',
+              data: data.proposalsApproved,
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.1,
+            },
+          ],
+        });
       }
     };
-    fetchRealTimeData();
+    fetchInitialData();
   }, []);
 
-  const handleWidgetAdd = () => {
-    setWidgets([
-      ...widgets,
-      {
-        id: widgets.length + 1,
-        type: 'line',
-        title: `Widget ${widgets.length + 1}`,
-        data: proposalData,
-      },
-    ]);
-  };
-
-  const handleWidgetRemove = (id) => {
-    setWidgets(widgets.filter((widget) => widget.id !== id));
-  };
-
-  const handleWidgetTypeChange = (id, type) => {
-    setWidgets(
-      widgets.map((widget) =>
-        widget.id === id ? { ...widget, type: type } : widget
-      )
-    );
-  };
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const data = await getRealTimeData();
+      if (data) {
+        setRealTimeProposalData({
+          labels: data.labels,
+          datasets: [
+            {
+              label: 'Proposals Created',
+              data: data.proposalsCreated,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.1,
+            },
+            {
+              label: 'Proposals Approved',
+              data: data.proposalsApproved,
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.1,
+            },
+          ],
+        });
+      }
+    }, cacheDuration);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col">
-        <div className="flex justify-between mb-4">
-          <h1 className="text-2xl font-bold">Proposal Studio Dashboard</h1>
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={handleWidgetAdd}
-          >
-            Add Widget
-          </button>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Proposal Studio Dashboard</h1>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {widgets.map((widget) => (
-            <div key={widget.id} className="bg-white p-4 rounded shadow">
-              <h2 className="text-lg font-bold mb-2">{widget.title}</h2>
-              {widget.type === 'line' && (
-                <Line
-                  data={widget.data}
-                  options={chartOptions}
-                  className="h-64"
-                />
-              )}
-              {widget.type === 'bar' && (
-                <Bar
-                  data={widget.data}
-                  options={chartOptions}
-                  className="h-64"
-                />
-              )}
-              {widget.type === 'pie' && (
-                <Pie
-                  data={widget.data}
-                  options={chartOptions}
-                  className="h-64"
-                />
-              )}
-              <div className="flex justify-between mt-4">
-                <select
-                  value={widget.type}
-                  onChange={(e) => handleWidgetTypeChange(widget.id, e.target.value)}
-                  className="bg-gray-100 p-2 rounded"
-                >
-                  <option value="line">Line</option>
-                  <option value="bar">Bar</option>
-                  <option value="pie">Pie</option>
-                </select>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => handleWidgetRemove(widget.id)}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="row">
+          <div className="col-md-6">
+            <Line
+              options={chartOptions}
+              data={realTimeProposalData}
+              className="chart"
+            />
+          </div>
+          <div className="col-md-6">
+            <Bar
+              options={chartOptions}
+              data={realTimeProposalData}
+              className="chart"
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <Pie
+              options={chartOptions}
+              data={widgets[2].data}
+              className="chart"
+            />
+          </div>
         </div>
       </div>
     </DashboardLayout>

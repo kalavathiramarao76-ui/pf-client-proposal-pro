@@ -46,30 +46,22 @@ const FAQPage = () => {
         <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial, proposal studio for freelancers, proposal studio for businesses, proposal studio for entrepreneurs" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta property="og:url" content="https://www.proposalstudio.com/faq" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial, proposal studio for freelancers, proposal studio for businesses, proposal studio for entrepreneurs" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
-        <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
-        <link rel="canonical" href="https://www.proposalstudio.com/faq" />
+        <meta name="twitter:keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, proposal writing, proposal design, proposal creation, business proposal templates, proposal builder, proposal generator, proposal maker, proposal studio pricing, proposal studio features, proposal studio reviews, proposal studio demo, proposal studio tutorial, proposal studio login, proposal studio sign up, proposal studio free trial, proposal studio for freelancers, proposal studio for businesses, proposal studio for entrepreneurs" />
       </Head>
-      {faqs.map((faq, index) => (
-        <div key={index}>
-          <h2>{faq.question}</h2>
-          <p>{expanded === faq.question ? faq.answer : faq.answer.substring(0, 150) + '...'}</p>
-          {expanded !== faq.question && (
-            <button onClick={() => handleToggle(index)}>
-              Read more <AiOutlineArrowRight />
-            </button>
-          )}
-          {expanded === faq.question && (
-            <button onClick={() => handleToggle(index)}>
-              Read less <AiOutlineArrowRight />
-            </button>
-          )}
-        </div>
-      ))}
+      <h1>Proposal Studio FAQ - Frequently Asked Questions</h1>
+      <h2>General Questions</h2>
+      <ul>
+        {faqs.map((faq, index) => (
+          <li key={index}>
+            <h3>{faq.question}</h3>
+            <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Read more</span>}</p>
+            {expanded === faq.question && <p>{faq.answer}</p>}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
