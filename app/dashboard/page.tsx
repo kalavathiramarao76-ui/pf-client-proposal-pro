@@ -142,19 +142,77 @@ const DashboardPage = () => {
       }
     };
     fetchRealTimeData();
-    const intervalId = setInterval(fetchRealTimeData, 10000);
-    return () => {
-      clearInterval(intervalId);
-    };
   }, []);
 
-  const handleLogo = () => {
-    // Add logo handling logic here
-  };
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const data = await getRealTimeData();
+        if (data) {
+          setRealTimeProposalData({
+            labels: data.labels,
+            datasets: [
+              {
+                label: 'Proposals Created',
+                data: data.proposalsCreated,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1,
+              },
+              {
+                label: 'Proposals Approved',
+                data: data.proposalsApproved,
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1,
+              },
+            ],
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, cacheDuration);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <DashboardLayout>
-      {/* Add dashboard content here */}
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <h2>Proposal Studio Dashboard</h2>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <Line
+              options={chartOptions}
+              data={proposalData}
+              className="chart"
+            />
+          </div>
+          <div className="col-md-6">
+            {chartType === 'line' ? (
+              <Line
+                options={chartOptions}
+                data={realTimeProposalData}
+                className="chart"
+              />
+            ) : chartType === 'bar' ? (
+              <Bar
+                options={chartOptions}
+                data={realTimeProposalData}
+                className="chart"
+              />
+            ) : (
+              <Pie
+                options={chartOptions}
+                data={realTimeProposalData}
+                className="chart"
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </DashboardLayout>
   );
 };

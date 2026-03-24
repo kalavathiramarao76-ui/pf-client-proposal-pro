@@ -52,9 +52,10 @@ const FAQPage = () => {
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
         <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
+        <link rel="canonical" href="https://www.proposalstudio.com/faq" />
       </Head>
       <h1>Proposal Studio FAQ</h1>
-      <p>Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals.</p>
+      <p>Frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals.</p>
       <ul>
         {faqs.map((faq, index) => (
           <li key={index}>
@@ -62,7 +63,9 @@ const FAQPage = () => {
               {faq.question}
               <AiOutlineArrowRight />
             </button>
-            {expanded === faq.question && <p>{faq.answer}</p>}
+            {expanded === faq.question && (
+              <p>{faq.answer}</p>
+            )}
           </li>
         ))}
       </ul>
