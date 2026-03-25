@@ -105,95 +105,105 @@ const ClientDatabasePage = () => {
         setName('');
         setEmail('');
         setPhone('');
-        setIsNewClient(false);
       }
     } catch (error) {
       setFormSubmissionError('Error adding client');
     }
   };
 
-  const handleImportClients = () => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.csv, .json';
-    fileInput.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          try {
-            const fileContent = event.target?.result as string;
-            if (file.name.endsWith('.csv')) {
-              const csvContent = fileContent.split('\n');
-              const clients: Client[] = csvContent.map((row) => {
-                const [name, email, phone] = row.split(',');
-                return {
-                  name: name.trim(),
-                  email: email.trim(),
-                  phone: phone.trim(),
-                };
-              });
-              setClients(clients);
-            } else if (file.name.endsWith('.json')) {
-              const jsonContent = JSON.parse(fileContent);
-              setClients(jsonContent);
-            }
-          } catch (error) {
-            console.error('Error importing clients:', error);
-          }
-        };
-        reader.readAsText(file);
-      }
-    };
-    fileInput.click();
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value;
+    setSearchTerm(searchTerm);
+    setIsSearching(true);
+
+    if (searchTerm.length > 0) {
+      const filteredSuggestions = clients.filter((client) => {
+        const clientName = client.name.toLowerCase();
+        const clientEmail = client.email.toLowerCase();
+        const clientPhone = client.phone.toLowerCase();
+        const search = searchTerm.toLowerCase();
+
+        return (
+          clientName.includes(search) ||
+          clientEmail.includes(search) ||
+          clientPhone.includes(search)
+        );
+      });
+
+      setSuggestions(filteredSuggestions);
+    } else {
+      setSuggestions([]);
+      setIsSearching(false);
+    }
   };
 
-  const handleExportClients = () => {
-    const csvContent = clients.map((client) => `${client.name},${client.email},${client.phone}`).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'clients.csv';
-    link.click();
+  const handleSelectSuggestion = (client: Client) => {
+    setIsSearching(false);
+    setSuggestions([]);
+    setSearchTerm(client.name);
   };
 
   return (
     <Layout>
-      <h1>Client Database</h1>
-      <Button onClick={handleImportClients}>Import Clients</Button>
-      <Button onClick={handleExportClients}>Export Clients</Button>
-      <Table
-        data={clients}
-        columns={[
-          { name: 'Name', selector: (row) => row.name },
-          { name: 'Email', selector: (row) => row.email },
-          { name: 'Phone', selector: (row) => row.phone },
-        ]}
-      />
-      <form>
-        <Input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Name"
-          error={errors.name}
-        />
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          error={errors.email}
-        />
-        <Input
-          type="text"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="Phone"
-          error={errors.phone}
+      <div>
+        <h1>Client Database</h1>
+        <div>
+          <Input
+            type="search"
+            value={searchTerm}
+            onChange={handleSearch}
+            placeholder="Search clients"
+          />
+          {isSearching && (
+            <ul>
+              {suggestions.map((client) => (
+                <li key={client.email}>
+                  <button onClick={() => handleSelectSuggestion(client)}>
+                    {client.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <Table
+          clients={clients}
+          pageNumber={pageNumber}
+          itemsPerPage={itemsPerPage}
+          sortOrder={sortOrder}
+          sortField={sortField}
+          onSort={(field, order) => {
+            setSortField(field);
+            setSortOrder(order);
+          }}
+          onPageChange={(pageNumber) => setPageNumber(pageNumber)}
+          onItemsPerPageChange={(itemsPerPage) => setItemsPerPage(itemsPerPage)}
         />
         <Button onClick={handleAddClient}>Add Client</Button>
-      </form>
+        <form>
+          <Input
+            type="text"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Name"
+          />
+          <Input
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="Email"
+          />
+          <Input
+            type="text"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            placeholder="Phone"
+          />
+          {errors.name && <div>{errors.name}</div>}
+          {errors.email && <div>{errors.email}</div>}
+          {errors.phone && <div>{errors.phone}</div>}
+        </form>
+      </div>
     </Layout>
   );
 };
