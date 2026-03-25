@@ -30,6 +30,11 @@ const ClientDatabasePage = () => {
   const [sortField, setSortField] = useState<'name' | 'email' | 'phone'>('name');
   const [suggestions, setSuggestions] = useState<Client[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [filter, setFilter] = useState({
+    name: '',
+    email: '',
+    phone: '',
+  });
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -94,92 +99,84 @@ const ClientDatabasePage = () => {
 
   const validatePhone = (phone: string) => {
     const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
-    if (!phoneRegex.test(phone)) {
-      return 'Invalid phone number (use XXX-XXX-XXXX format)';
-    }
-    return '';
+    return phoneRegex.test(phone);
   };
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    if (!emailRegex.test(email)) {
-      return 'Invalid email address';
-    }
-    return '';
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value.toLowerCase();
+    setSearchTerm(searchTerm);
+    const filteredClients = clients.filter((client) => {
+      return (
+        client.name.toLowerCase().includes(searchTerm) ||
+        client.email.toLowerCase().includes(searchTerm) ||
+        client.phone.toLowerCase().includes(searchTerm)
+      );
+    });
+    setSuggestions(filteredClients);
   };
 
-  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const phone = event.target.value;
-    setPhone(phone);
-    setErrors((prevErrors) => ({ ...prevErrors, phone: validatePhone(phone) }));
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const email = event.target.value;
-    setEmail(email);
-    setErrors((prevErrors) => ({ ...prevErrors, email: validateEmail(email) }));
-  };
-
-  const handleAddClient = () => {
-    try {
-      if (validateForm()) {
-        const newClient: Client = {
-          name,
-          email,
-          phone,
-        };
-        setClients((prevClients) => [...prevClients, newClient]);
-        setName('');
-        setEmail('');
-        setPhone('');
-        setErrors({
-          name: '',
-          email: '',
-          phone: '',
-        });
-      }
-    } catch (error) {
-      setFormSubmissionError('Error adding client');
-    }
+  const handleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFilter({ ...filter, [name]: value });
+    const filteredClients = clients.filter((client) => {
+      return (
+        (filter.name === '' || client.name.toLowerCase().includes(filter.name.toLowerCase())) &&
+        (filter.email === '' || client.email.toLowerCase().includes(filter.email.toLowerCase())) &&
+        (filter.phone === '' || client.phone.toLowerCase().includes(filter.phone.toLowerCase()))
+      );
+    });
+    setSuggestions(filteredClients);
   };
 
   return (
     <Layout>
-      <Table
-        clients={clients}
-        searchTerm={searchTerm}
-        pageNumber={pageNumber}
-        itemsPerPage={itemsPerPage}
-        sortOrder={sortOrder}
-        sortField={sortField}
-        onSearchTermChange={(term) => setSearchTerm(term)}
-        onPageNumberChange={(page) => setPageNumber(page)}
-        onItemsPerPageChange={(items) => setItemsPerPage(items)}
-        onSortOrderChange={(order) => setSortOrder(order)}
-        onSortFieldChange={(field) => setSortField(field)}
-      />
-      <Button onClick={handleAddClient}>Add Client</Button>
-      <Input
-        type="text"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        placeholder="Name"
-        error={errors.name}
-      />
-      <Input
-        type="email"
-        value={email}
-        onChange={handleEmailChange}
-        placeholder="Email"
-        error={errors.email}
-      />
-      <Input
-        type="tel"
-        value={phone}
-        onChange={handlePhoneChange}
-        placeholder="Phone (XXX-XXX-XXXX)"
-        error={errors.phone}
-      />
+      <div>
+        <h1>Client Database</h1>
+        <div>
+          <Input
+            type="search"
+            value={searchTerm}
+            onChange={handleSearch}
+            placeholder="Search clients"
+          />
+          <div>
+            <label>
+              Filter by name:
+              <Input
+                type="text"
+                name="name"
+                value={filter.name}
+                onChange={handleFilter}
+              />
+            </label>
+            <label>
+              Filter by email:
+              <Input
+                type="text"
+                name="email"
+                value={filter.email}
+                onChange={handleFilter}
+              />
+            </label>
+            <label>
+              Filter by phone:
+              <Input
+                type="text"
+                name="phone"
+                value={filter.phone}
+                onChange={handleFilter}
+              />
+            </label>
+          </div>
+        </div>
+        <Table
+          clients={suggestions.length > 0 ? suggestions : clients}
+          pageNumber={pageNumber}
+          itemsPerPage={itemsPerPage}
+          sortOrder={sortOrder}
+          sortField={sortField}
+        />
+      </div>
     </Layout>
   );
 };

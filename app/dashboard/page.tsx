@@ -37,7 +37,11 @@ const cacheDuration = 5000; // 5 seconds
 
 const fetchRealTimeData = async () => {
   try {
-    const response = await axios.get('/api/proposal-analytics');
+    const response = await axios.get('/api/proposal-analytics', {
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    });
     return response.data;
   } catch (error) {
     console.error(error);
@@ -53,6 +57,31 @@ const getRealTimeData = async () => {
   cache.proposalData = data;
   cache.timestamp = Date.now();
   return data;
+};
+
+const useRealTimeData = () => {
+  const [realTimeData, setRealTimeData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAndCacheData = async () => {
+      try {
+        const data = await getRealTimeData();
+        setRealTimeData(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    };
+    fetchAndCacheData();
+
+    const intervalId = setInterval(fetchAndCacheData, cacheDuration);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return { realTimeData, loading, error };
 };
 
 const DashboardPage = () => {
@@ -75,6 +104,7 @@ const DashboardPage = () => {
       },
     ],
   });
+  const { realTimeData, loading, error } = useRealTimeData();
   const [realTimeProposalData, setRealTimeProposalData] = useState({
     labels: [],
     datasets: [
@@ -150,134 +180,61 @@ const DashboardPage = () => {
   ]);
 
   useEffect(() => {
-    const intervalId = setInterval(async () => {
-      const data = await getRealTimeData();
-      if (data) {
-        setRealTimeProposalData({
-          labels: data.labels,
-          datasets: [
-            {
-              label: 'Proposals Created',
-              data: data.proposalsCreated,
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.1,
-            },
-            {
-              label: 'Proposals Approved',
-              data: data.proposalsApproved,
-              borderColor: 'rgb(255, 99, 132)',
-              tension: 0.1,
-            },
-          ],
-        });
-      }
-    }, 1000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const handleChartTypeChange = (event) => {
-    setChartType(event.target.value);
-  };
-
-  const handleDatasetVisibilityChange = (event) => {
-    const dataset = event.target.dataset;
-    const visibility = event.target.checked;
-    setDatasetVisibility((prevVisibility) => ({
-      ...prevVisibility,
-      [dataset]: visibility,
-    }));
-  };
+    if (realTimeData) {
+      setRealTimeProposalData({
+        labels: realTimeData.labels,
+        datasets: [
+          {
+            label: 'Proposals Created',
+            data: realTimeData.datasets[0].data,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+          {
+            label: 'Proposals Approved',
+            data: realTimeData.datasets[1].data,
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1,
+          },
+        ],
+      });
+    }
+  }, [realTimeData]);
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col">
-        <div className="flex justify-between mb-4">
-          <h1 className="text-2xl font-bold">Proposal Studio Dashboard</h1>
-          <select
-            value={chartType}
-            onChange={handleChartTypeChange}
-            className="px-4 py-2 border border-gray-300 rounded-md"
-          >
-            <option value="line">Line Chart</option>
-            <option value="bar">Bar Chart</option>
-            <option value="pie">Pie Chart</option>
-          </select>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Proposal Studio Dashboard</h1>
+          </div>
         </div>
-        <div className="flex flex-col mb-4">
-          {widgets.map((widget) => (
-            <div key={widget.id} className="mb-4">
-              <h2 className="text-xl font-bold">{widget.title}</h2>
-              {widget.type === 'line' && (
-                <Line
-                  options={chartOptions}
-                  data={widget.data}
-                  datasetVisibility={datasetVisibility}
-                />
-              )}
-              {widget.type === 'bar' && (
-                <Bar
-                  options={chartOptions}
-                  data={widget.data}
-                  datasetVisibility={datasetVisibility}
-                />
-              )}
-              {widget.type === 'pie' && (
-                <Pie
-                  options={chartOptions}
-                  data={widget.data}
-                  datasetVisibility={datasetVisibility}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="flex flex-col mb-4">
-          <h2 className="text-xl font-bold">Real-time Proposal Data</h2>
-          {chartType === 'line' && (
-            <Line
-              options={chartOptions}
-              data={realTimeProposalData}
-              datasetVisibility={datasetVisibility}
-            />
-          )}
-          {chartType === 'bar' && (
+        <div className="row">
+          <div className="col-md-6">
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error.message}</p>
+            ) : (
+              <Line
+                options={chartOptions}
+                data={realTimeProposalData}
+              />
+            )}
+          </div>
+          <div className="col-md-6">
             <Bar
               options={chartOptions}
-              data={realTimeProposalData}
-              datasetVisibility={datasetVisibility}
+              data={proposalData}
             />
-          )}
-          {chartType === 'pie' && (
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-12">
             <Pie
               options={chartOptions}
-              data={realTimeProposalData}
-              datasetVisibility={datasetVisibility}
+              data={widgets[2].data}
             />
-          )}
-        </div>
-        <div className="flex flex-col mb-4">
-          <h2 className="text-xl font-bold">Dataset Visibility</h2>
-          <div className="flex flex-col">
-            <div className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                checked={datasetVisibility['Proposals Created']}
-                onChange={handleDatasetVisibilityChange}
-                dataset="Proposals Created"
-                className="mr-2"
-              />
-              <span>Proposals Created</span>
-            </div>
-            <div className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                checked={datasetVisibility['Proposals Approved']}
-                onChange={handleDatasetVisibilityChange}
-                dataset="Proposals Approved"
-                className="mr-2"
-              />
-              <span>Proposals Approved</span>
-            </div>
           </div>
         </div>
       </div>

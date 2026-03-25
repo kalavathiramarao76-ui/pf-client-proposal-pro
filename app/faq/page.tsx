@@ -43,22 +43,70 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling, proposal builder, proposal generator" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, proposal tracking, proposal analytics" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
-        <meta property="og:site_name" content="Proposal Studio" />
         <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta name="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
-        <meta name="twitter:site" content="@ProposalStudio" />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "${faqs[0].question}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${faqs[0].answer}"
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "${faqs[1].question}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${faqs[1].answer}"
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "${faqs[2].question}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${faqs[2].answer}"
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "${faqs[3].question}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${faqs[3].answer}"
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "${faqs[4].question}",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "${faqs[4].answer}"
+                  }
+                }
+              ]
+            }
+          `}
+        </script>
       </Head>
       {faqs.map((faq, index) => (
         <div key={index}>
           <h2>{faq.question}</h2>
-          <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Read more</span>}</p>
-          {expanded === faq.question && <p onClick={() => handleToggle(index)}><AiOutlineArrowRight /> Show less</p>}
+          <button onClick={() => handleToggle(index)}>
+            {expanded === faq.question ? 'Hide' : 'Show'} Answer
+            <AiOutlineArrowRight />
+          </button>
+          {expanded === faq.question && <p>{faq.answer}</p>}
         </div>
       ))}
     </div>
