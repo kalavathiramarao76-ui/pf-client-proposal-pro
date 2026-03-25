@@ -44,6 +44,11 @@ const ClientDatabasePage = () => {
     { value: 'business', label: 'Business' },
   ]);
   const [tags, setTags] = useState([]);
+  const [clientCategories, setClientCategories] = useState([
+    { value: 'lead', label: 'Lead' },
+    { value: 'prospect', label: 'Prospect' },
+    { value: 'customer', label: 'Customer' },
+  ]);
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -108,180 +113,112 @@ const ClientDatabasePage = () => {
     return Object.values(newErrors).every((error) => error === '');
   };
 
-  const handleCategoryChange = (category: string) => {
-    setFilter({ ...filter, category });
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
 
   const handleTagChange = (tags: string[]) => {
-    setFilter({ ...filter, tags });
+    setFilter((prevFilter) => ({ ...prevFilter, tags }));
+  };
+
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
 
   const filteredClients = clients.filter((client) => {
     const nameMatch = client.name.toLowerCase().includes(filter.name.toLowerCase());
     const emailMatch = client.email.toLowerCase().includes(filter.email.toLowerCase());
     const phoneMatch = client.phone.toLowerCase().includes(filter.phone.toLowerCase());
-    const categoryMatch = client.category === filter.category || filter.category === '';
+    const categoryMatch = client.category === filter.category;
     const tagMatch = filter.tags.every((tag) => client.tags.includes(tag));
 
     return nameMatch && emailMatch && phoneMatch && categoryMatch && tagMatch;
   });
 
-  const handleClientCreate = () => {
-    if (validateForm()) {
-      const newClient: Client = {
-        name,
-        email,
-        phone,
-        category: filter.category,
-        tags: filter.tags,
-      };
-
-      setClients([...clients, newClient]);
-      setName('');
-      setEmail('');
-      setPhone('');
-      setFilter({ name: '', email: '', phone: '', category: '', tags: [] });
-    }
-  };
-
-  const handleClientEdit = () => {
-    if (validateClientData(editedClient as Client)) {
-      const updatedClients = clients.map((client) => {
-        if (client.name === editedClient?.name) {
-          return { ...client, ...editedClient };
-        }
-        return client;
-      });
-
-      setClients(updatedClients);
-      setEditedClient(null);
-    }
-  };
-
-  const handleClientDelete = (client: Client) => {
-    const updatedClients = clients.filter((c) => c.name !== client.name);
-    setClients(updatedClients);
-  };
-
   return (
     <Layout>
-      <div className="flex flex-col">
-        <div className="flex justify-between mb-4">
-          <h1 className="text-2xl font-bold">Client Database</h1>
-          <Button onClick={handleClientCreate}>Create New Client</Button>
-        </div>
-        <div className="flex flex-col mb-4">
-          <Input
-            type="text"
-            value={filter.name}
-            onChange={(e) => setFilter({ ...filter, name: e.target.value })}
-            placeholder="Search by name"
-          />
-          <Input
-            type="email"
-            value={filter.email}
-            onChange={(e) => setFilter({ ...filter, email: e.target.value })}
-            placeholder="Search by email"
-          />
-          <Input
-            type="text"
-            value={filter.phone}
-            onChange={(e) => setFilter({ ...filter, phone: e.target.value })}
-            placeholder="Search by phone"
-          />
-          <Select
-            options={categories}
-            value={filter.category}
-            onChange={handleCategoryChange}
-            placeholder="Select category"
-          />
-          <TagInput
-            tags={filter.tags}
-            onChange={handleTagChange}
-            placeholder="Add tags"
-          />
-        </div>
-        <Table
-          data={filteredClients}
-          columns={[
-            { label: 'Name', accessor: 'name' },
-            { label: 'Email', accessor: 'email' },
-            { label: 'Phone', accessor: 'phone' },
-            { label: 'Category', accessor: 'category' },
-            { label: 'Tags', accessor: 'tags' },
-          ]}
-          onEdit={(client) => setEditedClient(client)}
-          onDelete={handleClientDelete}
+      <h1>Client Database</h1>
+      <div>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Name"
         />
-        {isNewClient && (
-          <div className="flex flex-col mb-4">
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
-            />
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-            />
-            <Input
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Phone"
-            />
-            <Select
-              options={categories}
-              value={filter.category}
-              onChange={handleCategoryChange}
-              placeholder="Select category"
-            />
-            <TagInput
-              tags={filter.tags}
-              onChange={handleTagChange}
-              placeholder="Add tags"
-            />
-            <Button onClick={handleClientCreate}>Create Client</Button>
-          </div>
-        )}
-        {editedClient && (
-          <div className="flex flex-col mb-4">
-            <Input
-              type="text"
-              value={editedClient.name}
-              onChange={(e) => setEditedClient({ ...editedClient, name: e.target.value })}
-              placeholder="Name"
-            />
-            <Input
-              type="email"
-              value={editedClient.email}
-              onChange={(e) => setEditedClient({ ...editedClient, email: e.target.value })}
-              placeholder="Email"
-            />
-            <Input
-              type="text"
-              value={editedClient.phone}
-              onChange={(e) => setEditedClient({ ...editedClient, phone: e.target.value })}
-              placeholder="Phone"
-            />
-            <Select
-              options={categories}
-              value={editedClient.category}
-              onChange={(category) => setEditedClient({ ...editedClient, category })}
-              placeholder="Select category"
-            />
-            <TagInput
-              tags={editedClient.tags}
-              onChange={(tags) => setEditedClient({ ...editedClient, tags })}
-              placeholder="Add tags"
-            />
-            <Button onClick={handleClientEdit}>Save Changes</Button>
-          </div>
-        )}
+        <Input
+          type="email"
+          name="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="Email"
+        />
+        <Input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          placeholder="Phone"
+        />
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={handleCategoryChange}
+          options={clientCategories}
+        />
+        <TagInput
+          tags={filter.tags}
+          onChange={handleTagChange}
+          placeholder="Tags"
+        />
+        <Button onClick={() => console.log('Add client')}>Add Client</Button>
       </div>
+      <div>
+        <Input
+          type="text"
+          name="name"
+          value={filter.name}
+          onChange={handleFilterChange}
+          placeholder="Filter by name"
+        />
+        <Input
+          type="email"
+          name="email"
+          value={filter.email}
+          onChange={handleFilterChange}
+          placeholder="Filter by email"
+        />
+        <Input
+          type="text"
+          name="phone"
+          value={filter.phone}
+          onChange={handleFilterChange}
+          placeholder="Filter by phone"
+        />
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={handleCategoryChange}
+          options={clientCategories}
+        />
+        <TagInput
+          tags={filter.tags}
+          onChange={handleTagChange}
+          placeholder="Filter by tags"
+        />
+      </div>
+      <Table
+        data={filteredClients}
+        columns={[
+          { name: 'Name', selector: (row) => row.name },
+          { name: 'Email', selector: (row) => row.email },
+          { name: 'Phone', selector: (row) => row.phone },
+          { name: 'Category', selector: (row) => row.category },
+          { name: 'Tags', selector: (row) => row.tags.join(', ') },
+        ]}
+      />
     </Layout>
   );
 };

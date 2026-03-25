@@ -43,15 +43,14 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, proposal tracking, proposal analytics" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling, proposal builder, proposal generator" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
-        <meta property="og:site_name" content="Proposal Studio" />
         <meta property="og:type" content="website" />
       </Head>
       <h1>Proposal Studio FAQ</h1>
-      <h2>Frequently Asked Questions</h2>
+      <h2>Frequently Asked Questions About Our Proposal Management Software</h2>
       {faqs.map((faq, index) => (
         <div key={index}>
           <h3>{faq.question}</h3>

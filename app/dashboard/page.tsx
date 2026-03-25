@@ -126,7 +126,11 @@ const DashboardPage = () => {
     responsive: true,
     plugins: {
       legend: {
+        position: 'top',
+      },
+      title: {
         display: true,
+        text: 'Proposal Analytics',
       },
     },
   });
@@ -159,8 +163,8 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
+      <div className="container">
+        <h1>Proposal Studio Dashboard</h1>
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
