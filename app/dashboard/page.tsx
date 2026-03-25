@@ -150,6 +150,32 @@ const DashboardPage = () => {
   ]);
 
   useEffect(() => {
+    const fetchInitialData = async () => {
+      const data = await getRealTimeData();
+      if (data) {
+        setRealTimeProposalData({
+          labels: data.labels,
+          datasets: [
+            {
+              label: 'Proposals Created',
+              data: data.proposalsCreated,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.1,
+            },
+            {
+              label: 'Proposals Approved',
+              data: data.proposalsApproved,
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.1,
+            },
+          ],
+        });
+      }
+    };
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
     const intervalId = setInterval(async () => {
       const data = await getRealTimeData();
       if (data) {
@@ -211,15 +237,6 @@ const DashboardPage = () => {
               </div>
             </div>
           ))}
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <h2>Real-time Proposal Data</h2>
-            <Line
-              options={chartOptions}
-              data={realTimeProposalData}
-            />
-          </div>
         </div>
       </div>
     </DashboardLayout>

@@ -96,7 +96,6 @@ const ClientDatabasePage = () => {
     try {
       if (validateForm()) {
         const newClient: Client = {
-          id: Date.now(),
           name,
           email,
           phone,
@@ -105,124 +104,179 @@ const ClientDatabasePage = () => {
         setName('');
         setEmail('');
         setPhone('');
+        setIsNewClient(false);
       }
     } catch (error) {
       setFormSubmissionError('Error adding client');
     }
   };
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value;
-    setSearchTerm(searchTerm);
-    if (searchTerm.length > 0) {
-      setIsSearching(true);
-      const filteredClients = clients.filter((client) =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.phone.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setSuggestions(filteredClients);
-    } else {
-      setIsSearching(false);
-      setSuggestions([]);
+  const handleEditClient = (client: Client) => {
+    setEditedClient(client);
+    setIsNewClient(false);
+  };
+
+  const handleUpdateClient = () => {
+    try {
+      if (validateForm()) {
+        const updatedClients = clients.map((client) =>
+          client === editedClient ? { name, email, phone } : client
+        );
+        setClients(updatedClients);
+        setEditedClient(null);
+        setIsNewClient(false);
+      }
+    } catch (error) {
+      setFormSubmissionError('Error updating client');
     }
   };
 
-  const handleSelectSuggestion = (client: Client) => {
-    setSearchTerm(client.name);
-    setSuggestions([]);
-    setIsSearching(false);
+  const handleDeleteClient = (client: Client) => {
+    try {
+      const updatedClients = clients.filter((c) => c !== client);
+      setClients(updatedClients);
+    } catch (error) {
+      setFormSubmissionError('Error deleting client');
+    }
   };
+
+  const handleSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    setIsSearching(true);
+    const filteredClients = clients.filter((client) => {
+      const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
+      return clientString.includes(searchTerm.toLowerCase());
+    });
+    setSuggestions(filteredClients);
+  };
+
+  const handleSort = (sortField: 'name' | 'email' | 'phone', sortOrder: 'asc' | 'desc') => {
+    setSortField(sortField);
+    setSortOrder(sortOrder);
+    const sortedClients = clients.sort((a, b) => {
+      if (sortField === 'name') {
+        return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      } else if (sortField === 'email') {
+        return sortOrder === 'asc' ? a.email.localeCompare(b.email) : b.email.localeCompare(a.email);
+      } else {
+        return sortOrder === 'asc' ? a.phone.localeCompare(b.phone) : b.phone.localeCompare(a.phone);
+      }
+    });
+    setClients(sortedClients);
+  };
+
+  const handlePagination = (pageNumber: number, itemsPerPage: number) => {
+    setPageNumber(pageNumber);
+    setItemsPerPage(itemsPerPage);
+  };
+
+  const filteredClients = clients.filter((client) => {
+    const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
+    return clientString.includes(searchTerm.toLowerCase());
+  });
+
+  const paginatedClients = filteredClients.slice(
+    (pageNumber - 1) * itemsPerPage,
+    pageNumber * itemsPerPage
+  );
 
   return (
     <Layout>
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold">Client Database</h1>
-        <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
-      </div>
-      <div className="mb-4">
-        <Input
-          type="search"
-          value={searchTerm}
-          onChange={handleSearch}
-          placeholder="Search clients"
-        />
-        {isSearching && (
-          <ul className="absolute bg-white border shadow-md w-full mt-2">
-            {suggestions.map((client) => (
-              <li
-                key={client.id}
-                className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                onClick={() => handleSelectSuggestion(client)}
-              >
-                {client.name}
-              </li>
-            ))}
-          </ul>
+      <h1>Client Database</h1>
+      <Input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => handleSearch(e.target.value)}
+        placeholder="Search clients"
+      />
+      <Table>
+        <thead>
+          <tr>
+            <th>
+              <Button onClick={() => handleSort('name', sortOrder === 'asc' ? 'desc' : 'asc')}>
+                Name
+              </Button>
+            </th>
+            <th>
+              <Button onClick={() => handleSort('email', sortOrder === 'asc' ? 'desc' : 'asc')}>
+                Email
+              </Button>
+            </th>
+            <th>
+              <Button onClick={() => handleSort('phone', sortOrder === 'asc' ? 'desc' : 'asc')}>
+                Phone
+              </Button>
+            </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedClients.map((client) => (
+            <tr key={client.name}>
+              <td>{client.name}</td>
+              <td>{client.email}</td>
+              <td>{client.phone}</td>
+              <td>
+                <Button onClick={() => handleEditClient(client)}>Edit</Button>
+                <Button onClick={() => handleDeleteClient(client)}>Delete</Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <div>
+        <Button onClick={() => setIsNewClient(true)}>Add Client</Button>
+        {isNewClient && (
+          <div>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name"
+            />
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+            />
+            <Input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone"
+            />
+            <Button onClick={handleAddClient}>Add</Button>
+          </div>
+        )}
+        {editedClient && (
+          <div>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name"
+            />
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+            />
+            <Input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone"
+            />
+            <Button onClick={handleUpdateClient}>Update</Button>
+          </div>
         )}
       </div>
-      <Table
-        clients={clients}
-        pageNumber={pageNumber}
-        itemsPerPage={itemsPerPage}
-        sortOrder={sortOrder}
-        sortField={sortField}
-        onPageChange={(pageNumber) => setPageNumber(pageNumber)}
-        onSortChange={(sortOrder, sortField) => {
-          setSortOrder(sortOrder);
-          setSortField(sortField);
-        }}
-      />
-      {isNewClient && (
-        <div className="fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 shadow-md w-1/2">
-            <h2 className="text-2xl font-bold mb-4">Add New Client</h2>
-            <form>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
-                  Name
-                </label>
-                <Input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="John Doe"
-                />
-                {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="john.doe@example.com"
-                />
-                {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone">
-                  Phone
-                </label>
-                <Input
-                  type="text"
-                  id="phone"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  placeholder="123-456-7890"
-                />
-                {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
-              </div>
-              <Button onClick={handleAddClient}>Add Client</Button>
-              <Button onClick={() => setIsNewClient(false)}>Cancel</Button>
-            </form>
-          </div>
-        </div>
-      )}
+      <div>
+        <Button onClick={() => handlePagination(pageNumber - 1, itemsPerPage)}>Prev</Button>
+        <Button onClick={() => handlePagination(pageNumber + 1, itemsPerPage)}>Next</Button>
+      </div>
     </Layout>
   );
 };
