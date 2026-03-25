@@ -43,22 +43,26 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling, free trial, pricing plans" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling, proposal builder, proposal generator, free trial, pricing plans" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
         <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta name="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
-        <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
       </Head>
-      <h1>Proposal Studio FAQ</h1>
-      <p>Get answers to frequently asked questions about Proposal Studio, a SaaS tool designed to help freelancers and creators create, manage, and track business proposals with ease.</p>
       {faqs.map((faq, index) => (
         <div key={index}>
-          <h2>{faq.question}</h2>
-          <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}>Read more <AiOutlineArrowRight /></span>}</p>
-          {expanded === faq.question && <p>{faq.answer}</p>}
+          <div>
+            <h3>{faq.question}</h3>
+            <button onClick={() => handleToggle(index)}>
+              <AiOutlineArrowRight />
+            </button>
+          </div>
+          {expanded === faq.question && (
+            <p>{faq.answer}</p>
+          )}
         </div>
       ))}
     </div>

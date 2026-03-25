@@ -100,7 +100,8 @@ const ClientDatabasePage = () => {
           email,
           phone,
         };
-        setClients([...clients, newClient]);
+
+        setClients((prevClients) => [...prevClients, newClient]);
         setName('');
         setEmail('');
         setPhone('');
@@ -111,172 +112,88 @@ const ClientDatabasePage = () => {
     }
   };
 
-  const handleEditClient = (client: Client) => {
-    setEditedClient(client);
-    setIsNewClient(false);
-  };
-
-  const handleUpdateClient = () => {
-    try {
-      if (validateForm()) {
-        const updatedClients = clients.map((client) =>
-          client === editedClient ? { name, email, phone } : client
-        );
-        setClients(updatedClients);
-        setEditedClient(null);
-        setIsNewClient(false);
+  const handleImportClients = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.csv, .json';
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const fileContent = event.target?.result as string;
+            if (file.name.endsWith('.csv')) {
+              const csvContent = fileContent.split('\n');
+              const clients: Client[] = csvContent.map((row) => {
+                const [name, email, phone] = row.split(',');
+                return {
+                  name: name.trim(),
+                  email: email.trim(),
+                  phone: phone.trim(),
+                };
+              });
+              setClients(clients);
+            } else if (file.name.endsWith('.json')) {
+              const jsonContent = JSON.parse(fileContent);
+              setClients(jsonContent);
+            }
+          } catch (error) {
+            console.error('Error importing clients:', error);
+          }
+        };
+        reader.readAsText(file);
       }
-    } catch (error) {
-      setFormSubmissionError('Error updating client');
-    }
+    };
+    fileInput.click();
   };
 
-  const handleDeleteClient = (client: Client) => {
-    try {
-      const updatedClients = clients.filter((c) => c !== client);
-      setClients(updatedClients);
-    } catch (error) {
-      setFormSubmissionError('Error deleting client');
-    }
+  const handleExportClients = () => {
+    const csvContent = clients.map((client) => `${client.name},${client.email},${client.phone}`).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'clients.csv';
+    link.click();
   };
-
-  const handleSearch = (searchTerm: string) => {
-    setSearchTerm(searchTerm);
-    setIsSearching(true);
-    const filteredClients = clients.filter((client) => {
-      const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
-      return clientString.includes(searchTerm.toLowerCase());
-    });
-    setSuggestions(filteredClients);
-  };
-
-  const handleSort = (sortField: 'name' | 'email' | 'phone', sortOrder: 'asc' | 'desc') => {
-    setSortField(sortField);
-    setSortOrder(sortOrder);
-    const sortedClients = clients.sort((a, b) => {
-      if (sortField === 'name') {
-        return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-      } else if (sortField === 'email') {
-        return sortOrder === 'asc' ? a.email.localeCompare(b.email) : b.email.localeCompare(a.email);
-      } else {
-        return sortOrder === 'asc' ? a.phone.localeCompare(b.phone) : b.phone.localeCompare(a.phone);
-      }
-    });
-    setClients(sortedClients);
-  };
-
-  const handlePagination = (pageNumber: number, itemsPerPage: number) => {
-    setPageNumber(pageNumber);
-    setItemsPerPage(itemsPerPage);
-  };
-
-  const filteredClients = clients.filter((client) => {
-    const clientString = `${client.name} ${client.email} ${client.phone}`.toLowerCase();
-    return clientString.includes(searchTerm.toLowerCase());
-  });
-
-  const paginatedClients = filteredClients.slice(
-    (pageNumber - 1) * itemsPerPage,
-    pageNumber * itemsPerPage
-  );
 
   return (
     <Layout>
       <h1>Client Database</h1>
-      <Input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => handleSearch(e.target.value)}
-        placeholder="Search clients"
+      <Button onClick={handleImportClients}>Import Clients</Button>
+      <Button onClick={handleExportClients}>Export Clients</Button>
+      <Table
+        data={clients}
+        columns={[
+          { name: 'Name', selector: (row) => row.name },
+          { name: 'Email', selector: (row) => row.email },
+          { name: 'Phone', selector: (row) => row.phone },
+        ]}
       />
-      <Table>
-        <thead>
-          <tr>
-            <th>
-              <Button onClick={() => handleSort('name', sortOrder === 'asc' ? 'desc' : 'asc')}>
-                Name
-              </Button>
-            </th>
-            <th>
-              <Button onClick={() => handleSort('email', sortOrder === 'asc' ? 'desc' : 'asc')}>
-                Email
-              </Button>
-            </th>
-            <th>
-              <Button onClick={() => handleSort('phone', sortOrder === 'asc' ? 'desc' : 'asc')}>
-                Phone
-              </Button>
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedClients.map((client) => (
-            <tr key={client.name}>
-              <td>{client.name}</td>
-              <td>{client.email}</td>
-              <td>{client.phone}</td>
-              <td>
-                <Button onClick={() => handleEditClient(client)}>Edit</Button>
-                <Button onClick={() => handleDeleteClient(client)}>Delete</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <div>
-        <Button onClick={() => setIsNewClient(true)}>Add Client</Button>
-        {isNewClient && (
-          <div>
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
-            />
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-            />
-            <Input
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Phone"
-            />
-            <Button onClick={handleAddClient}>Add</Button>
-          </div>
-        )}
-        {editedClient && (
-          <div>
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
-            />
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-            />
-            <Input
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Phone"
-            />
-            <Button onClick={handleUpdateClient}>Update</Button>
-          </div>
-        )}
-      </div>
-      <div>
-        <Button onClick={() => handlePagination(pageNumber - 1, itemsPerPage)}>Prev</Button>
-        <Button onClick={() => handlePagination(pageNumber + 1, itemsPerPage)}>Next</Button>
-      </div>
+      <form>
+        <Input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          error={errors.name}
+        />
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          error={errors.email}
+        />
+        <Input
+          type="text"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Phone"
+          error={errors.phone}
+        />
+        <Button onClick={handleAddClient}>Add Client</Button>
+      </form>
     </Layout>
   );
 };

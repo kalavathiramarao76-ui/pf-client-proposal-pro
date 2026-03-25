@@ -147,33 +147,29 @@ const DashboardPage = () => {
         ],
       },
     },
+    {
+      id: 4,
+      type: 'gauge',
+      title: 'Proposal Completion Rate',
+      data: {
+        value: 75,
+        max: 100,
+        min: 0,
+        label: 'Completion Rate',
+        color: 'rgb(75, 192, 192)',
+      },
+    },
+    {
+      id: 5,
+      type: 'table',
+      title: 'Recent Proposals',
+      data: [
+        { id: 1, title: 'Proposal 1', status: 'Approved' },
+        { id: 2, title: 'Proposal 2', status: 'Rejected' },
+        { id: 3, title: 'Proposal 3', status: 'Created' },
+      ],
+    },
   ]);
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const data = await getRealTimeData();
-      if (data) {
-        setRealTimeProposalData({
-          labels: data.labels,
-          datasets: [
-            {
-              label: 'Proposals Created',
-              data: data.proposalsCreated,
-              borderColor: 'rgb(75, 192, 192)',
-              tension: 0.1,
-            },
-            {
-              label: 'Proposals Approved',
-              data: data.proposalsApproved,
-              borderColor: 'rgb(255, 99, 132)',
-              tension: 0.1,
-            },
-          ],
-        });
-      }
-    };
-    fetchInitialData();
-  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(async () => {
@@ -197,46 +193,178 @@ const DashboardPage = () => {
           ],
         });
       }
-    }, cacheDuration);
+    }, 1000);
     return () => clearInterval(intervalId);
   }, []);
+
+  const handleChartTypeChange = (type) => {
+    setChartType(type);
+  };
+
+  const handleDatasetVisibilityChange = (dataset, visible) => {
+    setDatasetVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [dataset]: visible,
+    }));
+  };
 
   return (
     <DashboardLayout>
       <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <h1>Proposal Studio Dashboard</h1>
-          </div>
-        </div>
+        <h1>Proposal Studio Dashboard</h1>
         <div className="row">
           {widgets.map((widget) => (
             <div key={widget.id} className="col-md-4">
               <div className="card">
-                <div className="card-body">
+                <div className="card-header">
                   <h5 className="card-title">{widget.title}</h5>
+                </div>
+                <div className="card-body">
                   {widget.type === 'line' && (
                     <Line
-                      options={chartOptions}
                       data={widget.data}
+                      options={chartOptions}
+                      height={200}
                     />
                   )}
                   {widget.type === 'bar' && (
                     <Bar
-                      options={chartOptions}
                       data={widget.data}
+                      options={chartOptions}
+                      height={200}
                     />
                   )}
                   {widget.type === 'pie' && (
                     <Pie
-                      options={chartOptions}
                       data={widget.data}
+                      options={chartOptions}
+                      height={200}
                     />
+                  )}
+                  {widget.type === 'gauge' && (
+                    <div className="gauge">
+                      <div
+                        className="gauge-value"
+                        style={{
+                          width: `${widget.data.value}%`,
+                          backgroundColor: widget.data.color,
+                        }}
+                      >
+                        {widget.data.value}%
+                      </div>
+                      <div className="gauge-label">
+                        {widget.data.label}
+                      </div>
+                    </div>
+                  )}
+                  {widget.type === 'table' && (
+                    <table className="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Title</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {widget.data.map((proposal) => (
+                          <tr key={proposal.id}>
+                            <td>{proposal.id}</td>
+                            <td>{proposal.title}</td>
+                            <td>{proposal.status}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   )}
                 </div>
               </div>
             </div>
           ))}
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="card">
+              <div className="card-header">
+                <h5 className="card-title">Real-time Proposal Data</h5>
+              </div>
+              <div className="card-body">
+                {chartType === 'line' && (
+                  <Line
+                    data={realTimeProposalData}
+                    options={chartOptions}
+                    height={400}
+                  />
+                )}
+                {chartType === 'bar' && (
+                  <Bar
+                    data={realTimeProposalData}
+                    options={chartOptions}
+                    height={400}
+                  />
+                )}
+                {chartType === 'pie' && (
+                  <Pie
+                    data={realTimeProposalData}
+                    options={chartOptions}
+                    height={400}
+                  />
+                )}
+              </div>
+              <div className="card-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleChartTypeChange('line')}
+                >
+                  Line Chart
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleChartTypeChange('bar')}
+                >
+                  Bar Chart
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleChartTypeChange('pie')}
+                >
+                  Pie Chart
+                </button>
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={datasetVisibility['Proposals Created']}
+                    onChange={(e) =>
+                      handleDatasetVisibilityChange(
+                        'Proposals Created',
+                        e.target.checked
+                      )
+                    }
+                  />
+                  <label className="form-check-label">
+                    Proposals Created
+                  </label>
+                </div>
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={datasetVisibility['Proposals Approved']}
+                    onChange={(e) =>
+                      handleDatasetVisibilityChange(
+                        'Proposals Approved',
+                        e.target.checked
+                      )
+                    }
+                  />
+                  <label className="form-check-label">
+                    Proposals Approved
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </DashboardLayout>
