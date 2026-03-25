@@ -77,7 +77,9 @@ const useRealTimeData = () => {
     };
     fetchAndCacheData();
 
-    const intervalId = setInterval(fetchAndCacheData, cacheDuration);
+    const intervalId = setInterval(() => {
+      fetchAndCacheData();
+    }, cacheDuration);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -126,34 +128,21 @@ const DashboardPage = () => {
     responsive: true,
     plugins: {
       legend: {
-        display: true,
         position: 'top',
       },
-      tooltip: {
-        displayColors: false,
-        callbacks: {
-          label: (tooltipItem) => {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`;
-          },
-        },
-      },
-    },
-    interaction: {
-      mode: 'nearest',
-      intersect: false,
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
+      title: {
+        display: true,
+        text: 'Proposal Analytics',
       },
     },
   });
 
   useEffect(() => {
     if (realTimeData) {
-      const labels = realTimeData.map((data) => data.date);
+      const labels = realTimeData.map((data) => data.month);
       const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
       const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
+
       setRealTimeProposalData({
         labels,
         datasets: [
@@ -174,41 +163,22 @@ const DashboardPage = () => {
     }
   }, [realTimeData]);
 
-  const handleDrillDown = (datasetIndex, index) => {
-    const data = realTimeData[index];
-    console.log(`Drill down to ${data.date} with ${data.proposalsCreated} proposals created and ${data.proposalsApproved} proposals approved`);
-  };
-
   return (
     <DashboardLayout>
       <div className="container">
         <h1>Proposal Studio Dashboard</h1>
         <div className="row">
           <div className="col-md-6">
-            <Line
-              data={proposalData}
-              options={chartOptions}
-              onClick={(event, elements) => {
-                if (elements.length > 0) {
-                  const datasetIndex = elements[0].datasetIndex;
-                  const index = elements[0].index;
-                  handleDrillDown(datasetIndex, index);
-                }
-              }}
-            />
+            <Line options={chartOptions} data={proposalData} />
           </div>
           <div className="col-md-6">
-            <Line
-              data={realTimeProposalData}
-              options={chartOptions}
-              onClick={(event, elements) => {
-                if (elements.length > 0) {
-                  const datasetIndex = elements[0].datasetIndex;
-                  const index = elements[0].index;
-                  handleDrillDown(datasetIndex, index);
-                }
-              }}
-            />
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error.message}</p>
+            ) : (
+              <Line options={chartOptions} data={realTimeProposalData} />
+            )}
           </div>
         </div>
       </div>

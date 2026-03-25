@@ -90,160 +90,124 @@ const ClientDatabasePage = () => {
       newErrors.category = 'Invalid category';
     }
 
-    if (filter.tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
-    } else if (filter.tags.some((tag) => typeof tag !== 'string' || tag.trim() === '')) {
-      newErrors.tags = 'Invalid tags';
-    }
-
     setErrors(newErrors);
-
     return Object.values(newErrors).every((error) => error === '');
   };
 
-  const validateClientData = (client: Client) => {
-    const newErrors = {
-      name: '',
-      email: '',
-      category: '',
-      tags: '',
-    };
+  const filteredClients = clients.filter((client) => {
+    const nameMatch = client.name.toLowerCase().includes(filter.name.toLowerCase());
+    const emailMatch = client.email.toLowerCase().includes(filter.email.toLowerCase());
+    const phoneMatch = client.phone.toLowerCase().includes(filter.phone.toLowerCase());
+    const categoryMatch = client.category === filter.category;
+    const tagsMatch = filter.tags.every((tag) => client.tags.includes(tag));
 
-    if (!client.name) {
-      newErrors.name = 'Name is required';
+    return nameMatch && emailMatch && phoneMatch && categoryMatch && tagsMatch;
+  });
+
+  const sortedClients = filteredClients.sort((a, b) => {
+    if (sortField === 'name') {
+      return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    } else if (sortField === 'email') {
+      return sortOrder === 'asc' ? a.email.localeCompare(b.email) : b.email.localeCompare(a.email);
+    } else if (sortField === 'phone') {
+      return sortOrder === 'asc' ? a.phone.localeCompare(b.phone) : b.phone.localeCompare(a.phone);
     }
+    return 0;
+  });
 
-    if (!client.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(client.email)) {
-      newErrors.email = 'Invalid email address';
-    }
+  const paginatedClients = sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage);
 
-    if (!client.category) {
-      newErrors.category = 'Category is required';
-    } else if (!clientCategories.find((category) => category.value === client.category)) {
-      newErrors.category = 'Invalid category';
-    }
+  const handleFilterChange = (field: string, value: string | string[]) => {
+    setFilter((prevFilter) => ({ ...prevFilter, [field]: value }));
+  };
 
-    if (client.tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
-    } else if (client.tags.some((tag) => typeof tag !== 'string' || tag.trim() === '')) {
-      newErrors.tags = 'Invalid tags';
-    }
+  const handleSortChange = (field: 'name' | 'email' | 'phone', order: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortOrder(order);
+  };
 
-    return Object.values(newErrors).every((error) => error === '');
+  const handlePageChange = (pageNumber: number) => {
+    setPageNumber(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (itemsPerPage: number) => {
+    setItemsPerPage(itemsPerPage);
   };
 
   return (
     <Layout>
-      <Table
-        clients={clients}
-        filter={filter}
-        setFilter={setFilter}
-        pageNumber={pageNumber}
-        setPageNumber={setPageNumber}
-        itemsPerPage={itemsPerPage}
-        setItemsPerPage={setItemsPerPage}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-        sortField={sortField}
-        setSortField={setSortField}
-      />
-      <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
-      {isNewClient && (
-        <form>
+      <div className="client-database-page">
+        <h1>Client Database</h1>
+        <div className="filter-section">
           <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
+            label="Name"
+            value={filter.name}
+            onChange={(e) => handleFilterChange('name', e.target.value)}
           />
           <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            label="Email"
+            value={filter.email}
+            onChange={(e) => handleFilterChange('email', e.target.value)}
           />
           <Input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Phone"
+            label="Phone"
+            value={filter.phone}
+            onChange={(e) => handleFilterChange('phone', e.target.value)}
           />
           <Select
+            label="Category"
             value={filter.category}
-            onChange={(e) => setFilter({ ...filter, category: e.target.value })}
             options={clientCategories}
+            onChange={(value) => handleFilterChange('category', value)}
           />
           <TagInput
-            tags={filter.tags}
-            setTags={(tags) => setFilter({ ...filter, tags })}
+            label="Tags"
+            value={filter.tags}
+            onChange={(tags) => handleFilterChange('tags', tags)}
           />
-          <Button type="submit" onClick={(e) => {
-            e.preventDefault();
-            if (validateForm()) {
-              const newClient: Client = {
-                name,
-                email,
-                phone,
-                category: filter.category,
-                tags: filter.tags,
-              };
-              setClients([...clients, newClient]);
-              setName('');
-              setEmail('');
-              setPhone('');
-              setFilter({
-                name: '',
-                email: '',
-                phone: '',
-                category: '',
-                tags: [],
-              });
-              setIsNewClient(false);
-            }
-          }}>Add Client</Button>
-        </form>
-      )}
-      {editedClient && (
-        <form>
-          <Input
-            type="text"
-            value={editedClient.name}
-            onChange={(e) => setEditedClient({ ...editedClient, name: e.target.value })}
-            placeholder="Name"
-          />
-          <Input
-            type="email"
-            value={editedClient.email}
-            onChange={(e) => setEditedClient({ ...editedClient, email: e.target.value })}
-            placeholder="Email"
-          />
-          <Input
-            type="text"
-            value={editedClient.phone}
-            onChange={(e) => setEditedClient({ ...editedClient, phone: e.target.value })}
-            placeholder="Phone"
+        </div>
+        <div className="sort-section">
+          <Select
+            label="Sort By"
+            value={sortField}
+            options={[
+              { value: 'name', label: 'Name' },
+              { value: 'email', label: 'Email' },
+              { value: 'phone', label: 'Phone' },
+            ]}
+            onChange={(value) => handleSortChange(value as 'name' | 'email' | 'phone', sortOrder)}
           />
           <Select
-            value={editedClient.category}
-            onChange={(e) => setEditedClient({ ...editedClient, category: e.target.value })}
-            options={clientCategories}
+            label="Order"
+            value={sortOrder}
+            options={[
+              { value: 'asc', label: 'Ascending' },
+              { value: 'desc', label: 'Descending' },
+            ]}
+            onChange={(value) => handleSortChange(sortField, value as 'asc' | 'desc')}
           />
-          <TagInput
-            tags={editedClient.tags}
-            setTags={(tags) => setEditedClient({ ...editedClient, tags })}
+        </div>
+        <div className="pagination-section">
+          <Select
+            label="Items Per Page"
+            value={itemsPerPage}
+            options={[5, 10, 20, 50]}
+            onChange={(value) => handleItemsPerPageChange(value as number)}
           />
-          <Button type="submit" onClick={(e) => {
-            e.preventDefault();
-            if (validateClientData(editedClient)) {
-              const updatedClients = clients.map((client) => client.id === editedClient.id ? editedClient : client);
-              setClients(updatedClients);
-              setEditedClient(null);
-            }
-          }}>Save Changes</Button>
-        </form>
-      )}
+          <Button onClick={() => handlePageChange(pageNumber - 1)}>Previous</Button>
+          <Button onClick={() => handlePageChange(pageNumber + 1)}>Next</Button>
+        </div>
+        <Table
+          columns={[
+            { label: 'Name', field: 'name' },
+            { label: 'Email', field: 'email' },
+            { label: 'Phone', field: 'phone' },
+            { label: 'Category', field: 'category' },
+            { label: 'Tags', field: 'tags' },
+          ]}
+          data={paginatedClients}
+        />
+      </div>
     </Layout>
   );
 };
