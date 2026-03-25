@@ -17,6 +17,8 @@ import {
 } from 'chart.js';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import axios from 'axios';
+import { tippy } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 ChartJS.register(
   CategoryScale,
@@ -127,54 +129,54 @@ const DashboardPage = () => {
   const [chartOptions, setChartOptions] = useState({
     responsive: true,
     plugins: {
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem) => {
+            return `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`;
+          },
+        },
+        displayColors: false,
+      },
       legend: {
-        position: 'top',
-      },
-      title: {
         display: true,
-        text: 'Proposal Analytics',
+        position: 'bottom',
       },
+    },
+    animation: {
+      duration: 2000,
+      easing: 'easeInOutQuart',
+    },
+    interaction: {
+      intersect: false,
     },
   });
 
   useEffect(() => {
-    if (realTimeData) {
-      const labels = realTimeData.map((data) => data.date);
-      const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
-      const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
-      setRealTimeProposalData({
-        labels,
-        datasets: [
-          {
-            label: 'Proposals Created',
-            data: proposalsCreated,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1,
-          },
-          {
-            label: 'Proposals Approved',
-            data: proposalsApproved,
-            borderColor: 'rgb(255, 99, 132)',
-            tension: 0.1,
-          },
-        ],
-      });
-    }
-  }, [realTimeData]);
+    tippy('.chart-tooltip', {
+      content: 'Hover over the chart to see more information',
+      placement: 'bottom',
+      theme: 'light',
+    });
+  }, []);
 
   return (
     <DashboardLayout>
-      <div className="container">
-        <h1>Proposal Studio Dashboard</h1>
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : (
-          <div>
-            <Line options={chartOptions} data={realTimeProposalData} />
-          </div>
-        )}
+      <div className="chart-container">
+        <Line
+          data={proposalData}
+          options={chartOptions}
+          className="chart-tooltip"
+        />
+        <Bar
+          data={proposalData}
+          options={chartOptions}
+          className="chart-tooltip"
+        />
+        <Pie
+          data={proposalData}
+          options={chartOptions}
+          className="chart-tooltip"
+        />
       </div>
     </DashboardLayout>
   );
