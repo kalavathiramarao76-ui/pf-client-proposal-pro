@@ -44,18 +44,13 @@ const FAQPage = () => {
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
         <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling, proposal builder, proposal generator" />
-        <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
-        <meta property="og:url" content="https://www.proposalstudio.com/faq" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta name="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
       </Head>
+      <h1>Proposal Studio FAQ</h1>
+      <h2>Frequently Asked Questions</h2>
       {faqs.map((faq, index) => (
         <div key={index}>
-          <h2>{faq.question}</h2>
-          <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}>{faq.answer.substring(0, 100)}... <AiOutlineArrowRight /></span>}</p>
+          <h3>{faq.question}</h3>
+          <p>{expanded === faq.question ? faq.answer : <span onClick={() => handleToggle(index)}>Read more <AiOutlineArrowRight /></span>}</p>
           {expanded === faq.question && <p>{faq.answer}</p>}
         </div>
       ))}

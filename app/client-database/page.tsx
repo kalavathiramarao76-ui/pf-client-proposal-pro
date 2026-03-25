@@ -23,6 +23,8 @@ const ClientDatabasePage = () => {
     name: '',
     email: '',
     phone: '',
+    category: '',
+    tags: '',
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
@@ -62,6 +64,8 @@ const ClientDatabasePage = () => {
       name: '',
       email: '',
       phone: '',
+      category: '',
+      tags: '',
     };
 
     if (!name) {
@@ -80,6 +84,18 @@ const ClientDatabasePage = () => {
       newErrors.phone = 'Invalid phone number (use XXX-XXX-XXXX format)';
     }
 
+    if (!filter.category) {
+      newErrors.category = 'Category is required';
+    } else if (!clientCategories.find((category) => category.value === filter.category)) {
+      newErrors.category = 'Invalid category';
+    }
+
+    if (filter.tags.length === 0) {
+      newErrors.tags = 'At least one tag is required';
+    } else if (filter.tags.some((tag) => typeof tag !== 'string' || tag.trim() === '')) {
+      newErrors.tags = 'Invalid tags';
+    }
+
     setErrors(newErrors);
 
     return Object.values(newErrors).every((error) => error === '');
@@ -89,6 +105,8 @@ const ClientDatabasePage = () => {
     const newErrors = {
       name: '',
       email: '',
+      category: '',
+      tags: '',
     };
 
     if (!client.name) {
@@ -101,67 +119,39 @@ const ClientDatabasePage = () => {
       newErrors.email = 'Invalid email address';
     }
 
+    if (!client.category) {
+      newErrors.category = 'Category is required';
+    } else if (!clientCategories.find((category) => category.value === client.category)) {
+      newErrors.category = 'Invalid category';
+    }
+
+    if (client.tags.length === 0) {
+      newErrors.tags = 'At least one tag is required';
+    } else if (client.tags.some((tag) => typeof tag !== 'string' || tag.trim() === '')) {
+      newErrors.tags = 'Invalid tags';
+    }
+
     return Object.values(newErrors).every((error) => error === '');
-  };
-
-  const handleSearch = (searchTerm: string) => {
-    setIsSearching(true);
-    const filteredClients = clients.filter((client) => {
-      const clientName = client.name.toLowerCase();
-      const clientEmail = client.email.toLowerCase();
-      const search = searchTerm.toLowerCase();
-      return clientName.includes(search) || clientEmail.includes(search);
-    });
-    setSuggestions(filteredClients);
-    setIsSearching(false);
-  };
-
-  const handleSelectSuggestion = (selectedClient: Client) => {
-    setSearchTerm(selectedClient.name);
-    setSuggestions([]);
   };
 
   return (
     <Layout>
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold">Client Database</h1>
-        <div className="flex items-center">
-          <Input
-            type="search"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              handleSearch(e.target.value);
-            }}
-            placeholder="Search clients"
-            className="w-64"
-          />
-          {isSearching && (
-            <ul className="absolute bg-white shadow-md p-2 w-64">
-              {suggestions.map((suggestion) => (
-                <li
-                  key={suggestion.id}
-                  className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => handleSelectSuggestion(suggestion)}
-                >
-                  {suggestion.name} ({suggestion.email})
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
       <Table
-        data={clients}
-        columns={[
-          { label: 'Name', accessor: 'name' },
-          { label: 'Email', accessor: 'email' },
-          { label: 'Phone', accessor: 'phone' },
-        ]}
+        clients={clients}
+        filter={filter}
+        setFilter={setFilter}
+        pageNumber={pageNumber}
+        setPageNumber={setPageNumber}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        sortField={sortField}
+        setSortField={setSortField}
       />
       <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
       {isNewClient && (
-        <div className="mt-4">
+        <form>
           <Input
             type="text"
             value={name}
@@ -180,8 +170,79 @@ const ClientDatabasePage = () => {
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Phone"
           />
-          <Button onClick={() => validateForm()}>Save Client</Button>
-        </div>
+          <Select
+            value={filter.category}
+            onChange={(e) => setFilter({ ...filter, category: e.target.value })}
+            options={clientCategories}
+          />
+          <TagInput
+            tags={filter.tags}
+            setTags={(tags) => setFilter({ ...filter, tags })}
+          />
+          <Button type="submit" onClick={(e) => {
+            e.preventDefault();
+            if (validateForm()) {
+              const newClient: Client = {
+                name,
+                email,
+                phone,
+                category: filter.category,
+                tags: filter.tags,
+              };
+              setClients([...clients, newClient]);
+              setName('');
+              setEmail('');
+              setPhone('');
+              setFilter({
+                name: '',
+                email: '',
+                phone: '',
+                category: '',
+                tags: [],
+              });
+              setIsNewClient(false);
+            }
+          }}>Add Client</Button>
+        </form>
+      )}
+      {editedClient && (
+        <form>
+          <Input
+            type="text"
+            value={editedClient.name}
+            onChange={(e) => setEditedClient({ ...editedClient, name: e.target.value })}
+            placeholder="Name"
+          />
+          <Input
+            type="email"
+            value={editedClient.email}
+            onChange={(e) => setEditedClient({ ...editedClient, email: e.target.value })}
+            placeholder="Email"
+          />
+          <Input
+            type="text"
+            value={editedClient.phone}
+            onChange={(e) => setEditedClient({ ...editedClient, phone: e.target.value })}
+            placeholder="Phone"
+          />
+          <Select
+            value={editedClient.category}
+            onChange={(e) => setEditedClient({ ...editedClient, category: e.target.value })}
+            options={clientCategories}
+          />
+          <TagInput
+            tags={editedClient.tags}
+            setTags={(tags) => setEditedClient({ ...editedClient, tags })}
+          />
+          <Button type="submit" onClick={(e) => {
+            e.preventDefault();
+            if (validateClientData(editedClient)) {
+              const updatedClients = clients.map((client) => client.id === editedClient.id ? editedClient : client);
+              setClients(updatedClients);
+              setEditedClient(null);
+            }
+          }}>Save Changes</Button>
+        </form>
       )}
     </Layout>
   );
