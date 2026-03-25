@@ -47,66 +47,17 @@ const FAQPage = () => {
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
+        <meta property="og:site_name" content="Proposal Studio" />
         <meta property="og:type" content="website" />
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "${faqs[0].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[0].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[1].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[1].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[2].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[2].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[3].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[3].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[4].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[4].answer}"
-                  }
-                }
-              ]
-            }
-          `}
-        </script>
       </Head>
+      <h1>Proposal Studio FAQ</h1>
+      <h2>Frequently Asked Questions</h2>
       {faqs.map((faq, index) => (
         <div key={index}>
-          <h2>{faq.question}</h2>
-          <button onClick={() => handleToggle(index)}>
-            {expanded === faq.question ? 'Hide' : 'Show'} Answer
-            <AiOutlineArrowRight />
-          </button>
-          {expanded === faq.question && <p>{faq.answer}</p>}
+          <h3>{faq.question}</h3>
+          <p>{expanded === faq.question ? faq.answer : faq.answer.substring(0, 150) + '...'}</p>
+          {expanded !== faq.question && <button onClick={() => handleToggle(index)}>Read more <AiOutlineArrowRight /></button>}
+          {expanded === faq.question && <button onClick={() => handleToggle(index)}>Read less <AiOutlineArrowRight /></button>}
         </div>
       ))}
     </div>

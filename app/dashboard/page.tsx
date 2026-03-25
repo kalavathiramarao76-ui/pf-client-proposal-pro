@@ -126,73 +126,29 @@ const DashboardPage = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
-      },
-      title: {
         display: true,
-        text: 'Proposal Creation and Approval Trend',
       },
     },
   });
-  const [chartType, setChartType] = useState('line');
-  const [datasetVisibility, setDatasetVisibility] = useState({
-    'Proposals Created': true,
-    'Proposals Approved': true,
-  });
-  const [widgets, setWidgets] = useState([
-    {
-      id: 1,
-      type: 'line',
-      title: 'Proposal Creation Trend',
-      data: proposalData,
-    },
-    {
-      id: 2,
-      type: 'bar',
-      title: 'Proposal Approval Trend',
-      data: proposalData,
-    },
-    {
-      id: 3,
-      type: 'pie',
-      title: 'Proposal Status',
-      data: {
-        labels: ['Created', 'Approved', 'Rejected'],
-        datasets: [
-          {
-            label: 'Proposal Status',
-            data: [10, 20, 30],
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(255, 206, 86, 0.2)',
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-            ],
-            borderWidth: 1,
-          },
-        ],
-      },
-    },
-  ]);
 
   useEffect(() => {
     if (realTimeData) {
+      const labels = realTimeData.map((data) => data.month);
+      const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
+      const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
+
       setRealTimeProposalData({
-        labels: realTimeData.labels,
+        labels,
         datasets: [
           {
             label: 'Proposals Created',
-            data: realTimeData.datasets[0].data,
+            data: proposalsCreated,
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.1,
           },
           {
             label: 'Proposals Approved',
-            data: realTimeData.datasets[1].data,
+            data: proposalsApproved,
             borderColor: 'rgb(255, 99, 132)',
             tension: 0.1,
           },
@@ -203,40 +159,17 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <h1>Proposal Studio Dashboard</h1>
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <div>
+            <Line options={chartOptions} data={realTimeProposalData} />
           </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6">
-            {loading ? (
-              <p>Loading...</p>
-            ) : error ? (
-              <p>Error: {error.message}</p>
-            ) : (
-              <Line
-                options={chartOptions}
-                data={realTimeProposalData}
-              />
-            )}
-          </div>
-          <div className="col-md-6">
-            <Bar
-              options={chartOptions}
-              data={proposalData}
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <Pie
-              options={chartOptions}
-              data={widgets[2].data}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </DashboardLayout>
   );
