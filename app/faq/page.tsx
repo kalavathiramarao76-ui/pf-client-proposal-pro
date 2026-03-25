@@ -48,26 +48,26 @@ const FAQPage = () => {
         <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
         <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
+        <meta name="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
+        <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
       </Head>
       <h1>Proposal Studio FAQ</h1>
-      <p>Below, you'll find answers to some of the most frequently asked questions about Proposal Studio. If you can't find the answer to your question, please don't hesitate to contact us.</p>
-      <div id="table-of-contents">
-        <h2>Table of Contents</h2>
-        <ul>
-          {faqs.map((faq, index) => (
-            <li key={index}>
-              <a href={`#${faq.question.replace(/\s+/g, '-').toLowerCase()}`}>{faq.question}</a>
-            </li>
-          ))}
-        </ul>
-      </div>
-      {faqs.map((faq, index) => (
-        <div key={index}>
-          <h2 id={faq.question.replace(/\s+/g, '-').toLowerCase()}>{faq.question}</h2>
-          <button onClick={() => handleToggle(index)}>{expanded === faq.question ? 'Hide' : 'Show'} answer <AiOutlineArrowRight /></button>
-          {expanded === faq.question && <p>{faq.answer}</p>}
-        </div>
-      ))}
+      <p>Get answers to frequently asked questions about Proposal Studio, a SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease.</p>
+      <ul>
+        {faqs.map((faq, index) => (
+          <li key={index}>
+            <button onClick={() => handleToggle(index)}>
+              {faq.question}
+              <AiOutlineArrowRight />
+            </button>
+            {expanded === faq.question && (
+              <p>{faq.answer}</p>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

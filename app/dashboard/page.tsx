@@ -139,10 +139,9 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (realTimeData) {
-      const labels = realTimeData.map((data) => data.month);
+      const labels = realTimeData.map((data) => data.date);
       const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
       const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
-
       setRealTimeProposalData({
         labels,
         datasets: [
@@ -165,15 +164,17 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
-        <div className="flex flex-wrap justify-center">
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
-            <Line options={chartOptions} data={proposalData} />
-          </div>
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+      <div className="container">
+        <h1>Proposal Studio Dashboard</h1>
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <div>
             <Line options={chartOptions} data={realTimeProposalData} />
           </div>
-        </div>
+        )}
       </div>
     </DashboardLayout>
   );
