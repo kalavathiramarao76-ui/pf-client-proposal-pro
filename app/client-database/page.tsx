@@ -90,124 +90,130 @@ const ClientDatabasePage = () => {
       newErrors.category = 'Invalid category';
     }
 
+    if (!filter.tags.length) {
+      newErrors.tags = 'Tags are required';
+    }
+
     setErrors(newErrors);
     return Object.values(newErrors).every((error) => error === '');
   };
 
-  const filteredClients = clients.filter((client) => {
-    const nameMatch = client.name.toLowerCase().includes(filter.name.toLowerCase());
-    const emailMatch = client.email.toLowerCase().includes(filter.email.toLowerCase());
-    const phoneMatch = client.phone.toLowerCase().includes(filter.phone.toLowerCase());
-    const categoryMatch = client.category === filter.category;
-    const tagsMatch = filter.tags.every((tag) => client.tags.includes(tag));
-
-    return nameMatch && emailMatch && phoneMatch && categoryMatch && tagsMatch;
-  });
-
-  const sortedClients = filteredClients.sort((a, b) => {
-    if (sortField === 'name') {
-      return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-    } else if (sortField === 'email') {
-      return sortOrder === 'asc' ? a.email.localeCompare(b.email) : b.email.localeCompare(a.email);
-    } else if (sortField === 'phone') {
-      return sortOrder === 'asc' ? a.phone.localeCompare(b.phone) : b.phone.localeCompare(a.phone);
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value;
+    setSearchTerm(searchTerm);
+    if (searchTerm.length > 2) {
+      const filteredSuggestions = clients.filter((client) => {
+        const clientName = client.name.toLowerCase();
+        const clientEmail = client.email.toLowerCase();
+        const clientPhone = client.phone.toLowerCase();
+        return (
+          clientName.includes(searchTerm.toLowerCase()) ||
+          clientEmail.includes(searchTerm.toLowerCase()) ||
+          clientPhone.includes(searchTerm.toLowerCase())
+        );
+      });
+      setSuggestions(filteredSuggestions);
+      setIsSearching(true);
+    } else {
+      setSuggestions([]);
+      setIsSearching(false);
     }
-    return 0;
+  };
+
+  const handleFilter = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+  };
+
+  const filteredClients = clients.filter((client) => {
+    const clientName = client.name.toLowerCase();
+    const clientEmail = client.email.toLowerCase();
+    const clientPhone = client.phone.toLowerCase();
+    return (
+      (filter.name ? clientName.includes(filter.name.toLowerCase()) : true) &&
+      (filter.email ? clientEmail.includes(filter.email.toLowerCase()) : true) &&
+      (filter.phone ? clientPhone.includes(filter.phone.toLowerCase()) : true) &&
+      (filter.category ? client.category === filter.category : true) &&
+      (filter.tags.length ? filter.tags.every((tag) => client.tags.includes(tag)) : true)
+    );
   });
-
-  const paginatedClients = sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage);
-
-  const handleFilterChange = (field: string, value: string | string[]) => {
-    setFilter((prevFilter) => ({ ...prevFilter, [field]: value }));
-  };
-
-  const handleSortChange = (field: 'name' | 'email' | 'phone', order: 'asc' | 'desc') => {
-    setSortField(field);
-    setSortOrder(order);
-  };
-
-  const handlePageChange = (pageNumber: number) => {
-    setPageNumber(pageNumber);
-  };
-
-  const handleItemsPerPageChange = (itemsPerPage: number) => {
-    setItemsPerPage(itemsPerPage);
-  };
 
   return (
     <Layout>
-      <div className="client-database-page">
-        <h1>Client Database</h1>
-        <div className="filter-section">
-          <Input
-            label="Name"
-            value={filter.name}
-            onChange={(e) => handleFilterChange('name', e.target.value)}
-          />
-          <Input
-            label="Email"
-            value={filter.email}
-            onChange={(e) => handleFilterChange('email', e.target.value)}
-          />
-          <Input
-            label="Phone"
-            value={filter.phone}
-            onChange={(e) => handleFilterChange('phone', e.target.value)}
-          />
-          <Select
-            label="Category"
-            value={filter.category}
-            options={clientCategories}
-            onChange={(value) => handleFilterChange('category', value)}
-          />
-          <TagInput
-            label="Tags"
-            value={filter.tags}
-            onChange={(tags) => handleFilterChange('tags', tags)}
-          />
-        </div>
-        <div className="sort-section">
-          <Select
-            label="Sort By"
-            value={sortField}
-            options={[
-              { value: 'name', label: 'Name' },
-              { value: 'email', label: 'Email' },
-              { value: 'phone', label: 'Phone' },
-            ]}
-            onChange={(value) => handleSortChange(value as 'name' | 'email' | 'phone', sortOrder)}
-          />
-          <Select
-            label="Order"
-            value={sortOrder}
-            options={[
-              { value: 'asc', label: 'Ascending' },
-              { value: 'desc', label: 'Descending' },
-            ]}
-            onChange={(value) => handleSortChange(sortField, value as 'asc' | 'desc')}
-          />
-        </div>
-        <div className="pagination-section">
-          <Select
-            label="Items Per Page"
-            value={itemsPerPage}
-            options={[5, 10, 20, 50]}
-            onChange={(value) => handleItemsPerPageChange(value as number)}
-          />
-          <Button onClick={() => handlePageChange(pageNumber - 1)}>Previous</Button>
-          <Button onClick={() => handlePageChange(pageNumber + 1)}>Next</Button>
-        </div>
-        <Table
-          columns={[
-            { label: 'Name', field: 'name' },
-            { label: 'Email', field: 'email' },
-            { label: 'Phone', field: 'phone' },
-            { label: 'Category', field: 'category' },
-            { label: 'Tags', field: 'tags' },
-          ]}
-          data={paginatedClients}
+      <div className="flex justify-between mb-4">
+        <h1 className="text-2xl font-bold">Client Database</h1>
+        <Button onClick={() => router.push('/clients/create')}>Create New Client</Button>
+      </div>
+      <div className="flex flex-col mb-4">
+        <Input
+          type="search"
+          value={searchTerm}
+          onChange={handleSearch}
+          placeholder="Search clients..."
+          className="w-full mb-2"
+        />
+        {isSearching && (
+          <ul className="list-none p-0 m-0">
+            {suggestions.map((suggestion) => (
+              <li key={suggestion.id} className="py-2 border-b border-gray-200">
+                <a href="#" onClick={() => router.push(`/clients/${suggestion.id}`)}>
+                  {suggestion.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="flex flex-col mb-4">
+        <label className="text-lg font-bold mb-2">Filter by:</label>
+        <Input
+          type="text"
+          name="name"
+          value={filter.name}
+          onChange={handleFilter}
+          placeholder="Name"
+          className="w-full mb-2"
+        />
+        <Input
+          type="email"
+          name="email"
+          value={filter.email}
+          onChange={handleFilter}
+          placeholder="Email"
+          className="w-full mb-2"
+        />
+        <Input
+          type="text"
+          name="phone"
+          value={filter.phone}
+          onChange={handleFilter}
+          placeholder="Phone"
+          className="w-full mb-2"
+        />
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={handleFilter}
+          options={clientCategories}
+          className="w-full mb-2"
+        />
+        <TagInput
+          name="tags"
+          value={filter.tags}
+          onChange={(tags) => setFilter((prevFilter) => ({ ...prevFilter, tags }))}
+          className="w-full mb-2"
         />
       </div>
+      <Table
+        data={filteredClients}
+        columns={[
+          { label: 'Name', accessor: 'name' },
+          { label: 'Email', accessor: 'email' },
+          { label: 'Phone', accessor: 'phone' },
+          { label: 'Category', accessor: 'category' },
+          { label: 'Tags', accessor: 'tags' },
+        ]}
+      />
     </Layout>
   );
 };

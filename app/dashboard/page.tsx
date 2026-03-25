@@ -165,20 +165,13 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container">
-        <h1>Proposal Studio Dashboard</h1>
-        <div className="row">
-          <div className="col-md-6">
+      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
+        <div className="flex flex-wrap justify-center">
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
             <Line options={chartOptions} data={proposalData} />
           </div>
-          <div className="col-md-6">
-            {loading ? (
-              <p>Loading...</p>
-            ) : error ? (
-              <p>Error: {error.message}</p>
-            ) : (
-              <Line options={chartOptions} data={realTimeProposalData} />
-            )}
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+            <Line options={chartOptions} data={realTimeProposalData} />
           </div>
         </div>
       </div>
