@@ -149,16 +149,64 @@ const DashboardPage = () => {
     },
   ]);
 
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const data = await getRealTimeData();
+      if (data) {
+        setRealTimeProposalData({
+          labels: data.labels,
+          datasets: [
+            {
+              label: 'Proposals Created',
+              data: data.proposalsCreated,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.1,
+            },
+            {
+              label: 'Proposals Approved',
+              data: data.proposalsApproved,
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.1,
+            },
+          ],
+        });
+      }
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleChartTypeChange = (event) => {
+    setChartType(event.target.value);
+  };
+
+  const handleDatasetVisibilityChange = (event) => {
+    const dataset = event.target.dataset;
+    const visibility = event.target.checked;
+    setDatasetVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [dataset]: visibility,
+    }));
+  };
+
   return (
     <DashboardLayout>
-      <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-2">Overview</h2>
-        <p className="text-lg mb-4">Get an overview of your proposal data</p>
-        <div className="flex flex-wrap justify-center">
+      <div className="flex flex-col">
+        <div className="flex justify-between mb-4">
+          <h1 className="text-2xl font-bold">Proposal Studio Dashboard</h1>
+          <select
+            value={chartType}
+            onChange={handleChartTypeChange}
+            className="px-4 py-2 border border-gray-300 rounded-md"
+          >
+            <option value="line">Line Chart</option>
+            <option value="bar">Bar Chart</option>
+            <option value="pie">Pie Chart</option>
+          </select>
+        </div>
+        <div className="flex flex-col mb-4">
           {widgets.map((widget) => (
-            <div key={widget.id} className="w-full md:w-1/2 xl:w-1/3 p-4">
-              <h3 className="text-lg font-bold mb-2">{widget.title}</h3>
+            <div key={widget.id} className="mb-4">
+              <h2 className="text-xl font-bold">{widget.title}</h2>
               {widget.type === 'line' && (
                 <Line
                   options={chartOptions}
@@ -183,21 +231,56 @@ const DashboardPage = () => {
             </div>
           ))}
         </div>
-      </section>
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-2">Real-Time Data</h2>
-        <p className="text-lg mb-4">Get real-time updates on your proposal data</p>
-        <div className="flex flex-wrap justify-center">
-          <div className="w-full md:w-1/2 xl:w-1/3 p-4">
-            <h3 className="text-lg font-bold mb-2">Real-Time Proposal Data</h3>
+        <div className="flex flex-col mb-4">
+          <h2 className="text-xl font-bold">Real-time Proposal Data</h2>
+          {chartType === 'line' && (
             <Line
               options={chartOptions}
               data={realTimeProposalData}
               datasetVisibility={datasetVisibility}
             />
+          )}
+          {chartType === 'bar' && (
+            <Bar
+              options={chartOptions}
+              data={realTimeProposalData}
+              datasetVisibility={datasetVisibility}
+            />
+          )}
+          {chartType === 'pie' && (
+            <Pie
+              options={chartOptions}
+              data={realTimeProposalData}
+              datasetVisibility={datasetVisibility}
+            />
+          )}
+        </div>
+        <div className="flex flex-col mb-4">
+          <h2 className="text-xl font-bold">Dataset Visibility</h2>
+          <div className="flex flex-col">
+            <div className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                checked={datasetVisibility['Proposals Created']}
+                onChange={handleDatasetVisibilityChange}
+                dataset="Proposals Created"
+                className="mr-2"
+              />
+              <span>Proposals Created</span>
+            </div>
+            <div className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                checked={datasetVisibility['Proposals Approved']}
+                onChange={handleDatasetVisibilityChange}
+                dataset="Proposals Approved"
+                className="mr-2"
+              />
+              <span>Proposals Approved</span>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
     </DashboardLayout>
   );
 };

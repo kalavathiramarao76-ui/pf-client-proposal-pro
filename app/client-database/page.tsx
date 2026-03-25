@@ -92,6 +92,34 @@ const ClientDatabasePage = () => {
     return newErrors;
   };
 
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
+    if (!phoneRegex.test(phone)) {
+      return 'Invalid phone number (use XXX-XXX-XXXX format)';
+    }
+    return '';
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    if (!emailRegex.test(email)) {
+      return 'Invalid email address';
+    }
+    return '';
+  };
+
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const phone = event.target.value;
+    setPhone(phone);
+    setErrors((prevErrors) => ({ ...prevErrors, phone: validatePhone(phone) }));
+  };
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const email = event.target.value;
+    setEmail(email);
+    setErrors((prevErrors) => ({ ...prevErrors, email: validateEmail(email) }));
+  };
+
   const handleAddClient = () => {
     try {
       if (validateForm()) {
@@ -100,110 +128,58 @@ const ClientDatabasePage = () => {
           email,
           phone,
         };
-
         setClients((prevClients) => [...prevClients, newClient]);
         setName('');
         setEmail('');
         setPhone('');
+        setErrors({
+          name: '',
+          email: '',
+          phone: '',
+        });
       }
     } catch (error) {
       setFormSubmissionError('Error adding client');
     }
   };
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value;
-    setSearchTerm(searchTerm);
-    setIsSearching(true);
-
-    if (searchTerm.length > 0) {
-      const filteredSuggestions = clients.filter((client) => {
-        const clientName = client.name.toLowerCase();
-        const clientEmail = client.email.toLowerCase();
-        const clientPhone = client.phone.toLowerCase();
-        const search = searchTerm.toLowerCase();
-
-        return (
-          clientName.includes(search) ||
-          clientEmail.includes(search) ||
-          clientPhone.includes(search)
-        );
-      });
-
-      setSuggestions(filteredSuggestions);
-    } else {
-      setSuggestions([]);
-      setIsSearching(false);
-    }
-  };
-
-  const handleSelectSuggestion = (client: Client) => {
-    setIsSearching(false);
-    setSuggestions([]);
-    setSearchTerm(client.name);
-  };
-
   return (
     <Layout>
-      <div>
-        <h1>Client Database</h1>
-        <div>
-          <Input
-            type="search"
-            value={searchTerm}
-            onChange={handleSearch}
-            placeholder="Search clients"
-          />
-          {isSearching && (
-            <ul>
-              {suggestions.map((client) => (
-                <li key={client.email}>
-                  <button onClick={() => handleSelectSuggestion(client)}>
-                    {client.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <Table
-          clients={clients}
-          pageNumber={pageNumber}
-          itemsPerPage={itemsPerPage}
-          sortOrder={sortOrder}
-          sortField={sortField}
-          onSort={(field, order) => {
-            setSortField(field);
-            setSortOrder(order);
-          }}
-          onPageChange={(pageNumber) => setPageNumber(pageNumber)}
-          onItemsPerPageChange={(itemsPerPage) => setItemsPerPage(itemsPerPage)}
-        />
-        <Button onClick={handleAddClient}>Add Client</Button>
-        <form>
-          <Input
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Name"
-          />
-          <Input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Email"
-          />
-          <Input
-            type="text"
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            placeholder="Phone"
-          />
-          {errors.name && <div>{errors.name}</div>}
-          {errors.email && <div>{errors.email}</div>}
-          {errors.phone && <div>{errors.phone}</div>}
-        </form>
-      </div>
+      <Table
+        clients={clients}
+        searchTerm={searchTerm}
+        pageNumber={pageNumber}
+        itemsPerPage={itemsPerPage}
+        sortOrder={sortOrder}
+        sortField={sortField}
+        onSearchTermChange={(term) => setSearchTerm(term)}
+        onPageNumberChange={(page) => setPageNumber(page)}
+        onItemsPerPageChange={(items) => setItemsPerPage(items)}
+        onSortOrderChange={(order) => setSortOrder(order)}
+        onSortFieldChange={(field) => setSortField(field)}
+      />
+      <Button onClick={handleAddClient}>Add Client</Button>
+      <Input
+        type="text"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        placeholder="Name"
+        error={errors.name}
+      />
+      <Input
+        type="email"
+        value={email}
+        onChange={handleEmailChange}
+        placeholder="Email"
+        error={errors.email}
+      />
+      <Input
+        type="tel"
+        value={phone}
+        onChange={handlePhoneChange}
+        placeholder="Phone (XXX-XXX-XXXX)"
+        error={errors.phone}
+      />
     </Layout>
   );
 };

@@ -44,17 +44,15 @@ const FAQPage = () => {
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
         <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling, proposal builder, proposal generator" />
-        <meta name="robots" content="index, follow" />
-        <meta name="author" content="Proposal Studio" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
         <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
+        <meta property="og:site_name" content="Proposal Studio" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://www.proposalstudio.com/images/og-image.jpg" />
-        <meta property="twitter:card" content="summary" />
-        <meta property="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta property="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
-        <meta property="twitter:image" content="https://www.proposalstudio.com/images/twitter-image.jpg" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
+        <meta name="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
+        <meta name="twitter:site" content="@ProposalStudio" />
       </Head>
       {faqs.map((faq, index) => (
         <div key={index}>
