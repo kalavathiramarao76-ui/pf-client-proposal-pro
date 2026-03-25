@@ -148,117 +148,79 @@ const DashboardPage = () => {
       },
     },
   ]);
-  const [filterOptions, setFilterOptions] = useState({
-    dateRange: 'all',
-    proposalStatus: 'all',
-  });
 
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilterOptions((prevFilterOptions) => ({
-      ...prevFilterOptions,
-      [name]: value,
-    }));
-  };
-
-  const handleDatasetVisibilityChange = (datasetLabel, visibility) => {
-    setDatasetVisibility((prevDatasetVisibility) => ({
-      ...prevDatasetVisibility,
-      [datasetLabel]: visibility,
-    }));
-  };
-
-  const filteredProposalData = () => {
-    const filteredData = { ...proposalData };
-    if (filterOptions.dateRange !== 'all') {
-      const startDate = new Date(filterOptions.dateRange.split(',')[0]);
-      const endDate = new Date(filterOptions.dateRange.split(',')[1]);
-      filteredData.labels = filteredData.labels.filter((label, index) => {
-        const date = new Date(label);
-        return date >= startDate && date <= endDate;
-      });
-      filteredData.datasets.forEach((dataset) => {
-        dataset.data = dataset.data.filter((data, index) => {
-          const date = new Date(filteredData.labels[index]);
-          return date >= startDate && date <= endDate;
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const data = await getRealTimeData();
+      if (data) {
+        setRealTimeProposalData({
+          labels: data.labels,
+          datasets: [
+            {
+              label: 'Proposals Created',
+              data: data.proposalsCreated,
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.1,
+            },
+            {
+              label: 'Proposals Approved',
+              data: data.proposalsApproved,
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.1,
+            },
+          ],
         });
-      });
-    }
-    if (filterOptions.proposalStatus !== 'all') {
-      filteredData.datasets = filteredData.datasets.filter((dataset) => {
-        return dataset.label === filterOptions.proposalStatus;
-      });
-    }
-    return filteredData;
-  };
-
-  const drillDownData = (datasetLabel, index) => {
-    const drillDownData = {
-      labels: [],
-      datasets: [
-        {
-          label: datasetLabel,
-          data: [],
-          borderColor: 'rgb(75, 192, 192)',
-          tension: 0.1,
-        },
-      ],
-    };
-    const dataset = proposalData.datasets.find((dataset) => dataset.label === datasetLabel);
-    drillDownData.labels = proposalData.labels.map((label) => label + ' ' + datasetLabel);
-    drillDownData.datasets[0].data = dataset.data.map((data, index) => data * (index + 1));
-    return drillDownData;
-  };
+      }
+    }, cacheDuration);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <DashboardLayout>
-      <div className="filters">
-        <label>Date Range:</label>
-        <select name="dateRange" value={filterOptions.dateRange} onChange={handleFilterChange}>
-          <option value="all">All</option>
-          <option value="2022-01-01,2022-01-31">January 2022</option>
-          <option value="2022-02-01,2022-02-28">February 2022</option>
-        </select>
-        <label>Proposal Status:</label>
-        <select name="proposalStatus" value={filterOptions.proposalStatus} onChange={handleFilterChange}>
-          <option value="all">All</option>
-          <option value="Proposals Created">Proposals Created</option>
-          <option value="Proposals Approved">Proposals Approved</option>
-        </select>
-      </div>
-      <div className="charts">
-        {widgets.map((widget) => (
-          <div key={widget.id}>
-            <h2>{widget.title}</h2>
-            {widget.type === 'line' && (
-              <Line
-                data={filteredProposalData()}
-                options={chartOptions}
-                datasetVisibility={datasetVisibility}
-                onDatasetVisibilityChange={handleDatasetVisibilityChange}
-              />
-            )}
-            {widget.type === 'bar' && (
-              <Bar
-                data={filteredProposalData()}
-                options={chartOptions}
-                datasetVisibility={datasetVisibility}
-                onDatasetVisibilityChange={handleDatasetVisibilityChange}
-              />
-            )}
-            {widget.type === 'pie' && (
-              <Pie
-                data={widget.data}
-                options={chartOptions}
-                datasetVisibility={datasetVisibility}
-                onDatasetVisibilityChange={handleDatasetVisibilityChange}
-              />
-            )}
-            <button onClick={() => console.log(drillDownData('Proposals Created', 0))}>
-              Drill Down
-            </button>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Proposal Studio Dashboard</h1>
           </div>
-        ))}
+        </div>
+        <div className="row">
+          {widgets.map((widget) => (
+            <div key={widget.id} className="col-md-4">
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title">{widget.title}</h5>
+                  {widget.type === 'line' && (
+                    <Line
+                      options={chartOptions}
+                      data={widget.data}
+                    />
+                  )}
+                  {widget.type === 'bar' && (
+                    <Bar
+                      options={chartOptions}
+                      data={widget.data}
+                    />
+                  )}
+                  {widget.type === 'pie' && (
+                    <Pie
+                      options={chartOptions}
+                      data={widget.data}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            <h2>Real-time Proposal Data</h2>
+            <Line
+              options={chartOptions}
+              data={realTimeProposalData}
+            />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
