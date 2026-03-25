@@ -148,60 +148,117 @@ const DashboardPage = () => {
       },
     },
   ]);
+  const [filterOptions, setFilterOptions] = useState({
+    dateRange: 'all',
+    proposalStatus: 'all',
+  });
+
+  const handleFilterChange = (event) => {
+    const { name, value } = event.target;
+    setFilterOptions((prevFilterOptions) => ({
+      ...prevFilterOptions,
+      [name]: value,
+    }));
+  };
+
+  const handleDatasetVisibilityChange = (datasetLabel, visibility) => {
+    setDatasetVisibility((prevDatasetVisibility) => ({
+      ...prevDatasetVisibility,
+      [datasetLabel]: visibility,
+    }));
+  };
+
+  const filteredProposalData = () => {
+    const filteredData = { ...proposalData };
+    if (filterOptions.dateRange !== 'all') {
+      const startDate = new Date(filterOptions.dateRange.split(',')[0]);
+      const endDate = new Date(filterOptions.dateRange.split(',')[1]);
+      filteredData.labels = filteredData.labels.filter((label, index) => {
+        const date = new Date(label);
+        return date >= startDate && date <= endDate;
+      });
+      filteredData.datasets.forEach((dataset) => {
+        dataset.data = dataset.data.filter((data, index) => {
+          const date = new Date(filteredData.labels[index]);
+          return date >= startDate && date <= endDate;
+        });
+      });
+    }
+    if (filterOptions.proposalStatus !== 'all') {
+      filteredData.datasets = filteredData.datasets.filter((dataset) => {
+        return dataset.label === filterOptions.proposalStatus;
+      });
+    }
+    return filteredData;
+  };
+
+  const drillDownData = (datasetLabel, index) => {
+    const drillDownData = {
+      labels: [],
+      datasets: [
+        {
+          label: datasetLabel,
+          data: [],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1,
+        },
+      ],
+    };
+    const dataset = proposalData.datasets.find((dataset) => dataset.label === datasetLabel);
+    drillDownData.labels = proposalData.labels.map((label) => label + ' ' + datasetLabel);
+    drillDownData.datasets[0].data = dataset.data.map((data, index) => data * (index + 1));
+    return drillDownData;
+  };
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
-        <div className="flex flex-wrap justify-center mb-4">
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
-            <div className="bg-white rounded shadow-md p-4">
-              <h2 className="text-lg font-bold mb-2">Total Proposals</h2>
-              <p className="text-3xl font-bold">100</p>
-            </div>
+      <div className="filters">
+        <label>Date Range:</label>
+        <select name="dateRange" value={filterOptions.dateRange} onChange={handleFilterChange}>
+          <option value="all">All</option>
+          <option value="2022-01-01,2022-01-31">January 2022</option>
+          <option value="2022-02-01,2022-02-28">February 2022</option>
+        </select>
+        <label>Proposal Status:</label>
+        <select name="proposalStatus" value={filterOptions.proposalStatus} onChange={handleFilterChange}>
+          <option value="all">All</option>
+          <option value="Proposals Created">Proposals Created</option>
+          <option value="Proposals Approved">Proposals Approved</option>
+        </select>
+      </div>
+      <div className="charts">
+        {widgets.map((widget) => (
+          <div key={widget.id}>
+            <h2>{widget.title}</h2>
+            {widget.type === 'line' && (
+              <Line
+                data={filteredProposalData()}
+                options={chartOptions}
+                datasetVisibility={datasetVisibility}
+                onDatasetVisibilityChange={handleDatasetVisibilityChange}
+              />
+            )}
+            {widget.type === 'bar' && (
+              <Bar
+                data={filteredProposalData()}
+                options={chartOptions}
+                datasetVisibility={datasetVisibility}
+                onDatasetVisibilityChange={handleDatasetVisibilityChange}
+              />
+            )}
+            {widget.type === 'pie' && (
+              <Pie
+                data={widget.data}
+                options={chartOptions}
+                datasetVisibility={datasetVisibility}
+                onDatasetVisibilityChange={handleDatasetVisibilityChange}
+              />
+            )}
+            <button onClick={() => console.log(drillDownData('Proposals Created', 0))}>
+              Drill Down
+            </button>
           </div>
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
-            <div className="bg-white rounded shadow-md p-4">
-              <h2 className="text-lg font-bold mb-2">Approved Proposals</h2>
-              <p className="text-3xl font-bold">50</p>
-            </div>
-          </div>
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
-            <div className="bg-white rounded shadow-md p-4">
-              <h2 className="text-lg font-bold mb-2">Rejected Proposals</h2>
-              <p className="text-3xl font-bold">20</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center mb-4">
-          {widgets.map((widget) => (
-            <div key={widget.id} className="w-full lg:w-1/2 xl:w-1/2 p-6">
-              <div className="bg-white rounded shadow-md p-4">
-                <h2 className="text-lg font-bold mb-2">{widget.title}</h2>
-                {widget.type === 'line' && (
-                  <Line
-                    options={chartOptions}
-                    data={widget.data}
-                    className="h-64"
-                  />
-                )}
-                {widget.type === 'bar' && (
-                  <Bar
-                    options={chartOptions}
-                    data={widget.data}
-                    className="h-64"
-                  />
-                )}
-                {widget.type === 'pie' && (
-                  <Pie
-                    options={chartOptions}
-                    data={widget.data}
-                    className="h-64"
-                  />
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
     </DashboardLayout>
   );

@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     question: 'How much does Proposal Studio cost?',
-    answer: 'Please visit our pricing page to learn more about our pricing plans and to find the one that best suits your needs. We offer a range of plans, including a free trial, so you can try our proposal software before committing to a paid plan.',
+    answer: 'Please visit our <Link href="/pricing">pricing page</Link> to learn more about our pricing plans and to find the one that best suits your needs. We offer a range of plans, including a free trial, so you can try our proposal software before committing to a paid plan.',
   },
 ];
 
@@ -43,29 +43,32 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals. Learn about our proposal management software, features, pricing, and more." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates, pricing plans, free trial, proposal builder, proposal generator, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling" />
-        <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals. Learn about our proposal management software, features, pricing, and more." />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal tracking, business proposals, proposal software, proposal templates" />
+        <meta property="og:title" content="Proposal Studio FAQ" />
+        <meta property="og:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta name="twitter:description" content="Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals. Learn about our proposal management software, features, pricing, and more." />
-        <meta name="twitter:url" content="https://www.proposalstudio.com/faq" />
+        <meta property="og:site_name" content="Proposal Studio" />
       </Head>
+      <h1>Proposal Studio FAQ</h1>
+      <p>Get answers to frequently asked questions about Proposal Studio, a SaaS tool for freelancers and creators to create, manage, and track proposals.</p>
       {faqs.map((faq, index) => (
         <div key={index}>
-          <button onClick={() => handleToggle(index)} className="faq-question">
-            <span>{faq.question}</span>
-            <AiOutlineArrowRight className={expanded === faq.question ? 'arrow-down' : 'arrow-right'} />
-          </button>
+          <h2>{faq.question}</h2>
+          <p>{expanded === faq.question ? faq.answer : faq.answer.substring(0, 150) + '...'}</p>
+          {expanded !== faq.question && (
+            <button onClick={() => handleToggle(index)}>Read more <AiOutlineArrowRight /></button>
+          )}
           {expanded === faq.question && (
-            <div className="faq-answer">
-              <p>{faq.answer}</p>
-            </div>
+            <button onClick={() => handleToggle(index)}>Read less <AiOutlineArrowRight /></button>
           )}
         </div>
       ))}
+      <h2>Related Pages</h2>
+      <ul>
+        <li><Link href="/features">Features</Link></li>
+        <li><Link href="/pricing">Pricing</Link></li>
+        <li><Link href="/about">About Us</Link></li>
+      </ul>
     </div>
   );
 };
