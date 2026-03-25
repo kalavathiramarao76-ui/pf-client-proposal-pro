@@ -126,11 +126,13 @@ const DashboardPage = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
-      },
-      title: {
         display: true,
-        text: 'Proposal Analytics',
+        position: 'bottom',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
       },
     },
   });
@@ -163,17 +165,39 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container">
-        <h1>Proposal Studio Dashboard</h1>
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : (
-          <div>
-            <Line options={chartOptions} data={realTimeProposalData} />
+      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
+        <div className="flex flex-wrap justify-center">
+          <div className="w-full lg:w-1/2 xl:w-1/2 p-6">
+            <h2 className="text-3xl text-gray-900">Proposal Studio Dashboard</h2>
+            <p className="text-lg text-gray-600">Real-time data visualization</p>
           </div>
-        )}
+          <div className="w-full lg:w-1/2 xl:w-1/2 p-6">
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error.message}</p>
+            ) : (
+              <Line
+                data={realTimeProposalData}
+                options={chartOptions}
+                className="chart"
+              />
+            )}
+          </div>
+        </div>
+        <div className="flex flex-wrap justify-center">
+          <div className="w-full lg:w-1/2 xl:w-1/2 p-6">
+            <h2 className="text-3xl text-gray-900">Proposals Created vs Approved</h2>
+            <p className="text-lg text-gray-600">Historical data</p>
+          </div>
+          <div className="w-full lg:w-1/2 xl:w-1/2 p-6">
+            <Line
+              data={proposalData}
+              options={chartOptions}
+              className="chart"
+            />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

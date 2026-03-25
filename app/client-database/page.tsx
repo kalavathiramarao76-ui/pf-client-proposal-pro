@@ -89,7 +89,6 @@ const ClientDatabasePage = () => {
     const newErrors = {
       name: '',
       email: '',
-      phone: '',
     };
 
     if (!client.name) {
@@ -102,123 +101,88 @@ const ClientDatabasePage = () => {
       newErrors.email = 'Invalid email address';
     }
 
-    if (!client.phone) {
-      newErrors.phone = 'Phone is required';
-    } else if (!/^\d{3}-\d{3}-\d{4}$/.test(client.phone)) {
-      newErrors.phone = 'Invalid phone number (use XXX-XXX-XXXX format)';
-    }
-
-    setErrors(newErrors);
-
     return Object.values(newErrors).every((error) => error === '');
   };
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+  const handleSearch = (searchTerm: string) => {
+    setIsSearching(true);
+    const filteredClients = clients.filter((client) => {
+      const clientName = client.name.toLowerCase();
+      const clientEmail = client.email.toLowerCase();
+      const search = searchTerm.toLowerCase();
+      return clientName.includes(search) || clientEmail.includes(search);
+    });
+    setSuggestions(filteredClients);
+    setIsSearching(false);
   };
 
-  const handleTagChange = (tags: string[]) => {
-    setFilter((prevFilter) => ({ ...prevFilter, tags }));
+  const handleSelectSuggestion = (selectedClient: Client) => {
+    setSearchTerm(selectedClient.name);
+    setSuggestions([]);
   };
-
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
-  };
-
-  const filteredClients = clients.filter((client) => {
-    const nameMatch = client.name.toLowerCase().includes(filter.name.toLowerCase());
-    const emailMatch = client.email.toLowerCase().includes(filter.email.toLowerCase());
-    const phoneMatch = client.phone.toLowerCase().includes(filter.phone.toLowerCase());
-    const categoryMatch = client.category === filter.category;
-    const tagMatch = filter.tags.every((tag) => client.tags.includes(tag));
-
-    return nameMatch && emailMatch && phoneMatch && categoryMatch && tagMatch;
-  });
 
   return (
     <Layout>
-      <h1>Client Database</h1>
-      <div>
-        <Input
-          type="text"
-          name="name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Name"
-        />
-        <Input
-          type="email"
-          name="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Email"
-        />
-        <Input
-          type="text"
-          name="phone"
-          value={phone}
-          onChange={(event) => setPhone(event.target.value)}
-          placeholder="Phone"
-        />
-        <Select
-          name="category"
-          value={filter.category}
-          onChange={handleCategoryChange}
-          options={clientCategories}
-        />
-        <TagInput
-          tags={filter.tags}
-          onChange={handleTagChange}
-          placeholder="Tags"
-        />
-        <Button onClick={() => console.log('Add client')}>Add Client</Button>
-      </div>
-      <div>
-        <Input
-          type="text"
-          name="name"
-          value={filter.name}
-          onChange={handleFilterChange}
-          placeholder="Filter by name"
-        />
-        <Input
-          type="email"
-          name="email"
-          value={filter.email}
-          onChange={handleFilterChange}
-          placeholder="Filter by email"
-        />
-        <Input
-          type="text"
-          name="phone"
-          value={filter.phone}
-          onChange={handleFilterChange}
-          placeholder="Filter by phone"
-        />
-        <Select
-          name="category"
-          value={filter.category}
-          onChange={handleCategoryChange}
-          options={clientCategories}
-        />
-        <TagInput
-          tags={filter.tags}
-          onChange={handleTagChange}
-          placeholder="Filter by tags"
-        />
+      <div className="flex justify-between mb-4">
+        <h1 className="text-2xl font-bold">Client Database</h1>
+        <div className="flex items-center">
+          <Input
+            type="search"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              handleSearch(e.target.value);
+            }}
+            placeholder="Search clients"
+            className="w-64"
+          />
+          {isSearching && (
+            <ul className="absolute bg-white shadow-md p-2 w-64">
+              {suggestions.map((suggestion) => (
+                <li
+                  key={suggestion.id}
+                  className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleSelectSuggestion(suggestion)}
+                >
+                  {suggestion.name} ({suggestion.email})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
       <Table
-        data={filteredClients}
+        data={clients}
         columns={[
-          { name: 'Name', selector: (row) => row.name },
-          { name: 'Email', selector: (row) => row.email },
-          { name: 'Phone', selector: (row) => row.phone },
-          { name: 'Category', selector: (row) => row.category },
-          { name: 'Tags', selector: (row) => row.tags.join(', ') },
+          { label: 'Name', accessor: 'name' },
+          { label: 'Email', accessor: 'email' },
+          { label: 'Phone', accessor: 'phone' },
         ]}
       />
+      <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
+      {isNewClient && (
+        <div className="mt-4">
+          <Input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+          />
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+          />
+          <Input
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone"
+          />
+          <Button onClick={() => validateForm()}>Save Client</Button>
+        </div>
+      )}
     </Layout>
   );
 };
