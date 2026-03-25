@@ -94,99 +94,105 @@ const ClientDatabasePage = () => {
     return Object.values(newErrors).every((error) => error === '');
   };
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value;
+  const handleSearch = (searchTerm: string) => {
+    setIsSearching(true);
     setSearchTerm(searchTerm);
-    if (searchTerm.length > 2) {
-      const filteredSuggestions = clients.filter((client) => {
-        return (
-          client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          client.phone.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      });
-      setSuggestions(filteredSuggestions);
-      setIsSearching(true);
-    } else {
-      setSuggestions([]);
-      setIsSearching(false);
-    }
+    const filteredClients = clients.filter((client) => {
+      const clientName = client.name.toLowerCase();
+      const clientEmail = client.email.toLowerCase();
+      const clientPhone = client.phone.toLowerCase();
+      const search = searchTerm.toLowerCase();
+      return (
+        clientName.includes(search) ||
+        clientEmail.includes(search) ||
+        clientPhone.includes(search)
+      );
+    });
+    setSuggestions(filteredClients);
   };
 
-  const handleSuggestionClick = (suggestion: Client) => {
-    setSearchTerm(suggestion.name);
-    setSuggestions([]);
-    setIsSearching(false);
+  const handlePageChange = (pageNumber: number) => {
+    setPageNumber(pageNumber);
   };
+
+  const filteredClients = clients.filter((client) => {
+    const clientName = client.name.toLowerCase();
+    const clientEmail = client.email.toLowerCase();
+    const clientPhone = client.phone.toLowerCase();
+    const search = searchTerm.toLowerCase();
+    return (
+      clientName.includes(search) ||
+      clientEmail.includes(search) ||
+      clientPhone.includes(search)
+    );
+  });
+
+  const paginatedClients = filteredClients.slice(
+    (pageNumber - 1) * itemsPerPage,
+    pageNumber * itemsPerPage
+  );
 
   return (
     <Layout>
-      <div>
-        <h1>Client Database</h1>
-        <div>
-          <Input
-            type="search"
-            value={searchTerm}
-            onChange={handleSearch}
-            placeholder="Search clients"
-          />
-          {isSearching && (
-            <ul>
-              {suggestions.map((suggestion) => (
-                <li key={suggestion.name} onClick={() => handleSuggestionClick(suggestion)}>
-                  {suggestion.name}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <Table
-          clients={clients}
-          pageNumber={pageNumber}
-          itemsPerPage={itemsPerPage}
-          sortOrder={sortOrder}
-          sortField={sortField}
-          onSortChange={(sortField, sortOrder) => {
-            setSortField(sortField);
-            setSortOrder(sortOrder);
-          }}
-          onPageChange={(pageNumber) => setPageNumber(pageNumber)}
-          onItemsPerPageChange={(itemsPerPage) => setItemsPerPage(itemsPerPage)}
-        />
+      <div className="flex justify-between mb-4">
+        <h1 className="text-2xl font-bold">Client Database</h1>
         <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
-        {isNewClient && (
-          <div>
-            <Input
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Name"
-            />
-            <Input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="Email"
-            />
-            <Input
-              type="text"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              placeholder="Phone"
-            />
-            <Select
-              value={filter.category}
-              onChange={(event) => setFilter({ ...filter, category: event.target.value })}
-              options={clientCategories}
-            />
-            <TagInput
-              tags={filter.tags}
-              onAddTag={(tag) => setFilter({ ...filter, tags: [...filter.tags, tag] })}
-              onRemoveTag={(tag) => setFilter({ ...filter, tags: filter.tags.filter((t) => t !== tag) })}
-            />
-            <Button onClick={validateForm}>Save Client</Button>
-          </div>
+      </div>
+      <div className="mb-4">
+        <Input
+          type="search"
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+          placeholder="Search clients"
+          className="w-full"
+        />
+        {isSearching && (
+          <ul className="absolute bg-white shadow-md p-2 w-full">
+            {suggestions.map((client) => (
+              <li key={client.name} className="py-2">
+                {client.name}
+              </li>
+            ))}
+          </ul>
         )}
+      </div>
+      <Table
+        data={paginatedClients}
+        columns={[
+          { label: 'Name', accessor: 'name' },
+          { label: 'Email', accessor: 'email' },
+          { label: 'Phone', accessor: 'phone' },
+        ]}
+      />
+      <div className="flex justify-between mt-4">
+        <div>
+          <Select
+            value={itemsPerPage}
+            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </Select>
+          <span className="ml-2">items per page</span>
+        </div>
+        <div>
+          <Button
+            onClick={() => handlePageChange(pageNumber - 1)}
+            disabled={pageNumber === 1}
+          >
+            Previous
+          </Button>
+          <span className="mx-2">
+            Page {pageNumber} of {Math.ceil(filteredClients.length / itemsPerPage)}
+          </span>
+          <Button
+            onClick={() => handlePageChange(pageNumber + 1)}
+            disabled={pageNumber === Math.ceil(filteredClients.length / itemsPerPage)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </Layout>
   );

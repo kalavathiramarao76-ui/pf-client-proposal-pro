@@ -126,57 +126,76 @@ const DashboardPage = () => {
       },
     ],
   });
-  const [chartOptions, setChartOptions] = useState({
-    responsive: true,
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: (tooltipItem) => {
-            return `${tooltipItem.dataset.label}: ${tooltipItem.formattedValue}`;
-          },
-        },
-        displayColors: false,
-      },
-      legend: {
-        display: true,
-        position: 'bottom',
-      },
-    },
-    animation: {
-      duration: 2000,
-      easing: 'easeInOutQuart',
-    },
-    interaction: {
-      intersect: false,
-    },
-  });
 
   useEffect(() => {
-    tippy('.chart-tooltip', {
-      content: 'Hover over the chart to see more information',
-      placement: 'bottom',
-      theme: 'light',
-    });
-  }, []);
+    if (realTimeData) {
+      const labels = realTimeData.map((data) => data.date);
+      const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
+      const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
+      setRealTimeProposalData({
+        labels,
+        datasets: [
+          {
+            label: 'Proposals Created',
+            data: proposalsCreated,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+          {
+            label: 'Proposals Approved',
+            data: proposalsApproved,
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1,
+          },
+        ],
+      });
+    }
+  }, [realTimeData]);
 
   return (
     <DashboardLayout>
-      <div className="chart-container">
-        <Line
-          data={proposalData}
-          options={chartOptions}
-          className="chart-tooltip"
-        />
-        <Bar
-          data={proposalData}
-          options={chartOptions}
-          className="chart-tooltip"
-        />
-        <Pie
-          data={proposalData}
-          options={chartOptions}
-          className="chart-tooltip"
-        />
+      <div className="container">
+        <h1>Proposal Studio Dashboard</h1>
+        <div className="row">
+          <div className="col-md-6">
+            <Line
+              data={proposalData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Proposals Created and Approved',
+                  },
+                },
+              }}
+            />
+          </div>
+          <div className="col-md-6">
+            {loading ? (
+              <p>Loading real-time data...</p>
+            ) : (
+              <Line
+                data={realTimeProposalData}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
+                    title: {
+                      display: true,
+                      text: 'Real-time Proposals Created and Approved',
+                    },
+                  },
+                }}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
