@@ -90,138 +90,72 @@ const ClientDatabasePage = () => {
       newErrors.category = 'Invalid category';
     }
 
-    if (tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
-    }
-
-    return newErrors;
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const newErrors = validateForm();
     setErrors(newErrors);
+  };
 
-    if (Object.values(newErrors).every((error) => error === '')) {
-      try {
-        // Submit the form data
-        if (isNewClient) {
-          const newClient: Client = {
-            name,
-            email,
-            phone,
-            category: filter.category,
-            tags,
-          };
-          setClients((prevClients) => [...prevClients, newClient]);
-        } else if (editedClient) {
-          const updatedClient: Client = {
-            ...editedClient,
-            name,
-            email,
-            phone,
-            category: filter.category,
-            tags,
-          };
-          setClients((prevClients) =>
-            prevClients.map((client) => (client === editedClient ? updatedClient : client))
-          );
-        }
-        setIsNewClient(false);
-        setEditedClient(null);
-        setName('');
-        setEmail('');
-        setPhone('');
-        setFilter({
-          name: '',
-          email: '',
-          phone: '',
-          category: '',
-          tags: [],
-        });
-        setTags([]);
-      } catch (error) {
-        setFormSubmissionError('Error submitting form');
-      }
+  const handleSearchTermChange = (term: string) => {
+    setSearchTerm(term);
+    if (term.length > 2) {
+      const matchingClients = clients.filter((client) => {
+        return (
+          client.name.toLowerCase().includes(term.toLowerCase()) ||
+          client.email.toLowerCase().includes(term.toLowerCase()) ||
+          client.phone.toLowerCase().includes(term.toLowerCase())
+        );
+      });
+      setSuggestions(matchingClients);
+      setIsSearching(true);
+    } else {
+      setSuggestions([]);
+      setIsSearching(false);
     }
   };
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-    setErrors((prevErrors) => ({ ...prevErrors, name: '' }));
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-    setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
-  };
-
-  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(event.target.value);
-    setErrors((prevErrors) => ({ ...prevErrors, phone: '' }));
-  };
-
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter((prevFilter) => ({ ...prevFilter, category: event.target.value }));
-    setErrors((prevErrors) => ({ ...prevErrors, category: '' }));
-  };
-
-  const handleTagsChange = (tags: string[]) => {
-    setTags(tags);
-    setErrors((prevErrors) => ({ ...prevErrors, tags: '' }));
+  const handleSuggestionSelect = (selectedClient: Client) => {
+    setSearchTerm(selectedClient.name);
+    setSuggestions([]);
+    setIsSearching(false);
   };
 
   return (
     <Layout>
-      <h1>Client Database</h1>
-      <form onSubmit={handleSubmit}>
+      <div className="flex justify-between mb-4">
+        <h1 className="text-2xl font-bold">Client Database</h1>
+        <Button onClick={() => router.push('/clients/create')}>Create New Client</Button>
+      </div>
+      <div className="mb-4">
         <Input
-          type="text"
-          value={name}
-          onChange={handleNameChange}
-          placeholder="Name"
-          error={errors.name}
+          type="search"
+          value={searchTerm}
+          onChange={(e) => handleSearchTermChange(e.target.value)}
+          placeholder="Search clients..."
+          className="w-full"
         />
-        <Input
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          placeholder="Email"
-          error={errors.email}
-        />
-        <Input
-          type="text"
-          value={phone}
-          onChange={handlePhoneChange}
-          placeholder="Phone"
-          error={errors.phone}
-        />
-        <Select
-          value={filter.category}
-          onChange={handleCategoryChange}
-          options={clientCategories}
-          error={errors.category}
-        />
-        <TagInput
-          tags={tags}
-          onChange={handleTagsChange}
-          error={errors.tags}
-        />
-        <Button type="submit">Submit</Button>
-        {formSubmissionError && <p style={{ color: 'red' }}>{formSubmissionError}</p>}
-      </form>
+        {isSearching && (
+          <ul className="absolute bg-white border shadow-md w-full mt-2">
+            {suggestions.map((suggestion) => (
+              <li
+                key={suggestion.id}
+                className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleSuggestionSelect(suggestion)}
+              >
+                {suggestion.name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       <Table
-        clients={clients}
-        searchTerm={searchTerm}
+        data={clients}
+        columns={[
+          { label: 'Name', accessor: 'name' },
+          { label: 'Email', accessor: 'email' },
+          { label: 'Phone', accessor: 'phone' },
+        ]}
         pageNumber={pageNumber}
         itemsPerPage={itemsPerPage}
-        sortOrder={sortOrder}
-        sortField={sortField}
-        onSearchTermChange={(term) => setSearchTerm(term)}
-        onPageNumberChange={(page) => setPageNumber(page)}
+        onPageChange={(page) => setPageNumber(page)}
         onItemsPerPageChange={(items) => setItemsPerPage(items)}
-        onSortOrderChange={(order) => setSortOrder(order)}
-        onSortFieldChange={(field) => setSortField(field)}
       />
     </Layout>
   );

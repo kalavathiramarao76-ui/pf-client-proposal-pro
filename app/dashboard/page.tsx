@@ -129,9 +129,9 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (realTimeData) {
-      const labels = Object.keys(realTimeData);
-      const proposalsCreated = Object.values(realTimeData).map((data) => data.proposalsCreated);
-      const proposalsApproved = Object.values(realTimeData).map((data) => data.proposalsApproved);
+      const labels = realTimeData.map((data) => data.date);
+      const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
+      const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
       setRealTimeProposalData({
         labels,
         datasets: [
@@ -152,27 +152,79 @@ const DashboardPage = () => {
     }
   }, [realTimeData]);
 
+  useEffect(() => {
+    tippy('.tooltip', {
+      content: 'This is a tooltip',
+      placement: 'right',
+      theme: 'light',
+    });
+  }, []);
+
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
-        <div className="flex flex-wrap justify-center">
-          <div className="w-full lg:w-8/12 xl:w-9/12 p-6">
-            <h1 className="text-3xl text-gray-700">Proposal Studio Dashboard</h1>
-            <p className="text-lg text-gray-600">Welcome to the Proposal Studio dashboard.</p>
-            <div className="mt-6">
-              <Line
-                data={realTimeProposalData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: true,
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white p-4 rounded shadow">
+            <h2 className="text-2xl font-bold mb-2">Proposals Created</h2>
+            <Line
+              data={proposalData}
+              options={{
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      label: (context) => {
+                        const label = context.dataset.label || '';
+                        const value = context.formattedValue;
+                        return `${label}: ${value}`;
+                      },
                     },
                   },
-                }}
-              />
-            </div>
+                },
+              }}
+            />
+            <div className="tooltip">Hover over the chart for more information</div>
           </div>
+          <div className="bg-white p-4 rounded shadow">
+            <h2 className="text-2xl font-bold mb-2">Proposals Approved</h2>
+            <Bar
+              data={proposalData}
+              options={{
+                plugins: {
+                  tooltip: {
+                    callbacks: {
+                      label: (context) => {
+                        const label = context.dataset.label || '';
+                        const value = context.formattedValue;
+                        return `${label}: ${value}`;
+                      },
+                    },
+                  },
+                },
+              }}
+            />
+            <div className="tooltip">Hover over the chart for more information</div>
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded shadow mt-4">
+          <h2 className="text-2xl font-bold mb-2">Real-time Proposal Data</h2>
+          <Line
+            data={realTimeProposalData}
+            options={{
+              plugins: {
+                tooltip: {
+                  callbacks: {
+                    label: (context) => {
+                      const label = context.dataset.label || '';
+                      const value = context.formattedValue;
+                      return `${label}: ${value}`;
+                    },
+                  },
+                },
+              },
+            }}
+          />
+          <div className="tooltip">Hover over the chart for more information</div>
         </div>
       </div>
     </DashboardLayout>
