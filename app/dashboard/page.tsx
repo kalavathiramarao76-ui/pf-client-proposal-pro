@@ -82,12 +82,22 @@ const useRealTimeData = () => {
     };
     fetchAndCacheData();
 
+    const intervalId = setInterval(async () => {
+      try {
+        const data = await getRealTimeData();
+        setRealTimeData(data);
+      } catch (error) {
+        setError(error);
+      }
+    }, cacheDuration);
+
     socket.on('proposal-analytics', (data) => {
       setRealTimeData(data);
     });
 
     return () => {
       socket.off('proposal-analytics');
+      clearInterval(intervalId);
     };
   }, []);
 
@@ -132,14 +142,41 @@ const DashboardPage = () => {
       },
     ],
   });
-  const [layout, setLayout] = useState(null);
+
+  useEffect(() => {
+    if (realTimeData) {
+      const labels = Object.keys(realTimeData);
+      const proposalsCreated = Object.values(realTimeData).map((data) => data.proposalsCreated);
+      const proposalsApproved = Object.values(realTimeData).map((data) => data.proposalsApproved);
+
+      setRealTimeProposalData({
+        labels,
+        datasets: [
+          {
+            label: 'Proposals Created',
+            data: proposalsCreated,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+          {
+            label: 'Proposals Approved',
+            data: proposalsApproved,
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1,
+          },
+        ],
+      });
+    }
+  }, [realTimeData]);
 
   return (
     <DashboardLayout>
-      <div>
+      <div className="container">
         <h1>Proposal Studio Dashboard</h1>
         {loading ? (
           <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
         ) : (
           <div>
             <Line data={realTimeProposalData} />

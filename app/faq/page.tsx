@@ -8,22 +8,32 @@ const faqs = [
   {
     question: 'What is Proposal Studio?',
     answer: 'Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease. Our proposal management software is designed to streamline the proposal process, making it easier for businesses to win new clients and grow their revenue.',
+    metaDescription: 'Learn about Proposal Studio, a SaaS tool for freelancers and creators to create and manage business proposals.',
+    metaKeywords: 'Proposal Studio, SaaS tool, proposal management, freelancers, creators',
   },
   {
     question: 'What features does Proposal Studio offer?',
     answer: 'Proposal Studio offers a range of features, including customizable proposal templates, a client database, proposal analytics and tracking, integration with popular payment gateways, collaboration tools for teams, and branding and white-labeling options. Our proposal builder and generator tools make it easy to create professional-looking proposals in minutes.',
+    metaDescription: 'Discover the features of Proposal Studio, including customizable proposal templates and proposal analytics.',
+    metaKeywords: 'Proposal Studio features, proposal templates, proposal analytics, payment gateways, collaboration tools',
   },
   {
     question: 'How do I get started with Proposal Studio?',
     answer: 'To get started with Proposal Studio, simply sign up for an account and explore our features and templates. You can also contact our support team if you have any questions or need assistance. We offer a free trial, so you can try our proposal software before committing to a paid plan.',
+    metaDescription: 'Get started with Proposal Studio by signing up for an account and exploring our features and templates.',
+    metaKeywords: 'Proposal Studio, getting started, free trial, proposal software',
   },
   {
     question: 'Is Proposal Studio suitable for my business?',
     answer: 'Proposal Studio is designed for freelancers and creators who want to streamline their proposal process and increase their chances of winning new clients. If you fit this description, then Proposal Studio is likely a good fit for your business. Our proposal management software is scalable, so it can grow with your business, and we offer a range of pricing plans to suit different needs and budgets.',
+    metaDescription: 'Determine if Proposal Studio is suitable for your business by learning about our target audience and pricing plans.',
+    metaKeywords: 'Proposal Studio, business suitability, freelancers, creators, pricing plans',
   },
   {
     question: 'How much does Proposal Studio cost?',
     answer: 'Please visit our <Link href="/pricing">pricing page</Link> to learn more about our pricing plans and to find the one that best suits your needs. We offer a range of plans, including a free trial, so you can try our proposal software before committing to a paid plan.',
+    metaDescription: 'Learn about the pricing plans of Proposal Studio, including our free trial and paid plans.',
+    metaKeywords: 'Proposal Studio pricing, pricing plans, free trial, paid plans',
   },
 ];
 
@@ -43,75 +53,27 @@ const FAQPage = () => {
       <Head>
         <title>Proposal Studio FAQ - Frequently Asked Questions</title>
         <meta name="description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
-        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals, proposal templates, client database, proposal analytics, payment gateways, collaboration tools, branding, white-labeling" />
+        <meta name="keywords" content="Proposal Studio, FAQ, SaaS tool, freelancers, creators, proposal management, proposal software, business proposals" />
         <meta property="og:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
+        <meta property="og:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
         <meta property="og:url" content="https://www.proposalstudio.com/faq" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="Proposal Studio FAQ - Frequently Asked Questions" />
-        <meta name="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease. Learn about our proposal management software, features, pricing, and more." />
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "${faqs[0].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[0].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[1].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[1].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[2].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[2].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[3].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[3].answer}"
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "${faqs[4].question}",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "${faqs[4].answer}"
-                  }
-                }
-              ]
-            }
-          `}
-        </script>
+        <meta name="twitter:description" content="Discover the answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool designed for freelancers and creators to create, manage, and track business proposals with ease." />
       </Head>
       {faqs.map((faq, index) => (
         <div key={index}>
-          <button onClick={() => handleToggle(index)} className="faq-question">
-            <AiOutlineArrowRight />
-            {faq.question}
+          <Head>
+            <meta name="description" content={faq.metaDescription} />
+            <meta name="keywords" content={faq.metaKeywords} />
+          </Head>
+          <h2>{faq.question}</h2>
+          <button onClick={() => handleToggle(index)}>
+            {expanded === faq.question ? 'Hide' : 'Show'} <AiOutlineArrowRight />
           </button>
           {expanded === faq.question && (
-            <div className="faq-answer">
-              {faq.answer}
-            </div>
+            <p>{faq.answer}</p>
           )}
         </div>
       ))}

@@ -89,173 +89,113 @@ const ClientDatabasePage = () => {
     if (!phone) {
       newErrors.phone = 'Phone is required';
     } else if (!/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
-      newErrors.phone = 'Invalid phone number (use XXX-XXX-XXXX format)';
+      newErrors.phone = 'Invalid phone number. Please use the format XXX-XXX-XXXX';
     }
 
-    if (!filter.category) {
-      newErrors.category = 'Category is required';
-    } else if (!clientCategories.find((category) => category.value === filter.category)) {
-      newErrors.category = 'Invalid category';
+    if (Object.values(newErrors).some(error => error !== '')) {
+      setErrors(newErrors);
+      return false;
     }
 
-    setErrors(newErrors);
-    return Object.values(newErrors).every((error) => error === '');
+    return true;
   };
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-    const newClients = [...clients];
-    const [reorderedItem] = newClients.splice(result.source.index, 1);
-    newClients.splice(result.destination.index, 0, reorderedItem);
-    setClients(newClients);
-  };
-
-  const handleInlineEdit = (client: Client, field: string, value: string) => {
-    const newClients = [...clients];
-    const index = newClients.findIndex((c) => c === client);
-    if (index !== -1) {
-      newClients[index][field] = value;
-      setClients(newClients);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (validateForm()) {
+      // Form submission logic here
+    } else {
+      setFormSubmissionError('Please fix the errors in the form');
     }
   };
 
-  const handleColumnVisibilityToggle = (column: string) => {
-    setColumnVisibility((prevColumnVisibility) => ({
-      ...prevColumnVisibility,
-      [column]: !prevColumnVisibility[column],
-    }));
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    switch (name) {
+      case 'category':
+        setFilter(prevFilter => ({ ...prevFilter, category: value }));
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleTagInput = (tags: string[]) => {
+    setFilter(prevFilter => ({ ...prevFilter, tags }));
   };
 
   return (
     <Layout>
-      <div className="flex flex-col">
-        <div className="flex justify-between mb-4">
-          <h1 className="text-2xl font-bold">Client Database</h1>
-          <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
-        </div>
-        <div className="flex flex-col mb-4">
-          <Input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search clients"
-          />
-          <Select
-            value={filter.category}
-            onChange={(e) => setFilter((prevFilter) => ({ ...prevFilter, category: e.target.value }))}
-            options={clientCategories}
-          />
-          <TagInput
-            value={filter.tags}
-            onChange={(tags) => setFilter((prevFilter) => ({ ...prevFilter, tags }))}
-          />
-        </div>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="clients">
-            {(provided) => (
-              <Table
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                columns={[
-                  {
-                    Header: 'Name',
-                    accessor: 'name',
-                    visible: columnVisibility.name,
-                  },
-                  {
-                    Header: 'Email',
-                    accessor: 'email',
-                    visible: columnVisibility.email,
-                  },
-                  {
-                    Header: 'Phone',
-                    accessor: 'phone',
-                    visible: columnVisibility.phone,
-                  },
-                  {
-                    Header: 'Category',
-                    accessor: 'category',
-                    visible: columnVisibility.category,
-                  },
-                  {
-                    Header: 'Tags',
-                    accessor: 'tags',
-                    visible: columnVisibility.tags,
-                  },
-                ]}
-                data={clients}
-                onInlineEdit={handleInlineEdit}
-              >
-                {clients.map((client, index) => (
-                  <Draggable key={client.name} draggableId={client.name} index={index}>
-                    {(provided) => (
-                      <tr
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        ref={provided.innerRef}
-                      >
-                        <td>
-                          <Input
-                            type="text"
-                            value={client.name}
-                            onChange={(e) => handleInlineEdit(client, 'name', e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <Input
-                            type="email"
-                            value={client.email}
-                            onChange={(e) => handleInlineEdit(client, 'email', e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <Input
-                            type="text"
-                            value={client.phone}
-                            onChange={(e) => handleInlineEdit(client, 'phone', e.target.value)}
-                          />
-                        </td>
-                        <td>
-                          <Select
-                            value={client.category}
-                            onChange={(e) => handleInlineEdit(client, 'category', e.target.value)}
-                            options={clientCategories}
-                          />
-                        </td>
-                        <td>
-                          <TagInput
-                            value={client.tags}
-                            onChange={(tags) => handleInlineEdit(client, 'tags', tags)}
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </Draggable>
-                ))}
-              </Table>
-            )}
-          </Droppable>
-        </DragDropContext>
-        <div className="flex justify-between mt-4">
-          <div className="flex">
-            {Object.keys(columnVisibility).map((column) => (
-              <Button
-                key={column}
-                onClick={() => handleColumnVisibilityToggle(column)}
-                className={columnVisibility[column] ? 'bg-blue-500 hover:bg-blue-700' : 'bg-gray-300 hover:bg-gray-500'}
-              >
-                {column.charAt(0).toUpperCase() + column.slice(1)}
-              </Button>
-            ))}
-          </div>
-          <div className="flex">
-            <Button onClick={() => setPageNumber(pageNumber - 1)} disabled={pageNumber === 1}>
-              Previous
-            </Button>
-            <Button onClick={() => setPageNumber(pageNumber + 1)}>Next</Button>
-          </div>
-        </div>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={handleInputChange}
+          placeholder="Name"
+          error={errors.name}
+        />
+        <Input
+          type="email"
+          name="email"
+          value={email}
+          onChange={handleInputChange}
+          placeholder="Email"
+          error={errors.email}
+        />
+        <Input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={handleInputChange}
+          placeholder="Phone"
+          error={errors.phone}
+        />
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={handleSelectChange}
+          options={categories}
+          error={errors.category}
+        />
+        <TagInput
+          name="tags"
+          value={filter.tags}
+          onChange={handleTagInput}
+          error={errors.tags}
+        />
+        {formSubmissionError && <div style={{ color: 'red' }}>{formSubmissionError}</div>}
+        <Button type="submit">Submit</Button>
+      </form>
+      <Table
+        data={clients}
+        columns={[
+          { name: 'Name', selector: 'name' },
+          { name: 'Email', selector: 'email' },
+          { name: 'Phone', selector: 'phone' },
+          { name: 'Category', selector: 'category' },
+          { name: 'Tags', selector: 'tags' },
+        ]}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={setColumnVisibility}
+      />
     </Layout>
   );
 };
