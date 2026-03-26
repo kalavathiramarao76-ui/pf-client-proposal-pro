@@ -139,26 +139,6 @@ const ClientForm = ({
     setErrors(newErrors);
   };
 
-  const handleCategoryChange = (category: string) => {
-    const newErrors = { ...errors };
-    if (!category) {
-      newErrors.category = errorMessages.categoryRequired;
-    } else {
-      newErrors.category = '';
-    }
-    setErrors(newErrors);
-  };
-
-  const handleTagsChange = (tags: string[]) => {
-    const newErrors = { ...errors };
-    if (tags.length === 0) {
-      newErrors.tags = errorMessages.tagsRequired;
-    } else {
-      newErrors.tags = '';
-    }
-    setErrors(newErrors);
-  };
-
   return (
     <Layout>
       <form onSubmit={handleSubmit}>
@@ -198,13 +178,10 @@ const ClientForm = ({
         <div>
           <label>Category:</label>
           <Select
+            name="category"
             value={filter.category}
-            onChange={(e) => {
-              setFilter({ ...filter, category: e.target.value });
-              handleCategoryChange(e.target.value);
-            }}
+            onChange={(e) => setFilter({ ...filter, category: e.target.value })}
           >
-            <option value="">Select a category</option>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -217,9 +194,13 @@ const ClientForm = ({
           <label>Tags:</label>
           <TagInput
             tags={tags}
-            onChange={(tags) => {
-              setTags(tags);
-              handleTagsChange(tags);
+            setTags={setTags}
+            onBlur={() => {
+              if (tags.length === 0) {
+                setErrors({ ...errors, tags: errorMessages.tagsRequired });
+              } else {
+                setErrors({ ...errors, tags: '' });
+              }
             }}
           />
           {errors.tags && <div style={{ color: 'red' }}>{errors.tags}</div>}
