@@ -36,7 +36,7 @@ const cache = {
   timestamp: null,
 };
 
-const cacheDuration = 5000; // 5 seconds
+const cacheDuration = 1000; // 1 second
 
 const socket = io();
 
@@ -130,37 +130,27 @@ const DashboardPage = () => {
   });
   const { realTimeData, loading, error } = useRealTimeData();
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <DashboardLayout>
-      <div className="container">
+      <div>
         <h1>Proposal Studio Dashboard</h1>
-        <Line
-          data={proposalData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              title: {
-                display: true,
-                text: 'Proposals Created and Approved',
-              },
-            },
-          }}
-        />
-        {realTimeData && (
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
           <div>
-            <h2>Real-time Data</h2>
-            <pre>{JSON.stringify(realTimeData, null, 2)}</pre>
+            <Line data={proposalData} />
+            {realTimeData && (
+              <div>
+                <h2>Real-time Data</h2>
+                <pre>{JSON.stringify(realTimeData, null, 2)}</pre>
+              </div>
+            )}
+            {error && (
+              <div>
+                <h2>Error</h2>
+                <pre>{JSON.stringify(error, null, 2)}</pre>
+              </div>
+            )}
           </div>
         )}
       </div>

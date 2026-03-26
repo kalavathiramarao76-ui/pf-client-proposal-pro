@@ -126,82 +126,84 @@ const ClientForm = ({
       default:
         break;
     }
+
     setErrors(newErrors);
   };
 
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryBlur = (event: React.FocusEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     const newErrors = { ...errors };
-    if (!event.target.value) {
-      newErrors.category = 'Category is required';
-    } else {
-      newErrors.category = '';
+
+    if (name === 'category') {
+      if (!value) {
+        newErrors.category = 'Category is required';
+      } else {
+        newErrors.category = '';
+      }
     }
+
     setErrors(newErrors);
-    setFilter({ ...filter, category: event.target.value });
   };
 
-  const handleTagsChange = (newTags: string[]) => {
+  const handleTagsBlur = () => {
     const newErrors = { ...errors };
-    if (newTags.length === 0) {
+
+    if (tags.length === 0) {
       newErrors.tags = 'At least one tag is required';
     } else {
       newErrors.tags = '';
     }
+
     setErrors(newErrors);
-    setTags(newTags);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        name="name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.name}
-        placeholder="Name"
-      />
-      <Input
-        type="email"
-        name="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.email}
-        placeholder="Email"
-      />
-      <Input
-        type="text"
-        name="phone"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.phone}
-        placeholder="Phone"
-      />
-      <Select
-        name="category"
-        value={filter.category}
-        onChange={handleCategoryChange}
-        error={errors.category}
-      >
-        <option value="">Select a category</option>
-        {categories.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </Select>
-      <TagInput
-        tags={tags}
-        onChange={handleTagsChange}
-        error={errors.tags}
-        placeholder="Tags"
-      />
-      <Button type="submit">Submit</Button>
-      {errors.form && <div style={{ color: 'red' }}>{errors.form}</div>}
-    </form>
+    <Layout>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          onBlur={handleBlur}
+          placeholder="Name"
+          error={errors.name}
+        />
+        <Input
+          type="email"
+          name="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          onBlur={handleBlur}
+          placeholder="Email"
+          error={errors.email}
+        />
+        <Input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          onBlur={handleBlur}
+          placeholder="Phone"
+          error={errors.phone}
+        />
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={(event) => setFilter({ ...filter, category: event.target.value })}
+          onBlur={handleCategoryBlur}
+          options={categories}
+          error={errors.category}
+        />
+        <TagInput
+          tags={tags}
+          setTags={setTags}
+          onBlur={handleTagsBlur}
+          error={errors.tags}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Layout>
   );
 };
 
