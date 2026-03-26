@@ -126,24 +126,26 @@ const DashboardPage = () => {
       },
     ],
   });
+  const [layout, setLayout] = useState({
+    chart1: { x: 0, y: 0, width: 400, height: 200 },
+    chart2: { x: 400, y: 0, width: 400, height: 200 },
+    chart3: { x: 0, y: 200, width: 400, height: 200 },
+  });
 
   useEffect(() => {
     if (realTimeData) {
-      const labels = realTimeData.map((data) => data.date);
-      const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
-      const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
       setRealTimeProposalData({
-        labels,
+        labels: realTimeData.labels,
         datasets: [
           {
             label: 'Proposals Created',
-            data: proposalsCreated,
+            data: realTimeData.proposalsCreated,
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.1,
           },
           {
             label: 'Proposals Approved',
-            data: proposalsApproved,
+            data: realTimeData.proposalsApproved,
             borderColor: 'rgb(255, 99, 132)',
             tension: 0.1,
           },
@@ -152,81 +154,122 @@ const DashboardPage = () => {
     }
   }, [realTimeData]);
 
-  useEffect(() => {
-    tippy('.tooltip', {
-      content: 'This is a tooltip',
-      placement: 'right',
-      theme: 'light',
-    });
-  }, []);
+  const handleLayoutChange = (chartId, newLayout) => {
+    setLayout((prevLayout) => ({ ...prevLayout, [chartId]: newLayout }));
+  };
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-bold mb-2">Proposals Created</h2>
-            <Line
-              data={proposalData}
-              options={{
-                plugins: {
-                  tooltip: {
-                    callbacks: {
-                      label: (context) => {
-                        const label = context.dataset.label || '';
-                        const value = context.formattedValue;
-                        return `${label}: ${value}`;
-                      },
-                    },
-                  },
-                },
-              }}
-            />
-            <div className="tooltip">Hover over the chart for more information</div>
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-bold mb-2">Proposals Approved</h2>
-            <Bar
-              data={proposalData}
-              options={{
-                plugins: {
-                  tooltip: {
-                    callbacks: {
-                      label: (context) => {
-                        const label = context.dataset.label || '';
-                        const value = context.formattedValue;
-                        return `${label}: ${value}`;
-                      },
-                    },
-                  },
-                },
-              }}
-            />
-            <div className="tooltip">Hover over the chart for more information</div>
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded shadow mt-4">
-          <h2 className="text-2xl font-bold mb-2">Real-time Proposal Data</h2>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: layout.chart1.x,
+            top: layout.chart1.y,
+            width: layout.chart1.width,
+            height: layout.chart1.height,
+            border: '1px solid black',
+            backgroundColor: 'white',
+          }}
+        >
           <Line
-            data={realTimeProposalData}
+            data={proposalData}
             options={{
+              responsive: true,
               plugins: {
-                tooltip: {
-                  callbacks: {
-                    label: (context) => {
-                      const label = context.dataset.label || '';
-                      const value = context.formattedValue;
-                      return `${label}: ${value}`;
-                    },
-                  },
+                legend: {
+                  position: 'top',
+                },
+                title: {
+                  display: true,
+                  text: 'Proposals Created and Approved',
                 },
               },
             }}
           />
-          <div className="tooltip">Hover over the chart for more information</div>
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            left: layout.chart2.x,
+            top: layout.chart2.y,
+            width: layout.chart2.width,
+            height: layout.chart2.height,
+            border: '1px solid black',
+            backgroundColor: 'white',
+          }}
+        >
+          <Bar
+            data={realTimeProposalData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                title: {
+                  display: true,
+                  text: 'Real-time Proposals Created and Approved',
+                },
+              },
+            }}
+          />
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            left: layout.chart3.x,
+            top: layout.chart3.y,
+            width: layout.chart3.width,
+            height: layout.chart3.height,
+            border: '1px solid black',
+            backgroundColor: 'white',
+          }}
+        >
+          <Pie
+            data={realTimeProposalData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                title: {
+                  display: true,
+                  text: 'Real-time Proposals Created and Approved (Pie Chart)',
+                },
+              },
+            }}
+          />
         </div>
       </div>
+      <button
+        onClick={() =>
+          handleLayoutChange('chart1', { x: 100, y: 100, width: 300, height: 150 })
+        }
+      >
+        Change Chart 1 Layout
+      </button>
+      <button
+        onClick={() =>
+          handleLayoutChange('chart2', { x: 500, y: 100, width: 300, height: 150 })
+        }
+      >
+        Change Chart 2 Layout
+      </button>
+      <button
+        onClick={() =>
+          handleLayoutChange('chart3', { x: 100, y: 300, width: 300, height: 150 })
+        }
+      >
+        Change Chart 3 Layout
+      </button>
     </DashboardLayout>
   );
 };
