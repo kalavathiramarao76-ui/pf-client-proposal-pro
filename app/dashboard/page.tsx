@@ -19,6 +19,7 @@ import { Line, Bar, Pie } from 'react-chartjs-2';
 import axios from 'axios';
 import { tippy } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
+import { io } from 'socket.io-client';
 
 ChartJS.register(
   CategoryScale,
@@ -36,6 +37,8 @@ const cache = {
 };
 
 const cacheDuration = 5000; // 5 seconds
+
+const socket = io();
 
 const fetchRealTimeData = async () => {
   try {
@@ -79,10 +82,13 @@ const useRealTimeData = () => {
     };
     fetchAndCacheData();
 
-    const intervalId = setInterval(() => {
-      fetchAndCacheData();
-    }, cacheDuration);
-    return () => clearInterval(intervalId);
+    socket.on('proposal-analytics', (data) => {
+      setRealTimeData(data);
+    });
+
+    return () => {
+      socket.off('proposal-analytics');
+    };
   }, []);
 
   return { realTimeData, loading, error };
@@ -126,150 +132,20 @@ const DashboardPage = () => {
       },
     ],
   });
-  const [layout, setLayout] = useState({
-    chart1: { x: 0, y: 0, width: 400, height: 200 },
-    chart2: { x: 400, y: 0, width: 400, height: 200 },
-    chart3: { x: 0, y: 200, width: 400, height: 200 },
-  });
-
-  useEffect(() => {
-    if (realTimeData) {
-      setRealTimeProposalData({
-        labels: realTimeData.labels,
-        datasets: [
-          {
-            label: 'Proposals Created',
-            data: realTimeData.proposalsCreated,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1,
-          },
-          {
-            label: 'Proposals Approved',
-            data: realTimeData.proposalsApproved,
-            borderColor: 'rgb(255, 99, 132)',
-            tension: 0.1,
-          },
-        ],
-      });
-    }
-  }, [realTimeData]);
-
-  const handleLayoutChange = (chartId, newLayout) => {
-    setLayout((prevLayout) => ({ ...prevLayout, [chartId]: newLayout }));
-  };
+  const [layout, setLayout] = useState(null);
 
   return (
     <DashboardLayout>
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            left: layout.chart1.x,
-            top: layout.chart1.y,
-            width: layout.chart1.width,
-            height: layout.chart1.height,
-            border: '1px solid black',
-            backgroundColor: 'white',
-          }}
-        >
-          <Line
-            data={proposalData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                title: {
-                  display: true,
-                  text: 'Proposals Created and Approved',
-                },
-              },
-            }}
-          />
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            left: layout.chart2.x,
-            top: layout.chart2.y,
-            width: layout.chart2.width,
-            height: layout.chart2.height,
-            border: '1px solid black',
-            backgroundColor: 'white',
-          }}
-        >
-          <Bar
-            data={realTimeProposalData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                title: {
-                  display: true,
-                  text: 'Real-time Proposals Created and Approved',
-                },
-              },
-            }}
-          />
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            left: layout.chart3.x,
-            top: layout.chart3.y,
-            width: layout.chart3.width,
-            height: layout.chart3.height,
-            border: '1px solid black',
-            backgroundColor: 'white',
-          }}
-        >
-          <Pie
-            data={realTimeProposalData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                title: {
-                  display: true,
-                  text: 'Real-time Proposals Created and Approved (Pie Chart)',
-                },
-              },
-            }}
-          />
-        </div>
+      <div>
+        <h1>Proposal Studio Dashboard</h1>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div>
+            <Line data={realTimeProposalData} />
+          </div>
+        )}
       </div>
-      <button
-        onClick={() =>
-          handleLayoutChange('chart1', { x: 100, y: 100, width: 300, height: 150 })
-        }
-      >
-        Change Chart 1 Layout
-      </button>
-      <button
-        onClick={() =>
-          handleLayoutChange('chart2', { x: 500, y: 100, width: 300, height: 150 })
-        }
-      >
-        Change Chart 2 Layout
-      </button>
-      <button
-        onClick={() =>
-          handleLayoutChange('chart3', { x: 100, y: 300, width: 300, height: 150 })
-        }
-      >
-        Change Chart 3 Layout
-      </button>
     </DashboardLayout>
   );
 };

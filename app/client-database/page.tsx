@@ -9,6 +9,7 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { TagInput } from '../components/TagInput';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const ClientDatabasePage = () => {
   const router = useRouter();
@@ -51,6 +52,13 @@ const ClientDatabasePage = () => {
     { value: 'prospect', label: 'Prospect' },
     { value: 'customer', label: 'Customer' },
   ]);
+  const [columnVisibility, setColumnVisibility] = useState({
+    name: true,
+    email: true,
+    phone: true,
+    category: true,
+    tags: true,
+  });
 
   useEffect(() => {
     const storedClients = localStorage.getItem('clients');
@@ -94,57 +102,160 @@ const ClientDatabasePage = () => {
     return Object.values(newErrors).every((error) => error === '');
   };
 
-  const handleSearch = (searchTerm: string) => {
-    setIsSearching(true);
-    const filteredSuggestions = clients.filter((client) => {
-      const clientName = client.name.toLowerCase();
-      const clientEmail = client.email.toLowerCase();
-      const clientPhone = client.phone.toLowerCase();
-      const search = searchTerm.toLowerCase();
-      return (
-        clientName.includes(search) ||
-        clientEmail.includes(search) ||
-        clientPhone.includes(search)
-      );
-    });
-    setSuggestions(filteredSuggestions);
-    setIsSearching(false);
+  const handleDragEnd = (result: any) => {
+    if (!result.destination) return;
+    const newClients = [...clients];
+    const [reorderedItem] = newClients.splice(result.source.index, 1);
+    newClients.splice(result.destination.index, 0, reorderedItem);
+    setClients(newClients);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = event.target.value;
-    setSearchTerm(searchTerm);
-    if (searchTerm.length > 2) {
-      handleSearch(searchTerm);
-    } else {
-      setSuggestions([]);
+  const handleInlineEdit = (client: Client, field: string, value: string) => {
+    const newClients = [...clients];
+    const index = newClients.findIndex((c) => c === client);
+    if (index !== -1) {
+      newClients[index][field] = value;
+      setClients(newClients);
     }
+  };
+
+  const handleColumnVisibilityToggle = (column: string) => {
+    setColumnVisibility((prevColumnVisibility) => ({
+      ...prevColumnVisibility,
+      [column]: !prevColumnVisibility[column],
+    }));
   };
 
   return (
     <Layout>
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold">Client Database</h1>
-        <div className="flex items-center">
+      <div className="flex flex-col">
+        <div className="flex justify-between mb-4">
+          <h1 className="text-2xl font-bold">Client Database</h1>
+          <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
+        </div>
+        <div className="flex flex-col mb-4">
           <Input
-            type="search"
+            type="text"
             value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search clients..."
-            className="w-64"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search clients"
           />
-          {isSearching ? (
-            <div className="ml-2">Searching...</div>
-          ) : (
-            <ul className="ml-2">
-              {suggestions.map((suggestion) => (
-                <li key={suggestion.email}>{suggestion.name}</li>
-              ))}
-            </ul>
-          )}
+          <Select
+            value={filter.category}
+            onChange={(e) => setFilter((prevFilter) => ({ ...prevFilter, category: e.target.value }))}
+            options={clientCategories}
+          />
+          <TagInput
+            value={filter.tags}
+            onChange={(tags) => setFilter((prevFilter) => ({ ...prevFilter, tags }))}
+          />
+        </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="clients">
+            {(provided) => (
+              <Table
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                columns={[
+                  {
+                    Header: 'Name',
+                    accessor: 'name',
+                    visible: columnVisibility.name,
+                  },
+                  {
+                    Header: 'Email',
+                    accessor: 'email',
+                    visible: columnVisibility.email,
+                  },
+                  {
+                    Header: 'Phone',
+                    accessor: 'phone',
+                    visible: columnVisibility.phone,
+                  },
+                  {
+                    Header: 'Category',
+                    accessor: 'category',
+                    visible: columnVisibility.category,
+                  },
+                  {
+                    Header: 'Tags',
+                    accessor: 'tags',
+                    visible: columnVisibility.tags,
+                  },
+                ]}
+                data={clients}
+                onInlineEdit={handleInlineEdit}
+              >
+                {clients.map((client, index) => (
+                  <Draggable key={client.name} draggableId={client.name} index={index}>
+                    {(provided) => (
+                      <tr
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        ref={provided.innerRef}
+                      >
+                        <td>
+                          <Input
+                            type="text"
+                            value={client.name}
+                            onChange={(e) => handleInlineEdit(client, 'name', e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <Input
+                            type="email"
+                            value={client.email}
+                            onChange={(e) => handleInlineEdit(client, 'email', e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <Input
+                            type="text"
+                            value={client.phone}
+                            onChange={(e) => handleInlineEdit(client, 'phone', e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <Select
+                            value={client.category}
+                            onChange={(e) => handleInlineEdit(client, 'category', e.target.value)}
+                            options={clientCategories}
+                          />
+                        </td>
+                        <td>
+                          <TagInput
+                            value={client.tags}
+                            onChange={(tags) => handleInlineEdit(client, 'tags', tags)}
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </Draggable>
+                ))}
+              </Table>
+            )}
+          </Droppable>
+        </DragDropContext>
+        <div className="flex justify-between mt-4">
+          <div className="flex">
+            {Object.keys(columnVisibility).map((column) => (
+              <Button
+                key={column}
+                onClick={() => handleColumnVisibilityToggle(column)}
+                className={columnVisibility[column] ? 'bg-blue-500 hover:bg-blue-700' : 'bg-gray-300 hover:bg-gray-500'}
+              >
+                {column.charAt(0).toUpperCase() + column.slice(1)}
+              </Button>
+            ))}
+          </div>
+          <div className="flex">
+            <Button onClick={() => setPageNumber(pageNumber - 1)} disabled={pageNumber === 1}>
+              Previous
+            </Button>
+            <Button onClick={() => setPageNumber(pageNumber + 1)}>Next</Button>
+          </div>
         </div>
       </div>
-      {/* Rest of the code remains the same */}
     </Layout>
   );
 };
