@@ -85,21 +85,25 @@ const useRealTimeData = () => {
     const intervalId = setInterval(async () => {
       try {
         const data = await getRealTimeData();
-        setRealTimeData(data);
+        if (data !== realTimeData) {
+          setRealTimeData(data);
+        }
       } catch (error) {
         setError(error);
       }
     }, cacheDuration);
 
     socket.on('proposal-analytics', (data) => {
-      setRealTimeData(data);
+      if (data !== realTimeData) {
+        setRealTimeData(data);
+      }
     });
 
     return () => {
       socket.off('proposal-analytics');
       clearInterval(intervalId);
     };
-  }, []);
+  }, [realTimeData]);
 
   return { realTimeData, loading, error };
 };
@@ -145,49 +149,41 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (realTimeData) {
-      const updatedData = {
-        labels: realTimeData.labels,
-        datasets: realTimeData.datasets.map((dataset) => ({
-          ...dataset,
-          data: dataset.data.map((value) => value),
-        })),
-      };
-      setRealTimeProposalData(updatedData);
+      setRealTimeProposalData(realTimeData);
     }
   }, [realTimeData]);
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-bold mb-2">Proposals Created</h2>
-            <Line
-              data={realTimeProposalData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    display: true,
-                  },
-                },
-              }}
-            />
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <h1>Proposal Studio Dashboard</h1>
           </div>
-          <div className="bg-white p-4 rounded shadow">
-            <h2 className="text-2xl font-bold mb-2">Proposals Approved</h2>
-            <Bar
-              data={realTimeProposalData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    display: true,
+        </div>
+        <div className="row">
+          <div className="col-md-12">
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error.message}</p>
+            ) : (
+              <Line
+                data={realTimeProposalData}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                    },
+                    title: {
+                      display: true,
+                      text: 'Proposals Created and Approved',
+                    },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
