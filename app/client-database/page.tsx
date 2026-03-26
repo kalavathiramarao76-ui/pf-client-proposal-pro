@@ -11,6 +11,15 @@ import { Select } from '../components/Select';
 import { TagInput } from '../components/TagInput';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+const errorMessages = {
+  required: 'This field is required',
+  minLength: 'Must be at least 2 characters long',
+  invalidEmail: 'Invalid email address',
+  invalidPhone: 'Invalid phone number',
+  categoryRequired: 'Category is required',
+  tagsRequired: 'At least one tag is required',
+};
+
 const ClientForm = ({
   name,
   email,
@@ -39,29 +48,29 @@ const ClientForm = ({
     };
 
     if (!name) {
-      newErrors.name = 'Name is required';
+      newErrors.name = errorMessages.required;
     } else if (name.length < 2) {
-      newErrors.name = 'Name must be at least 2 characters long';
+      newErrors.name = errorMessages.minLength;
     }
 
     if (!email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = errorMessages.required;
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      newErrors.email = 'Invalid email address';
+      newErrors.email = errorMessages.invalidEmail;
     }
 
     if (!phone) {
-      newErrors.phone = 'Phone is required';
+      newErrors.phone = errorMessages.required;
     } else if (!/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
-      newErrors.phone = 'Invalid phone number';
+      newErrors.phone = errorMessages.invalidPhone;
     }
 
     if (!filter.category) {
-      newErrors.category = 'Category is required';
+      newErrors.category = errorMessages.categoryRequired;
     }
 
     if (tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
+      newErrors.tags = errorMessages.tagsRequired;
     }
 
     setErrors(newErrors);
@@ -98,60 +107,33 @@ const ClientForm = ({
     switch (name) {
       case 'name':
         if (!value) {
-          newErrors.name = 'Name is required';
+          newErrors.name = errorMessages.required;
         } else if (value.length < 2) {
-          newErrors.name = 'Name must be at least 2 characters long';
+          newErrors.name = errorMessages.minLength;
         } else {
           newErrors.name = '';
         }
         break;
       case 'email':
         if (!value) {
-          newErrors.email = 'Email is required';
+          newErrors.email = errorMessages.required;
         } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
-          newErrors.email = 'Invalid email address';
+          newErrors.email = errorMessages.invalidEmail;
         } else {
           newErrors.email = '';
         }
         break;
       case 'phone':
         if (!value) {
-          newErrors.phone = 'Phone is required';
+          newErrors.phone = errorMessages.required;
         } else if (!/^\d{3}-\d{3}-\d{4}$/.test(value)) {
-          newErrors.phone = 'Invalid phone number';
+          newErrors.phone = errorMessages.invalidPhone;
         } else {
           newErrors.phone = '';
         }
         break;
       default:
         break;
-    }
-
-    setErrors(newErrors);
-  };
-
-  const handleCategoryBlur = (event: React.FocusEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    const newErrors = { ...errors };
-
-    if (name === 'category') {
-      if (!value) {
-        newErrors.category = 'Category is required';
-      } else {
-        newErrors.category = '';
-      }
-    }
-
-    setErrors(newErrors);
-  };
-
-  const handleTagsBlur = () => {
-    const newErrors = { ...errors };
-
-    if (tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
-    } else {
-      newErrors.tags = '';
     }
 
     setErrors(newErrors);
@@ -191,14 +173,12 @@ const ClientForm = ({
           name="category"
           value={filter.category}
           onChange={(event) => setFilter({ ...filter, category: event.target.value })}
-          onBlur={handleCategoryBlur}
           options={categories}
           error={errors.category}
         />
         <TagInput
           tags={tags}
           setTags={setTags}
-          onBlur={handleTagsBlur}
           error={errors.tags}
         />
         <Button type="submit">Submit</Button>
