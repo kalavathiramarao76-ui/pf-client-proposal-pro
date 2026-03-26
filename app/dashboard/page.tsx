@@ -145,39 +145,51 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (realTimeData) {
-      setRealTimeProposalData({
+      const updatedData = {
         labels: realTimeData.labels,
-        datasets: realTimeData.datasets,
-      });
+        datasets: realTimeData.datasets.map((dataset) => ({
+          ...dataset,
+          data: dataset.data.map((value) => value),
+        })),
+      };
+      setRealTimeProposalData(updatedData);
     }
   }, [realTimeData]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <DashboardLayout>
-      <div>
-        <Line
-          data={realTimeProposalData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              title: {
-                display: true,
-                text: 'Proposal Analytics',
-              },
-            },
-          }}
-        />
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-4">Proposal Studio Dashboard</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white p-4 rounded shadow">
+            <h2 className="text-2xl font-bold mb-2">Proposals Created</h2>
+            <Line
+              data={realTimeProposalData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    display: true,
+                  },
+                },
+              }}
+            />
+          </div>
+          <div className="bg-white p-4 rounded shadow">
+            <h2 className="text-2xl font-bold mb-2">Proposals Approved</h2>
+            <Bar
+              data={realTimeProposalData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    display: true,
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

@@ -11,6 +11,150 @@ import { Select } from '../components/Select';
 import { TagInput } from '../components/TagInput';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+const ClientForm = ({
+  name,
+  email,
+  phone,
+  setName,
+  setEmail,
+  setPhone,
+  errors,
+  setErrors,
+  categories,
+  clientCategories,
+  setFilter,
+  filter,
+  tags,
+  setTags,
+  isNewClient,
+  editedClient,
+}) => {
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {
+      name: '',
+      email: '',
+      phone: '',
+      category: '',
+      tags: '',
+    };
+
+    if (!name) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+      newErrors.email = 'Invalid email address';
+    }
+
+    if (!phone) {
+      newErrors.phone = 'Phone is required';
+    } else if (!/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
+      newErrors.phone = 'Invalid phone number';
+    }
+
+    setErrors(newErrors);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    validateForm();
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Input
+        type="text"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        placeholder="Name"
+        error={errors.name}
+      />
+      <Input
+        type="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        placeholder="Email"
+        error={errors.email}
+      />
+      <Input
+        type="text"
+        value={phone}
+        onChange={(event) => setPhone(event.target.value)}
+        placeholder="Phone"
+        error={errors.phone}
+      />
+      <Select
+        options={categories}
+        value={filter.category}
+        onChange={(event) => setFilter({ ...filter, category: event.target.value })}
+      />
+      <TagInput
+        tags={tags}
+        setTags={setTags}
+        error={errors.tags}
+      />
+      <Button type="submit">Submit</Button>
+    </form>
+  );
+};
+
+const ClientTable = ({
+  clients,
+  setClients,
+  searchTerm,
+  pageNumber,
+  itemsPerPage,
+  sortOrder,
+  sortField,
+  columnVisibility,
+}) => {
+  const filteredClients = clients.filter((client) => {
+    return (
+      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.phone.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const sortedClients = filteredClients.sort((a, b) => {
+    if (sortOrder === 'asc') {
+      if (a[sortField] < b[sortField]) {
+        return -1;
+      }
+      if (a[sortField] > b[sortField]) {
+        return 1;
+      }
+      return 0;
+    } else {
+      if (a[sortField] < b[sortField]) {
+        return 1;
+      }
+      if (a[sortField] > b[sortField]) {
+        return -1;
+      }
+      return 0;
+    }
+  });
+
+  const paginatedClients = sortedClients.slice((pageNumber - 1) * itemsPerPage, pageNumber * itemsPerPage);
+
+  return (
+    <Table
+      columns={[
+        { name: 'Name', field: 'name', visible: columnVisibility.name },
+        { name: 'Email', field: 'email', visible: columnVisibility.email },
+        { name: 'Phone', field: 'phone', visible: columnVisibility.phone },
+        { name: 'Category', field: 'category', visible: columnVisibility.category },
+        { name: 'Tags', field: 'tags', visible: columnVisibility.tags },
+      ]}
+      data={paginatedClients}
+      onRowClick={(client) => console.log(client)}
+    />
+  );
+};
+
 const ClientDatabasePage = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -67,104 +211,34 @@ const ClientDatabasePage = () => {
     }
   }, []);
 
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {
-      name: '',
-      email: '',
-      phone: '',
-      category: '',
-      tags: '',
-    };
-
-    if (!name) {
-      newErrors.name = 'Name is required';
-    }
-
-    if (!email) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      newErrors.email = 'Invalid email address';
-    }
-
-    if (!phone) {
-      newErrors.phone = 'Phone is required';
-    } else if (!/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
-      newErrors.phone = 'Invalid phone number. Please use the format XXX-XXX-XXXX';
-    }
-
-    if (Object.values(newErrors).some(error => error !== '')) {
-      setErrors(newErrors);
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (validateForm()) {
-      // Form submission logic here
-    } else {
-      setFormSubmissionError('Please fill out all required fields');
-    }
-  };
-
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-    if (errors.name) {
-      setErrors({ ...errors, name: '' });
-    }
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-    if (errors.email) {
-      setErrors({ ...errors, email: '' });
-    }
-  };
-
-  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(event.target.value);
-    if (errors.phone) {
-      setErrors({ ...errors, phone: '' });
-    }
-  };
-
   return (
     <Layout>
-      <form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          value={name}
-          onChange={handleNameChange}
-          placeholder="Name"
-          error={errors.name}
-        />
-        <Input
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          placeholder="Email"
-          error={errors.email}
-        />
-        <Input
-          type="text"
-          value={phone}
-          onChange={handlePhoneChange}
-          placeholder="Phone"
-          error={errors.phone}
-        />
-        {formSubmissionError && <p style={{ color: 'red' }}>{formSubmissionError}</p>}
-        <Button type="submit">Submit</Button>
-      </form>
-      <Table
+      <ClientForm
+        name={name}
+        email={email}
+        phone={phone}
+        setName={setName}
+        setEmail={setEmail}
+        setPhone={setPhone}
+        errors={errors}
+        setErrors={setErrors}
+        categories={categories}
+        clientCategories={clientCategories}
+        setFilter={setFilter}
+        filter={filter}
+        tags={tags}
+        setTags={setTags}
+        isNewClient={isNewClient}
+        editedClient={editedClient}
+      />
+      <ClientTable
         clients={clients}
+        setClients={setClients}
         searchTerm={searchTerm}
         pageNumber={pageNumber}
         itemsPerPage={itemsPerPage}
         sortOrder={sortOrder}
         sortField={sortField}
-        filter={filter}
         columnVisibility={columnVisibility}
       />
     </Layout>
