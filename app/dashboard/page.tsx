@@ -129,63 +129,42 @@ const DashboardPage = () => {
     ],
   });
   const { realTimeData, loading, error } = useRealTimeData();
-  const [realTimeProposalData, setRealTimeProposalData] = useState({
-    labels: ['January', 'February', 'March', 'April', 'May'],
-    datasets: [
-      {
-        label: 'Proposals Created',
-        data: [10, 20, 30, 40, 50],
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1,
-      },
-      {
-        label: 'Proposals Approved',
-        data: [5, 10, 15, 20, 25],
-        borderColor: 'rgb(255, 99, 132)',
-        tension: 0.1,
-      },
-    ],
-  });
 
   useEffect(() => {
     if (realTimeData) {
-      setRealTimeProposalData(realTimeData);
+      setProposalData({
+        labels: realTimeData.labels,
+        datasets: realTimeData.datasets,
+      });
     }
   }, [realTimeData]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <DashboardLayout>
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12">
-            <h1>Proposal Studio Dashboard</h1>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            {loading ? (
-              <p>Loading...</p>
-            ) : error ? (
-              <p>Error: {error.message}</p>
-            ) : (
-              <Line
-                data={realTimeProposalData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      position: 'top',
-                    },
-                    title: {
-                      display: true,
-                      text: 'Proposals Created and Approved',
-                    },
-                  },
-                }}
-              />
-            )}
-          </div>
-        </div>
+      <div>
+        <Line
+          data={proposalData}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Proposal Analytics',
+              },
+            },
+          }}
+        />
       </div>
     </DashboardLayout>
   );

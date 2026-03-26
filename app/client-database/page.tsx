@@ -65,11 +65,57 @@ const ClientForm = ({
     }
 
     setErrors(newErrors);
+    return Object.values(newErrors).every((error) => error === '');
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    validateForm();
+    if (validateForm()) {
+      // Form is valid, proceed with submission
+      console.log('Form submitted successfully');
+    } else {
+      // Form is invalid, display error messages
+      console.log('Form submission failed due to errors');
+    }
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const newErrors = { ...errors };
+
+    switch (name) {
+      case 'name':
+        if (!value) {
+          newErrors.name = 'Name is required';
+        } else if (value.length < 2) {
+          newErrors.name = 'Name must be at least 2 characters long';
+        } else {
+          newErrors.name = '';
+        }
+        break;
+      case 'email':
+        if (!value) {
+          newErrors.email = 'Email is required';
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+          newErrors.email = 'Invalid email address';
+        } else {
+          newErrors.email = '';
+        }
+        break;
+      case 'phone':
+        if (!value) {
+          newErrors.phone = 'Phone is required';
+        } else if (!/^\d{3}-\d{3}-\d{4}$/.test(value)) {
+          newErrors.phone = 'Invalid phone number';
+        } else {
+          newErrors.phone = '';
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
   };
 
   return (
@@ -78,6 +124,7 @@ const ClientForm = ({
         type="text"
         value={name}
         onChange={(event) => setName(event.target.value)}
+        onBlur={handleBlur}
         placeholder="Name"
         error={errors.name}
         className={errors.name ? 'border-red-500' : 'border-gray-300'}
@@ -86,6 +133,7 @@ const ClientForm = ({
         type="email"
         value={email}
         onChange={(event) => setEmail(event.target.value)}
+        onBlur={handleBlur}
         placeholder="Email"
         error={errors.email}
         className={errors.email ? 'border-red-500' : 'border-gray-300'}
@@ -94,6 +142,7 @@ const ClientForm = ({
         type="text"
         value={phone}
         onChange={(event) => setPhone(event.target.value)}
+        onBlur={handleBlur}
         placeholder="Phone"
         error={errors.phone}
         className={errors.phone ? 'border-red-500' : 'border-gray-300'}
@@ -108,73 +157,16 @@ const ClientForm = ({
       <TagInput
         tags={tags}
         setTags={setTags}
-        error={errors.tags}
-        className={errors.tags ? 'border-red-500' : 'border-gray-300'}
       />
-      <Button type="submit">Submit</Button>
       {Object.keys(errors).some((key) => errors[key] !== '') && (
-        <div className="text-red-500 mt-2">
-          Please fix the following errors:
-          <ul>
-            {Object.keys(errors).map((key) => (
-              <li key={key}>{errors[key]}</li>
-            ))}
-          </ul>
+        <div className="text-red-500 text-sm mt-2">
+          Please fix the errors before submitting the form.
         </div>
       )}
+      <Button type="submit" className="mt-4">
+        Submit
+      </Button>
     </form>
-  );
-};
-
-const ClientTable = ({
-  clients,
-  setClients,
-  searchTerm,
-  pageNumber,
-  itemsPerPage,
-  sortOrder,
-  sortField,
-  columnVisibility,
-}) => {
-  const filteredClients = clients.filter((client) => {
-    return (
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.phone.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
-
-  const sortedClients = filteredClients.sort((a, b) => {
-    if (sortOrder === 'asc') {
-      if (a[sortField] < b[sortField]) {
-        return -1;
-      }
-      if (a[sortField] > b[sortField]) {
-        return 1;
-      }
-      return 0;
-    } else {
-      if (a[sortField] < b[sortField]) {
-        return 1;
-      }
-      if (a[sortField] > b[sortField]) {
-        return -1;
-      }
-      return 0;
-    }
-  });
-
-  return (
-    <Table
-      clients={sortedClients}
-      setClients={setClients}
-      searchTerm={searchTerm}
-      pageNumber={pageNumber}
-      itemsPerPage={itemsPerPage}
-      sortOrder={sortOrder}
-      sortField={sortField}
-      columnVisibility={columnVisibility}
-    />
   );
 };
 
