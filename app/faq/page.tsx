@@ -7,7 +7,7 @@ import schema from '../schema';
 
 const metaTags = {
   metaDescription: 'Discover Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, empowering sales teams and driving revenue growth with our innovative proposal management software.',
-  metaKeywords: 'Proposal Studio, SaaS tool, proposal management, freelancers, creators, business proposals, proposal software, proposal templates, client relationships, sales enablement, proposal automation, business growth, revenue growth, sales teams, proposal creation, proposal tracking, proposal analytics',
+  metaKeywords: 'Proposal Studio, SaaS tool, proposal management, freelancers, creators, business proposals, proposal software, proposal templates, client relationships, sales enablement, proposal automation, business growth, revenue growth, sales teams, proposal creation, proposal tracking, proposal analytics, proposal writing, proposal design, proposal development, proposal strategy',
   metaTitle: 'Proposal Studio: SaaS Tool for Freelancers and Creators - Proposal Management Made Easy',
   metaCanonical: 'https://www.proposalstudio.com/faq',
   metaRobots: 'index, follow',
@@ -40,43 +40,27 @@ const schemaMarkup = {
       name: 'How does Proposal Studio help with proposal creation?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a proposal builder, and a library of pre-built content. Our software is designed to make it easy to create professional-looking proposals that win new business.',
+        text: 'Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a proposal builder, and a library of pre-built content. Our software is designed to help businesses create professional-looking proposals quickly and efficiently, saving time and increasing the chances of winning new business.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What are the benefits of using Proposal Studio for proposal management?',
+      name: 'What are the benefits of using Proposal Studio?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The benefits of using Proposal Studio for proposal management include increased efficiency, improved collaboration, and enhanced visibility into the proposal process. Our software helps businesses to streamline their proposal process, reduce errors, and improve their chances of winning new business.',
+        text: 'The benefits of using Proposal Studio include increased efficiency, improved proposal quality, and enhanced collaboration. Our software helps businesses to streamline their proposal process, reduce the time spent on proposal creation, and increase the chances of winning new business.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How does Proposal Studio help with proposal tracking and analytics?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Proposal Studio provides a range of features to help with proposal tracking and analytics, including real-time tracking, analytics, and reporting. Our software helps businesses to track the performance of their proposals, identify areas for improvement, and make data-driven decisions to optimize their proposal strategy.',
       },
     },
   ],
 };
-
-const faqs = [
-  {
-    question: 'What is Proposal Studio?',
-    answer: 'Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease. Our proposal management software is designed to streamline the proposal process, making it easier for businesses to win new clients and grow their revenue.',
-    image: '/images/proposal-studio-logo.png',
-    alt: 'Proposal Studio Logo',
-    imageDescription: 'Proposal Studio logo, a SaaS tool for proposal management and creation, designed to help businesses win new clients and grow revenue',
-  },
-  {
-    question: 'How does Proposal Studio help with proposal creation?',
-    answer: 'Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a proposal builder, and a library of pre-built content. Our software is designed to make it easy to create professional-looking proposals that win new business.',
-    image: '/images/proposal-creation.png',
-    alt: 'Proposal Creation',
-    imageDescription: 'Proposal creation, a key feature of Proposal Studio, designed to help businesses create professional-looking proposals that win new business',
-  },
-  {
-    question: 'What are the benefits of using Proposal Studio for proposal management?',
-    answer: 'The benefits of using Proposal Studio for proposal management include increased efficiency, improved collaboration, and enhanced visibility into the proposal process. Our software helps businesses to streamline their proposal process, reduce errors, and improve their chances of winning new business.',
-    image: '/images/proposal-management.png',
-    alt: 'Proposal Management',
-    imageDescription: 'Proposal management, a key feature of Proposal Studio, designed to help businesses streamline their proposal process and improve their chances of winning new business',
-  },
-];
 
 const FaqPage = () => {
   return (
@@ -85,7 +69,7 @@ const FaqPage = () => {
         <title>{metaTags.metaTitle}</title>
         <meta name="description" content={metaTags.metaDescription} />
         <meta name="keywords" content={metaTags.metaKeywords} />
-        <link rel="canonical" href={metaTags.metaCanonical} />
+        <meta name="canonical" content={metaTags.metaCanonical} />
         <meta name="robots" content={metaTags.metaRobots} />
         <meta property="og:title" content={metaTags.metaOgTitle} />
         <meta property="og:description" content={metaTags.metaOgDescription} />
@@ -99,15 +83,17 @@ const FaqPage = () => {
         <meta name="twitter:image" content={metaTags.metaTwitterImage} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <h1>Proposal Studio FAQ</h1>
-      {faqs.map((faq, index) => (
-        <div key={index}>
-          <h2>{faq.question}</h2>
-          <p>{faq.answer}</p>
-          <Image src={faq.image} alt={faq.alt} width={200} height={200} />
-          <p>{faq.imageDescription}</p>
-        </div>
-      ))}
+      <div>
+        <h1>FAQ</h1>
+        <p>Discover Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, empowering sales teams and driving revenue growth with our innovative proposal management software.</p>
+        <Link href="/">
+          <a>
+            <AiOutlineArrowRight />
+            Back to Home
+          </a>
+        </Link>
+        <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />
+      </div>
     </div>
   );
 };
