@@ -129,9 +129,9 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (realTimeData) {
-      const labels = realTimeData.map((data) => data.date);
-      const proposalsCreated = realTimeData.map((data) => data.proposalsCreated);
-      const proposalsApproved = realTimeData.map((data) => data.proposalsApproved);
+      const labels = Object.keys(realTimeData);
+      const proposalsCreated = Object.values(realTimeData).map((data) => data.proposalsCreated);
+      const proposalsApproved = Object.values(realTimeData).map((data) => data.proposalsApproved);
       setRealTimeProposalData({
         labels,
         datasets: [
@@ -154,46 +154,24 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container">
-        <h1>Proposal Studio Dashboard</h1>
-        <div className="row">
-          <div className="col-md-6">
-            <Line
-              data={proposalData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: true,
-                    text: 'Proposals Created and Approved',
-                  },
-                },
-              }}
-            />
-          </div>
-          <div className="col-md-6">
-            {loading ? (
-              <p>Loading real-time data...</p>
-            ) : (
+      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
+        <div className="flex flex-wrap justify-center">
+          <div className="w-full lg:w-8/12 xl:w-9/12 p-6">
+            <h1 className="text-3xl text-gray-700">Proposal Studio Dashboard</h1>
+            <p className="text-lg text-gray-600">Welcome to the Proposal Studio dashboard.</p>
+            <div className="mt-6">
               <Line
                 data={realTimeProposalData}
                 options={{
                   responsive: true,
                   plugins: {
                     legend: {
-                      position: 'top',
-                    },
-                    title: {
                       display: true,
-                      text: 'Real-time Proposals Created and Approved',
                     },
                   },
                 }}
               />
-            )}
+            </div>
           </div>
         </div>
       </div>

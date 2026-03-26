@@ -90,110 +90,139 @@ const ClientDatabasePage = () => {
       newErrors.category = 'Invalid category';
     }
 
+    if (tags.length === 0) {
+      newErrors.tags = 'At least one tag is required';
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const newErrors = validateForm();
     setErrors(newErrors);
-    return Object.values(newErrors).every((error) => error === '');
+
+    if (Object.values(newErrors).every((error) => error === '')) {
+      try {
+        // Submit the form data
+        if (isNewClient) {
+          const newClient: Client = {
+            name,
+            email,
+            phone,
+            category: filter.category,
+            tags,
+          };
+          setClients((prevClients) => [...prevClients, newClient]);
+        } else if (editedClient) {
+          const updatedClient: Client = {
+            ...editedClient,
+            name,
+            email,
+            phone,
+            category: filter.category,
+            tags,
+          };
+          setClients((prevClients) =>
+            prevClients.map((client) => (client === editedClient ? updatedClient : client))
+          );
+        }
+        setIsNewClient(false);
+        setEditedClient(null);
+        setName('');
+        setEmail('');
+        setPhone('');
+        setFilter({
+          name: '',
+          email: '',
+          phone: '',
+          category: '',
+          tags: [],
+        });
+        setTags([]);
+      } catch (error) {
+        setFormSubmissionError('Error submitting form');
+      }
+    }
   };
 
-  const handleSearch = (searchTerm: string) => {
-    setIsSearching(true);
-    setSearchTerm(searchTerm);
-    const filteredClients = clients.filter((client) => {
-      const clientName = client.name.toLowerCase();
-      const clientEmail = client.email.toLowerCase();
-      const clientPhone = client.phone.toLowerCase();
-      const search = searchTerm.toLowerCase();
-      return (
-        clientName.includes(search) ||
-        clientEmail.includes(search) ||
-        clientPhone.includes(search)
-      );
-    });
-    setSuggestions(filteredClients);
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, name: '' }));
   };
 
-  const handlePageChange = (pageNumber: number) => {
-    setPageNumber(pageNumber);
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
   };
 
-  const filteredClients = clients.filter((client) => {
-    const clientName = client.name.toLowerCase();
-    const clientEmail = client.email.toLowerCase();
-    const clientPhone = client.phone.toLowerCase();
-    const search = searchTerm.toLowerCase();
-    return (
-      clientName.includes(search) ||
-      clientEmail.includes(search) ||
-      clientPhone.includes(search)
-    );
-  });
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, phone: '' }));
+  };
 
-  const paginatedClients = filteredClients.slice(
-    (pageNumber - 1) * itemsPerPage,
-    pageNumber * itemsPerPage
-  );
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilter((prevFilter) => ({ ...prevFilter, category: event.target.value }));
+    setErrors((prevErrors) => ({ ...prevErrors, category: '' }));
+  };
+
+  const handleTagsChange = (tags: string[]) => {
+    setTags(tags);
+    setErrors((prevErrors) => ({ ...prevErrors, tags: '' }));
+  };
 
   return (
     <Layout>
-      <div className="flex justify-between mb-4">
-        <h1 className="text-2xl font-bold">Client Database</h1>
-        <Button onClick={() => setIsNewClient(true)}>Add New Client</Button>
-      </div>
-      <div className="mb-4">
+      <h1>Client Database</h1>
+      <form onSubmit={handleSubmit}>
         <Input
-          type="search"
-          value={searchTerm}
-          onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Search clients"
-          className="w-full"
+          type="text"
+          value={name}
+          onChange={handleNameChange}
+          placeholder="Name"
+          error={errors.name}
         />
-        {isSearching && (
-          <ul className="absolute bg-white shadow-md p-2 w-full">
-            {suggestions.map((client) => (
-              <li key={client.name} className="py-2">
-                {client.name}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        <Input
+          type="email"
+          value={email}
+          onChange={handleEmailChange}
+          placeholder="Email"
+          error={errors.email}
+        />
+        <Input
+          type="text"
+          value={phone}
+          onChange={handlePhoneChange}
+          placeholder="Phone"
+          error={errors.phone}
+        />
+        <Select
+          value={filter.category}
+          onChange={handleCategoryChange}
+          options={clientCategories}
+          error={errors.category}
+        />
+        <TagInput
+          tags={tags}
+          onChange={handleTagsChange}
+          error={errors.tags}
+        />
+        <Button type="submit">Submit</Button>
+        {formSubmissionError && <p style={{ color: 'red' }}>{formSubmissionError}</p>}
+      </form>
       <Table
-        data={paginatedClients}
-        columns={[
-          { label: 'Name', accessor: 'name' },
-          { label: 'Email', accessor: 'email' },
-          { label: 'Phone', accessor: 'phone' },
-        ]}
+        clients={clients}
+        searchTerm={searchTerm}
+        pageNumber={pageNumber}
+        itemsPerPage={itemsPerPage}
+        sortOrder={sortOrder}
+        sortField={sortField}
+        onSearchTermChange={(term) => setSearchTerm(term)}
+        onPageNumberChange={(page) => setPageNumber(page)}
+        onItemsPerPageChange={(items) => setItemsPerPage(items)}
+        onSortOrderChange={(order) => setSortOrder(order)}
+        onSortFieldChange={(field) => setSortField(field)}
       />
-      <div className="flex justify-between mt-4">
-        <div>
-          <Select
-            value={itemsPerPage}
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </Select>
-          <span className="ml-2">items per page</span>
-        </div>
-        <div>
-          <Button
-            onClick={() => handlePageChange(pageNumber - 1)}
-            disabled={pageNumber === 1}
-          >
-            Previous
-          </Button>
-          <span className="mx-2">
-            Page {pageNumber} of {Math.ceil(filteredClients.length / itemsPerPage)}
-          </span>
-          <Button
-            onClick={() => handlePageChange(pageNumber + 1)}
-            disabled={pageNumber === Math.ceil(filteredClients.length / itemsPerPage)}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
     </Layout>
   );
 };
