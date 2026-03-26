@@ -140,7 +140,7 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div>
+      <div className="container">
         <h1>Proposal Studio Dashboard</h1>
         <Line
           data={proposalData}
@@ -157,6 +157,12 @@ const DashboardPage = () => {
             },
           }}
         />
+        {realTimeData && (
+          <div>
+            <h2>Real-time Data</h2>
+            <pre>{JSON.stringify(realTimeData, null, 2)}</pre>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

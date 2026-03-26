@@ -42,52 +42,16 @@ const faqs = [
       ],
     },
   },
-  {
-    question: 'What features does Proposal Studio offer?',
-    answer: 'Proposal Studio offers a range of features, including customizable proposal templates, a client database, proposal analytics and tracking, integration with popular payment gateways, collaboration tools for teams, and branding and white-labeling options. Our proposal builder and generator tools make it easy to create professional-looking proposals in minutes.',
-    metaDescription: 'Explore the robust features of Proposal Studio, including customizable proposal templates, advanced proposal analytics, seamless payment gateway',
-    metaKeywords: 'Proposal Studio, SaaS tool, proposal management, freelancers, creators, business proposals, proposal software, proposal templates, client relationships, sales enablement, proposal automation, business growth, revenue growth, sales teams',
-    metaTitle: 'Proposal Studio Features',
-    metaCanonical: 'https://www.proposalstudio.com/faq',
-    metaRobots: 'index, follow',
-    metaOgTitle: 'Proposal Studio Features',
-    metaOgDescription: 'Explore the robust features of Proposal Studio, including customizable proposal templates, advanced proposal analytics, seamless payment gateway',
-    metaOgUrl: 'https://www.proposalstudio.com/faq',
-    metaOgImage: '/images/proposal-studio-logo.png',
-    metaOgType: 'website',
-    metaTwitterCard: 'summary_large_image',
-    metaTwitterSite: '@proposalstudio',
-    metaTwitterTitle: 'Proposal Studio Features',
-    metaTwitterDescription: 'Explore the robust features of Proposal Studio, including customizable proposal templates, advanced proposal analytics, seamless payment gateway',
-    metaTwitterImage: '/images/proposal-studio-logo.png',
-    image: '/images/proposal-studio-logo.png',
-    alt: 'Proposal Studio Logo',
-    imageDescription: 'Proposal Studio logo, a SaaS tool for proposal management and creation, designed to help businesses win new clients and grow revenue',
-    structuredData: {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'What features does Proposal Studio offer?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Proposal Studio offers a range of features, including customizable proposal templates, a client database, proposal analytics and tracking, integration with popular payment gateways, collaboration tools for teams, and branding and white-labeling options. Our proposal builder and generator tools make it easy to create professional-looking proposals in minutes.',
-          },
-        },
-      ],
-    },
-  },
 ];
 
 const FaqPage = () => {
   return (
-    <div>
+    <>
       <Head>
         <title>{faqs[0].metaTitle}</title>
         <meta name="description" content={faqs[0].metaDescription} />
         <meta name="keywords" content={faqs[0].metaKeywords} />
-        <meta name="canonical" content={faqs[0].metaCanonical} />
+        <link rel="canonical" href={faqs[0].metaCanonical} />
         <meta name="robots" content={faqs[0].metaRobots} />
         <meta property="og:title" content={faqs[0].metaOgTitle} />
         <meta property="og:description" content={faqs[0].metaOgDescription} />
@@ -106,18 +70,18 @@ const FaqPage = () => {
           }}
         />
       </Head>
-      <div className="container">
-        <h1>Frequently Asked Questions</h1>
-        {faqs.map((faq, index) => (
-          <div key={index}>
-            <h2>{faq.question}</h2>
-            <p>{faq.answer}</p>
-            <Image src={faq.image} alt={faq.alt} width={100} height={100} />
-            <p>{faq.imageDescription}</p>
-          </div>
-        ))}
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions</h1>
+        <div className="flex flex-col">
+          {faqs.map((faq, index) => (
+            <div key={index} className="mb-4">
+              <h2 className="text-2xl font-bold mb-2">{faq.question}</h2>
+              <p className="text-lg">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
