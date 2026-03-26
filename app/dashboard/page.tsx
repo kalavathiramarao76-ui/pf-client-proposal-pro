@@ -130,15 +130,6 @@ const DashboardPage = () => {
   });
   const { realTimeData, loading, error } = useRealTimeData();
 
-  useEffect(() => {
-    if (realTimeData) {
-      setProposalData({
-        labels: realTimeData.labels,
-        datasets: realTimeData.datasets,
-      });
-    }
-  }, [realTimeData]);
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -150,6 +141,7 @@ const DashboardPage = () => {
   return (
     <DashboardLayout>
       <div>
+        <h1>Proposal Studio Dashboard</h1>
         <Line
           data={proposalData}
           options={{
@@ -160,7 +152,7 @@ const DashboardPage = () => {
               },
               title: {
                 display: true,
-                text: 'Proposal Analytics',
+                text: 'Proposals Created and Approved',
               },
             },
           }}

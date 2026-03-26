@@ -71,8 +71,12 @@ const ClientForm = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateForm()) {
-      // Form is valid, proceed with submission
-      console.log('Form submitted successfully');
+      try {
+        // Form is valid, proceed with submission
+        console.log('Form submitted successfully');
+      } catch (error) {
+        console.error('Error submitting form:', error);
+      }
     } else {
       // Form is invalid, display error messages
       console.log('Form submission failed due to errors');
@@ -114,59 +118,60 @@ const ClientForm = ({
       default:
         break;
     }
-
     setErrors(newErrors);
   };
 
+  const handleError = (error: any) => {
+    console.error('Error occurred:', error);
+    // Display error message to user
+    alert('An error occurred. Please try again.');
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        onBlur={handleBlur}
-        placeholder="Name"
-        error={errors.name}
-        className={errors.name ? 'border-red-500' : 'border-gray-300'}
-      />
-      <Input
-        type="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        onBlur={handleBlur}
-        placeholder="Email"
-        error={errors.email}
-        className={errors.email ? 'border-red-500' : 'border-gray-300'}
-      />
-      <Input
-        type="text"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        onBlur={handleBlur}
-        placeholder="Phone"
-        error={errors.phone}
-        className={errors.phone ? 'border-red-500' : 'border-gray-300'}
-      />
-      <Select
-        options={categories}
-        value={filter.category}
-        onChange={(event) => setFilter({ ...filter, category: event.target.value })}
-        error={errors.category}
-        className={errors.category ? 'border-red-500' : 'border-gray-300'}
-      />
-      <TagInput
-        tags={tags}
-        setTags={setTags}
-      />
-      {Object.keys(errors).some((key) => errors[key] !== '') && (
-        <div className="text-red-500 text-sm mt-2">
-          Please fix the errors before submitting the form.
-        </div>
-      )}
-      <Button type="submit" className="mt-4">
-        Submit
-      </Button>
-    </form>
+    <Layout>
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onBlur={handleBlur}
+          placeholder="Name"
+          error={errors.name}
+        />
+        <Input
+          type="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={handleBlur}
+          placeholder="Email"
+          error={errors.email}
+        />
+        <Input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          onBlur={handleBlur}
+          placeholder="Phone"
+          error={errors.phone}
+        />
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={(e) => setFilter({ ...filter, category: e.target.value })}
+          options={categories}
+          error={errors.category}
+        />
+        <TagInput
+          tags={tags}
+          setTags={setTags}
+          error={errors.tags}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Layout>
   );
 };
 
