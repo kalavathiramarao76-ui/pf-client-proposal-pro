@@ -68,7 +68,7 @@ const ClientDatabasePage = () => {
   }, []);
 
   const validateForm = () => {
-    const newErrors = {
+    const newErrors: { [key: string]: string } = {
       name: '',
       email: '',
       phone: '',
@@ -105,40 +105,29 @@ const ClientDatabasePage = () => {
     if (validateForm()) {
       // Form submission logic here
     } else {
-      setFormSubmissionError('Please fix the errors in the form');
+      setFormSubmissionError('Please fill out all required fields');
     }
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'email':
-        setEmail(value);
-        break;
-      case 'phone':
-        setPhone(value);
-        break;
-      default:
-        break;
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+    if (errors.name) {
+      setErrors({ ...errors, name: '' });
     }
   };
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'category':
-        setFilter(prevFilter => ({ ...prevFilter, category: value }));
-        break;
-      default:
-        break;
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+    if (errors.email) {
+      setErrors({ ...errors, email: '' });
     }
   };
 
-  const handleTagInput = (tags: string[]) => {
-    setFilter(prevFilter => ({ ...prevFilter, tags }));
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(event.target.value);
+    if (errors.phone) {
+      setErrors({ ...errors, phone: '' });
+    }
   };
 
   return (
@@ -146,55 +135,37 @@ const ClientDatabasePage = () => {
       <form onSubmit={handleSubmit}>
         <Input
           type="text"
-          name="name"
           value={name}
-          onChange={handleInputChange}
+          onChange={handleNameChange}
           placeholder="Name"
           error={errors.name}
         />
         <Input
           type="email"
-          name="email"
           value={email}
-          onChange={handleInputChange}
+          onChange={handleEmailChange}
           placeholder="Email"
           error={errors.email}
         />
         <Input
           type="text"
-          name="phone"
           value={phone}
-          onChange={handleInputChange}
+          onChange={handlePhoneChange}
           placeholder="Phone"
           error={errors.phone}
         />
-        <Select
-          name="category"
-          value={filter.category}
-          onChange={handleSelectChange}
-          options={categories}
-          error={errors.category}
-        />
-        <TagInput
-          name="tags"
-          value={filter.tags}
-          onChange={handleTagInput}
-          error={errors.tags}
-        />
-        {formSubmissionError && <div style={{ color: 'red' }}>{formSubmissionError}</div>}
+        {formSubmissionError && <p style={{ color: 'red' }}>{formSubmissionError}</p>}
         <Button type="submit">Submit</Button>
       </form>
       <Table
-        data={clients}
-        columns={[
-          { name: 'Name', selector: 'name' },
-          { name: 'Email', selector: 'email' },
-          { name: 'Phone', selector: 'phone' },
-          { name: 'Category', selector: 'category' },
-          { name: 'Tags', selector: 'tags' },
-        ]}
+        clients={clients}
+        searchTerm={searchTerm}
+        pageNumber={pageNumber}
+        itemsPerPage={itemsPerPage}
+        sortOrder={sortOrder}
+        sortField={sortField}
+        filter={filter}
         columnVisibility={columnVisibility}
-        onColumnVisibilityChange={setColumnVisibility}
       />
     </Layout>
   );

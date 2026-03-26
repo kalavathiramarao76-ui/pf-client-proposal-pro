@@ -126,17 +126,17 @@ const DashboardPage = () => {
   });
   const { realTimeData, loading, error } = useRealTimeData();
   const [realTimeProposalData, setRealTimeProposalData] = useState({
-    labels: [],
+    labels: ['January', 'February', 'March', 'April', 'May'],
     datasets: [
       {
         label: 'Proposals Created',
-        data: [],
+        data: [10, 20, 30, 40, 50],
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1,
       },
       {
         label: 'Proposals Approved',
-        data: [],
+        data: [5, 10, 15, 20, 25],
         borderColor: 'rgb(255, 99, 132)',
         tension: 0.1,
       },
@@ -145,43 +145,39 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (realTimeData) {
-      const labels = Object.keys(realTimeData);
-      const proposalsCreated = Object.values(realTimeData).map((data) => data.proposalsCreated);
-      const proposalsApproved = Object.values(realTimeData).map((data) => data.proposalsApproved);
-
       setRealTimeProposalData({
-        labels,
-        datasets: [
-          {
-            label: 'Proposals Created',
-            data: proposalsCreated,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1,
-          },
-          {
-            label: 'Proposals Approved',
-            data: proposalsApproved,
-            borderColor: 'rgb(255, 99, 132)',
-            tension: 0.1,
-          },
-        ],
+        labels: realTimeData.labels,
+        datasets: realTimeData.datasets,
       });
     }
   }, [realTimeData]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <DashboardLayout>
-      <div className="container">
-        <h1>Proposal Studio Dashboard</h1>
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : (
-          <div>
-            <Line data={realTimeProposalData} />
-          </div>
-        )}
+      <div>
+        <Line
+          data={realTimeProposalData}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Proposal Analytics',
+              },
+            },
+          }}
+        />
       </div>
     </DashboardLayout>
   );
