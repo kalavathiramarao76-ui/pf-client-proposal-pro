@@ -40,15 +40,31 @@ const schemaMarkup = {
       name: 'How does Proposal Studio improve proposal creation and management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio streamlines proposal creation and management by providing a centralized platform for creating, editing, and tracking proposals, as well as automating tasks and providing real-time analytics and insights.',
+        text: 'Proposal Studio streamlines proposal creation and management by providing a user-friendly interface, customizable templates, and automated workflows, enabling users to focus on high-value tasks and improve their overall proposal success rate.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What features does Proposal Studio offer for sales teams and revenue growth?',
+      name: 'What features does Proposal Studio offer to support proposal management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio offers a range of features for sales teams and revenue growth, including proposal automation, sales enablement, and real-time analytics and insights, to help drive revenue growth and improve sales performance.',
+        text: 'Proposal Studio offers a range of features, including proposal templates, proposal tracking, proposal analytics, and collaboration tools, to support proposal management and help users achieve their business goals.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How does Proposal Studio enhance sales enablement and revenue growth?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Proposal Studio enhances sales enablement and revenue growth by providing users with data-driven insights, automated workflows, and personalized proposal templates, enabling them to create and manage high-quality proposals that drive business results.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can Proposal Studio be integrated with other business tools and systems?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes, Proposal Studio can be integrated with a range of business tools and systems, including CRM software, marketing automation platforms, and productivity suites, to provide a seamless and connected user experience.',
       },
     },
   ],
@@ -61,7 +77,7 @@ const FaqPage = () => {
         <title>{metaTags.metaTitle}</title>
         <meta name="description" content={metaTags.metaDescription} />
         <meta name="keywords" content={metaTags.metaKeywords} />
-        <link rel="canonical" href={metaTags.metaCanonical} />
+        <meta name="canonical" content={metaTags.metaCanonical} />
         <meta name="robots" content={metaTags.metaRobots} />
         <meta property="og:title" content={metaTags.metaOgTitle} />
         <meta property="og:description" content={metaTags.metaOgDescription} />
@@ -75,21 +91,37 @@ const FaqPage = () => {
         <meta name="twitter:image" content={metaTags.metaTwitterImage} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <h1>Proposal Studio FAQ</h1>
-      <h2>Frequently Asked Questions</h2>
-      <p>Get answers to your questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships.</p>
-      <h3>What is Proposal Studio and how does it help with proposal management?</h3>
-      <p>Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track business proposals, proposal templates, and client relationships, empowering sales teams and driving revenue growth with innovative proposal management software, proposal automation, and sales enablement solutions.</p>
-      <h3>How does Proposal Studio improve proposal creation and management?</h3>
-      <p>Proposal Studio streamlines proposal creation and management by providing a centralized platform for creating, editing, and tracking proposals, as well as automating tasks and providing real-time analytics and insights.</p>
-      <h3>What features does Proposal Studio offer for sales teams and revenue growth?</h3>
-      <p>Proposal Studio offers a range of features for sales teams and revenue growth, including proposal automation, sales enablement, and real-time analytics and insights, to help drive revenue growth and improve sales performance.</p>
-      <Link href="/">
-        <a>
-          <AiOutlineArrowRight />
-          Back to Home
-        </a>
-      </Link>
+      <div className="container">
+        <h1>Proposal Studio FAQ</h1>
+        <p>Get answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships.</p>
+        <ul>
+          <li>
+            <Link href="/faq#what-is-proposal-studio">
+              <a>What is Proposal Studio and how does it help with proposal management?</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/faq#how-does-proposal-studio-improve-proposal-creation-and-management">
+              <a>How does Proposal Studio improve proposal creation and management?</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/faq#what-features-does-proposal-studio-offer-to-support-proposal-management">
+              <a>What features does Proposal Studio offer to support proposal management?</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/faq#how-does-proposal-studio-enhance-sales-enablement-and-revenue-growth">
+              <a>How does Proposal Studio enhance sales enablement and revenue growth?</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/faq#can-proposal-studio-be-integrated-with-other-business-tools-and-systems">
+              <a>Can Proposal Studio be integrated with other business tools and systems?</a>
+            </Link>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };
