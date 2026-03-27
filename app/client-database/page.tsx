@@ -162,50 +162,60 @@ const ClientForm = ({
   };
 
   return (
-    <Layout>
-      <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Name:</label>
         <Input
           type="text"
           name="name"
           value={name}
           onChange={(event) => setName(event.target.value)}
           onBlur={handleBlur}
-          placeholder="Name"
-          error={errors.name}
+          errorMessage={errors.name}
         />
+      </div>
+      <div>
+        <label>Email:</label>
         <Input
           type="email"
           name="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           onBlur={handleBlur}
-          placeholder="Email"
-          error={errors.email}
+          errorMessage={errors.email}
         />
+      </div>
+      <div>
+        <label>Phone:</label>
         <Input
-          type="tel"
+          type="text"
           name="phone"
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
           onBlur={handleBlur}
-          placeholder="Phone"
-          error={errors.phone}
+          errorMessage={errors.phone}
         />
+      </div>
+      <div>
+        <label>Category:</label>
         <Select
           name="category"
           value={filter.category}
           onChange={handleCategoryChange}
           options={categories}
-          error={errors.category}
+          errorMessage={errors.category}
         />
+      </div>
+      <div>
+        <label>Tags:</label>
         <TagInput
           tags={tags}
           onChange={handleTagsChange}
-          error={errors.tags}
+          errorMessage={errors.tags}
         />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Layout>
+      </div>
+      <Button type="submit">Submit</Button>
+    </form>
   );
 };
 
