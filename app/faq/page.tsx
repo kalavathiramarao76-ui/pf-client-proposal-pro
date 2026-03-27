@@ -40,7 +40,7 @@ const schemaMarkup = {
       name: 'How does Proposal Studio help with proposal creation?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a user-friendly interface, and real-time collaboration tools. Our software is designed to make it easy for businesses to create professional-looking proposals that win.',
+        text: 'Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a user-friendly interface, and real-time collaboration tools.',
       },
     },
     {
@@ -48,23 +48,23 @@ const schemaMarkup = {
       name: 'What are the benefits of using Proposal Studio?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The benefits of using Proposal Studio include increased efficiency, improved collaboration, and enhanced proposal quality. Our software helps businesses to streamline their proposal process, reduce errors, and increase their chances of winning new clients.',
+        text: 'The benefits of using Proposal Studio include increased efficiency, improved collaboration, and enhanced proposal quality, all of which can lead to increased revenue and business growth.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Is Proposal Studio easy to use?',
+      name: 'Is Proposal Studio suitable for small businesses and freelancers?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Proposal Studio is designed to be user-friendly and easy to use. Our software is intuitive and requires minimal training, making it easy for businesses to get started and start creating proposals right away.',
+        text: 'Yes, Proposal Studio is designed to be accessible and affordable for small businesses and freelancers, with a range of pricing plans and features to suit different needs and budgets.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Can I customize my proposals with Proposal Studio?',
+      name: 'How does Proposal Studio support sales teams?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Proposal Studio allows you to customize your proposals with your own branding, logos, and content. Our software provides a range of customizable proposal templates and a user-friendly interface that makes it easy to create professional-looking proposals that reflect your business.',
+        text: 'Proposal Studio provides sales teams with the tools and insights they need to create effective proposals, track client interactions, and analyze proposal performance, all of which can help drive revenue growth and improve sales outcomes.',
       },
     },
   ],
@@ -77,7 +77,7 @@ const FaqPage = () => {
         <title>{metaTags.metaTitle}</title>
         <meta name="description" content={metaTags.metaDescription} />
         <meta name="keywords" content={metaTags.metaKeywords} />
-        <link rel="canonical" href={metaTags.metaCanonical} />
+        <meta name="canonical" content={metaTags.metaCanonical} />
         <meta name="robots" content={metaTags.metaRobots} />
         <meta property="og:title" content={metaTags.metaOgTitle} />
         <meta property="og:description" content={metaTags.metaOgDescription} />
@@ -91,30 +91,38 @@ const FaqPage = () => {
         <meta name="twitter:image" content={metaTags.metaTwitterImage} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <h1>FAQ</h1>
-      <p>Here are some frequently asked questions about Proposal Studio:</p>
-      <ul>
-        <li>
-          <h2>What is Proposal Studio?</h2>
-          <p>Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease. Our proposal management software is designed to streamline the proposal process, making it easier for businesses to win new clients and grow their revenue.</p>
-        </li>
-        <li>
-          <h2>How does Proposal Studio help with proposal creation?</h2>
-          <p>Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a user-friendly interface, and real-time collaboration tools. Our software is designed to make it easy for businesses to create professional-looking proposals that win.</p>
-        </li>
-        <li>
-          <h2>What are the benefits of using Proposal Studio?</h2>
-          <p>The benefits of using Proposal Studio include increased efficiency, improved collaboration, and enhanced proposal quality. Our software helps businesses to streamline their proposal process, reduce errors, and increase their chances of winning new clients.</p>
-        </li>
-        <li>
-          <h2>Is Proposal Studio easy to use?</h2>
-          <p>Yes, Proposal Studio is designed to be user-friendly and easy to use. Our software is intuitive and requires minimal training, making it easy for businesses to get started and start creating proposals right away.</p>
-        </li>
-        <li>
-          <h2>Can I customize my proposals with Proposal Studio?</h2>
-          <p>Yes, Proposal Studio allows you to customize your proposals with your own branding, logos, and content. Our software provides a range of customizable proposal templates and a user-friendly interface that makes it easy to create professional-looking proposals that reflect your business.</p>
-        </li>
-      </ul>
+      <div className="container">
+        <h1>Frequently Asked Questions</h1>
+        <div className="faq-section">
+          <h2>General Questions</h2>
+          <div className="faq-question">
+            <h3>What is Proposal Studio?</h3>
+            <p>Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease. Our proposal management software is designed to streamline the proposal process, making it easier for businesses to win new clients and grow their revenue.</p>
+          </div>
+          <div className="faq-question">
+            <h3>How does Proposal Studio help with proposal creation?</h3>
+            <p>Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a user-friendly interface, and real-time collaboration tools.</p>
+          </div>
+        </div>
+        <div className="faq-section">
+          <h2>Benefits and Features</h2>
+          <div className="faq-question">
+            <h3>What are the benefits of using Proposal Studio?</h3>
+            <p>The benefits of using Proposal Studio include increased efficiency, improved collaboration, and enhanced proposal quality, all of which can lead to increased revenue and business growth.</p>
+          </div>
+          <div className="faq-question">
+            <h3>Is Proposal Studio suitable for small businesses and freelancers?</h3>
+            <p>Yes, Proposal Studio is designed to be accessible and affordable for small businesses and freelancers, with a range of pricing plans and features to suit different needs and budgets.</p>
+          </div>
+        </div>
+        <div className="faq-section">
+          <h2>Sales and Revenue Growth</h2>
+          <div className="faq-question">
+            <h3>How does Proposal Studio support sales teams?</h3>
+            <p>Proposal Studio provides sales teams with the tools and insights they need to create effective proposals, track client interactions, and analyze proposal performance, all of which can help drive revenue growth and improve sales outcomes.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
