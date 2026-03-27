@@ -169,8 +169,8 @@ const ClientForm = ({
         value={name}
         onChange={(event) => setName(event.target.value)}
         onBlur={handleBlur}
-        placeholder="Name"
         error={errors.name}
+        placeholder="Client Name"
       />
       <Input
         type="email"
@@ -178,8 +178,8 @@ const ClientForm = ({
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         onBlur={handleBlur}
-        placeholder="Email"
         error={errors.email}
+        placeholder="Email"
       />
       <Input
         type="text"
@@ -187,20 +187,22 @@ const ClientForm = ({
         value={phone}
         onChange={(event) => setPhone(event.target.value)}
         onBlur={handleBlur}
-        placeholder="Phone"
         error={errors.phone}
+        placeholder="Phone Number"
       />
       <Select
         name="category"
         value={filter.category}
         onChange={handleCategoryChange}
-        options={categories}
         error={errors.category}
+        options={categories}
+        placeholder="Select Category"
       />
       <TagInput
         tags={tags}
         onChange={handleTagsChange}
         error={errors.tags}
+        placeholder="Add Tags"
       />
       <Button type="submit">Submit</Button>
       {errors.form && <div style={{ color: 'red' }}>{errors.form}</div>}
