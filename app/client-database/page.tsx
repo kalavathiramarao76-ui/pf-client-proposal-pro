@@ -139,6 +139,28 @@ const ClientForm = ({
     setErrors(newErrors);
   };
 
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newErrors = { ...errors };
+    if (!event.target.value) {
+      newErrors.category = errorMessages.categoryRequired;
+    } else {
+      newErrors.category = '';
+    }
+    setErrors(newErrors);
+    setFilter({ ...filter, category: event.target.value });
+  };
+
+  const handleTagsChange = (tags: string[]) => {
+    const newErrors = { ...errors };
+    if (tags.length === 0) {
+      newErrors.tags = errorMessages.tagsRequired;
+    } else {
+      newErrors.tags = '';
+    }
+    setErrors(newErrors);
+    setTags(tags);
+  };
+
   return (
     <Layout>
       <form onSubmit={handleSubmit}>
@@ -148,7 +170,7 @@ const ClientForm = ({
           value={name}
           onChange={(event) => setName(event.target.value)}
           onBlur={handleBlur}
-          placeholder="Client Name"
+          placeholder="Name"
           error={errors.name}
         />
         <Input
@@ -157,7 +179,7 @@ const ClientForm = ({
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           onBlur={handleBlur}
-          placeholder="Email Address"
+          placeholder="Email"
           error={errors.email}
         />
         <Input
@@ -166,20 +188,19 @@ const ClientForm = ({
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
           onBlur={handleBlur}
-          placeholder="Phone Number"
+          placeholder="Phone"
           error={errors.phone}
         />
         <Select
           name="category"
           value={filter.category}
-          onChange={(event) => setFilter({ ...filter, category: event.target.value })}
+          onChange={handleCategoryChange}
           options={categories}
           error={errors.category}
         />
         <TagInput
-          name="tags"
-          value={tags}
-          onChange={(newTags) => setTags(newTags)}
+          tags={tags}
+          onChange={handleTagsChange}
           error={errors.tags}
         />
         <Button type="submit">Submit</Button>

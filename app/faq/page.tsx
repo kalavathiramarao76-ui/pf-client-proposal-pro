@@ -37,18 +37,18 @@ const schemaMarkup = {
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio improve proposal creation and tracking?',
+      name: 'How does Proposal Studio improve proposal management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of features to improve proposal creation and tracking, including customizable proposal templates, automated proposal workflows, and real-time proposal analytics, enabling users to streamline their proposal process and increase their chances of success.',
+        text: 'Proposal Studio improves proposal management by providing a centralized platform for creating, managing, and tracking proposals, as well as automating tasks and providing real-time analytics and insights.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What are the benefits of using Proposal Studio for sales enablement?',
+      name: 'What features does Proposal Studio offer?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of benefits for sales enablement, including access to a library of customizable proposal templates, automated proposal workflows, and real-time proposal analytics, enabling sales teams to create and manage proposals more efficiently and effectively, and driving revenue growth through improved proposal success rates.',
+        text: 'Proposal Studio offers a range of features, including proposal creation and management, proposal automation, sales enablement, and real-time analytics and insights.',
       },
     },
   ],
@@ -61,7 +61,7 @@ const FaqPage = () => {
         <title>{metaTags.metaTitle}</title>
         <meta name="description" content={metaTags.metaDescription} />
         <meta name="keywords" content={metaTags.metaKeywords} />
-        <link rel="canonical" href={metaTags.metaCanonical} />
+        <meta name="canonical" content={metaTags.metaCanonical} />
         <meta name="robots" content={metaTags.metaRobots} />
         <meta property="og:title" content={metaTags.metaOgTitle} />
         <meta property="og:description" content={metaTags.metaOgDescription} />
@@ -73,28 +73,34 @@ const FaqPage = () => {
         <meta name="twitter:title" content={metaTags.metaTwitterTitle} />
         <meta name="twitter:description" content={metaTags.metaTwitterDescription} />
         <meta name="twitter:image" content={metaTags.metaTwitterImage} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }}
+        />
       </Head>
-      <h1>Proposal Studio FAQ</h1>
-      <h2>Introduction to Proposal Studio</h2>
-      <p>Proposal Studio is a cutting-edge SaaS tool designed to help freelancers and creators create, manage, and track business proposals, proposal templates, and client relationships.</p>
-      <h2>Benefits of Using Proposal Studio</h2>
-      <p>Proposal Studio provides a range of benefits, including improved proposal creation and tracking, automated proposal workflows, and real-time proposal analytics, enabling users to streamline their proposal process and increase their chances of success.</p>
-      <h2>Proposal Studio Features</h2>
-      <ul>
-        <li>Customizable proposal templates</li>
-        <li>Automated proposal workflows</li>
-        <li>Real-time proposal analytics</li>
-        <li>Collaboration tools for teams</li>
-        <li>Integration with popular CRM and sales tools</li>
-      </ul>
-      <h2>Getting Started with Proposal Studio</h2>
-      <p>To get started with Proposal Studio, simply sign up for a free trial and begin exploring the platform. Our intuitive interface and comprehensive guides make it easy to get started and start creating and managing proposals in no time.</p>
-      <Link href="/contact">
-        <a>
-          Contact Us <AiOutlineArrowRight />
-        </a>
-      </Link>
+      <div className="container">
+        <h1>Frequently Asked Questions</h1>
+        <div className="faq-section">
+          <div className="faq-question">
+            <h2>What is Proposal Studio and how does it help with proposal management?</h2>
+            <p>
+              Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track business proposals, proposal templates, and client relationships, empowering sales teams and driving revenue growth with our innovative proposal management software, proposal automation, and sales enablement solutions.
+            </p>
+          </div>
+          <div className="faq-question">
+            <h2>How does Proposal Studio improve proposal management?</h2>
+            <p>
+              Proposal Studio improves proposal management by providing a centralized platform for creating, managing, and tracking proposals, as well as automating tasks and providing real-time analytics and insights.
+            </p>
+          </div>
+          <div className="faq-question">
+            <h2>What features does Proposal Studio offer?</h2>
+            <p>
+              Proposal Studio offers a range of features, including proposal creation and management, proposal automation, sales enablement, and real-time analytics and insights.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
