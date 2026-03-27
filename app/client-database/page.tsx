@@ -163,95 +163,65 @@ const ClientForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        name="name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.name}
-      />
-      <Input
-        type="email"
-        name="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.email}
-      />
-      <Input
-        type="text"
-        name="phone"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.phone}
-      />
-      <Select
-        name="category"
-        value={filter.category}
-        onChange={handleCategoryChange}
-        error={errors.category}
-      >
-        {categories.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </Select>
-      <TagInput
-        tags={tags}
-        onChange={handleTagsChange}
-        error={errors.tags}
-      />
+      <div>
+        <label>Name:</label>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          onBlur={handleBlur}
+        />
+        {errors.name && <div style={{ color: 'red' }}>{errors.name}</div>}
+      </div>
+      <div>
+        <label>Email:</label>
+        <Input
+          type="email"
+          name="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          onBlur={handleBlur}
+        />
+        {errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
+      </div>
+      <div>
+        <label>Phone:</label>
+        <Input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          onBlur={handleBlur}
+        />
+        {errors.phone && <div style={{ color: 'red' }}>{errors.phone}</div>}
+      </div>
+      <div>
+        <label>Category:</label>
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={handleCategoryChange}
+        >
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </Select>
+        {errors.category && <div style={{ color: 'red' }}>{errors.category}</div>}
+      </div>
+      <div>
+        <label>Tags:</label>
+        <TagInput
+          tags={tags}
+          onChange={handleTagsChange}
+        />
+        {errors.tags && <div style={{ color: 'red' }}>{errors.tags}</div>}
+      </div>
       <Button type="submit">Submit</Button>
-      {errors.form && <div style={{ color: 'red' }}>{errors.form}</div>}
     </form>
   );
 };
 
-const ClientDatabasePage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    category: '',
-    tags: '',
-    form: '',
-  });
-  const [categories, setCategories] = useState(['Category 1', 'Category 2']);
-  const [clientCategories, setClientCategories] = useState([]);
-  const [filter, setFilter] = useState({ category: '' });
-  const [tags, setTags] = useState([]);
-  const [isNewClient, setIsNewClient] = useState(true);
-  const [editedClient, setEditedClient] = useState(null);
-
-  return (
-    <Layout>
-      <ClientForm
-        name={name}
-        email={email}
-        phone={phone}
-        setName={setName}
-        setEmail={setEmail}
-        setPhone={setPhone}
-        errors={errors}
-        setErrors={setErrors}
-        categories={categories}
-        clientCategories={clientCategories}
-        setFilter={setFilter}
-        filter={filter}
-        tags={tags}
-        setTags={setTags}
-        isNewClient={isNewClient}
-        editedClient={editedClient}
-      />
-      <Table />
-    </Layout>
-  );
-};
-
-export default ClientDatabasePage;
+export default ClientForm;
