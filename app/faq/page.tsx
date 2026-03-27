@@ -94,33 +94,13 @@ const FaqPage = () => {
       <div className="container">
         <h1>Proposal Studio FAQ</h1>
         <p>Get answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships.</p>
-        <ul>
-          <li>
-            <Link href="/faq#what-is-proposal-studio">
-              <a>What is Proposal Studio and how does it help with proposal management?</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/faq#how-does-proposal-studio-improve-proposal-creation-and-management">
-              <a>How does Proposal Studio improve proposal creation and management?</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/faq#what-features-does-proposal-studio-offer-to-support-proposal-management">
-              <a>What features does Proposal Studio offer to support proposal management?</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/faq#how-does-proposal-studio-enhance-sales-enablement-and-revenue-growth">
-              <a>How does Proposal Studio enhance sales enablement and revenue growth?</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/faq#can-proposal-studio-be-integrated-with-other-business-tools-and-systems">
-              <a>Can Proposal Studio be integrated with other business tools and systems?</a>
-            </Link>
-          </li>
-        </ul>
+        <Link href="/contact">
+          <a>
+            <button>
+              Contact Us <AiOutlineArrowRight />
+            </button>
+          </a>
+        </Link>
       </div>
     </div>
   );

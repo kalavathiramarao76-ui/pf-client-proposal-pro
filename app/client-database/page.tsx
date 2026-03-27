@@ -180,7 +180,7 @@ const ClientForm = ({
         error={errors.email}
       />
       <Input
-        type="tel"
+        type="text"
         name="phone"
         value={phone}
         onChange={(event) => setPhone(event.target.value)}
@@ -210,7 +210,7 @@ const ClientForm = ({
   );
 };
 
-const Page = () => {
+const ClientDatabasePage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -220,6 +220,7 @@ const Page = () => {
     phone: '',
     category: '',
     tags: '',
+    form: '',
   });
   const [categories, setCategories] = useState(['Category 1', 'Category 2']);
   const [clientCategories, setClientCategories] = useState([]);
@@ -248,8 +249,9 @@ const Page = () => {
         isNewClient={isNewClient}
         editedClient={editedClient}
       />
+      <Table />
     </Layout>
   );
 };
 
-export default Page;
+export default ClientDatabasePage;
