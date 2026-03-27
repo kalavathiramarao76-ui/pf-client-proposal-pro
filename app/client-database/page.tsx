@@ -105,15 +105,28 @@ const ClientForm = ({
     const newErrors = { ...errors };
 
     switch (name) {
+      case 'name':
+        if (!value) {
+          newErrors.name = errorMessages.required;
+        } else if (value.length < 2) {
+          newErrors.name = errorMessages.minLength;
+        } else {
+          newErrors.name = '';
+        }
+        break;
       case 'email':
-        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+        if (!value) {
+          newErrors.email = errorMessages.required;
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
           newErrors.email = errorMessages.invalidEmail;
         } else {
           newErrors.email = '';
         }
         break;
       case 'phone':
-        if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(value)) {
+        if (!value) {
+          newErrors.phone = errorMessages.required;
+        } else if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(value)) {
           newErrors.phone = errorMessages.invalidPhone;
         } else {
           newErrors.phone = '';
@@ -126,67 +139,74 @@ const ClientForm = ({
     setErrors(newErrors);
   };
 
-  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const phone = event.target.value;
-    const formattedPhone = phone.replace(/[^0-9]/g, '');
-    if (formattedPhone.length > 10) {
-      setPhone(formattedPhone.slice(0, 10));
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newErrors = { ...errors };
+    if (!event.target.value) {
+      newErrors.category = errorMessages.categoryRequired;
     } else {
-      setPhone(formattedPhone);
+      newErrors.category = '';
     }
+    setErrors(newErrors);
+    setFilter({ ...filter, category: event.target.value });
   };
 
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const email = event.target.value;
-    const formattedEmail = email.trim().toLowerCase();
-    setEmail(formattedEmail);
+  const handleTagsChange = (tags: string[]) => {
+    const newErrors = { ...errors };
+    if (tags.length === 0) {
+      newErrors.tags = errorMessages.tagsRequired;
+    } else {
+      newErrors.tags = '';
+    }
+    setErrors(newErrors);
+    setTags(tags);
   };
 
   return (
-    <Layout>
-      <form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          name="name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          onBlur={handleBlur}
-          placeholder="Client Name"
-          error={errors.name}
-        />
-        <Input
-          type="email"
-          name="email"
-          value={email}
-          onChange={handleEmailChange}
-          onBlur={handleBlur}
-          placeholder="Email"
-          error={errors.email}
-        />
-        <Input
-          type="tel"
-          name="phone"
-          value={phone}
-          onChange={handlePhoneChange}
-          onBlur={handleBlur}
-          placeholder="Phone Number"
-          error={errors.phone}
-        />
-        <Select
-          name="category"
-          value={filter.category}
-          onChange={(event) => setFilter({ ...filter, category: event.target.value })}
-          options={categories}
-          error={errors.category}
-        />
-        <TagInput
-          tags={tags}
-          setTags={setTags}
-          error={errors.tags}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Layout>
+    <form onSubmit={handleSubmit}>
+      <Input
+        type="text"
+        name="name"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        onBlur={handleBlur}
+        error={errors.name}
+      />
+      <Input
+        type="email"
+        name="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        onBlur={handleBlur}
+        error={errors.email}
+      />
+      <Input
+        type="tel"
+        name="phone"
+        value={phone}
+        onChange={(event) => setPhone(event.target.value)}
+        onBlur={handleBlur}
+        error={errors.phone}
+      />
+      <Select
+        name="category"
+        value={filter.category}
+        onChange={handleCategoryChange}
+        error={errors.category}
+      >
+        {categories.map((category) => (
+          <option key={category} value={category}>
+            {category}
+          </option>
+        ))}
+      </Select>
+      <TagInput
+        tags={tags}
+        onChange={handleTagsChange}
+        error={errors.tags}
+      />
+      <Button type="submit">Submit</Button>
+      {errors.form && <p style={{ color: 'red' }}>{errors.form}</p>}
+    </form>
   );
 };
 
