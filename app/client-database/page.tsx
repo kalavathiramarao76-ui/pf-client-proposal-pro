@@ -163,93 +163,61 @@ const ClientForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        name="name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        onBlur={handleBlur}
-        placeholder="Name"
-        error={errors.name}
-      />
-      <Input
-        type="email"
-        name="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        onBlur={handleBlur}
-        placeholder="Email"
-        error={errors.email}
-      />
-      <Input
-        type="text"
-        name="phone"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        onBlur={handleBlur}
-        placeholder="Phone"
-        error={errors.phone}
-      />
-      <Select
-        name="category"
-        value={filter.category}
-        onChange={handleCategoryChange}
-        options={categories}
-        error={errors.category}
-      />
-      <TagInput
-        tags={tags}
-        onChange={handleTagsChange}
-        error={errors.tags}
-      />
+      <div>
+        <label>Name:</label>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          onBlur={handleBlur}
+          errorMessage={errors.name}
+        />
+      </div>
+      <div>
+        <label>Email:</label>
+        <Input
+          type="email"
+          name="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          onBlur={handleBlur}
+          errorMessage={errors.email}
+        />
+      </div>
+      <div>
+        <label>Phone:</label>
+        <Input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          onBlur={handleBlur}
+          errorMessage={errors.phone}
+        />
+      </div>
+      <div>
+        <label>Category:</label>
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={handleCategoryChange}
+          options={categories}
+          errorMessage={errors.category}
+        />
+      </div>
+      <div>
+        <label>Tags:</label>
+        <TagInput
+          tags={tags}
+          onChange={handleTagsChange}
+          errorMessage={errors.tags}
+        />
+      </div>
       <Button type="submit">Submit</Button>
       {errors.form && <div style={{ color: 'red' }}>{errors.form}</div>}
     </form>
   );
 };
 
-const ClientDatabasePage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    category: '',
-    tags: '',
-    form: '',
-  });
-  const [categories, setCategories] = useState([]);
-  const [clientCategories, setClientCategories] = useState([]);
-  const [filter, setFilter] = useState({ category: '' });
-  const [tags, setTags] = useState([]);
-  const [isNewClient, setIsNewClient] = useState(true);
-  const [editedClient, setEditedClient] = useState(null);
-
-  return (
-    <Layout>
-      <ClientForm
-        name={name}
-        email={email}
-        phone={phone}
-        setName={setName}
-        setEmail={setEmail}
-        setPhone={setPhone}
-        errors={errors}
-        setErrors={setErrors}
-        categories={categories}
-        clientCategories={clientCategories}
-        setFilter={setFilter}
-        filter={filter}
-        tags={tags}
-        setTags={setTags}
-        isNewClient={isNewClient}
-        editedClient={editedClient}
-      />
-      <Table />
-    </Layout>
-  );
-};
-
-export default ClientDatabasePage;
+export default ClientForm;

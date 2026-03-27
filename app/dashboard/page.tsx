@@ -130,6 +130,15 @@ const DashboardPage = () => {
   });
   const { realTimeData, loading, error } = useRealTimeData();
 
+  useEffect(() => {
+    if (realTimeData) {
+      setProposalData({
+        labels: realTimeData.labels,
+        datasets: realTimeData.datasets,
+      });
+    }
+  }, [realTimeData]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -140,64 +149,21 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container">
-        <h1>Proposal Studio Dashboard</h1>
-        <div className="row">
-          <div className="col-md-6">
-            <Line
-              data={proposalData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: true,
-                    text: 'Proposals Created and Approved',
-                  },
-                },
-              }}
-            />
-          </div>
-          <div className="col-md-6">
-            <Bar
-              data={proposalData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: true,
-                    text: 'Proposals Created and Approved',
-                  },
-                },
-              }}
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6">
-            <Pie
-              data={proposalData}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: true,
-                    text: 'Proposals Created and Approved',
-                  },
-                },
-              }}
-            />
-          </div>
-        </div>
-      </div>
+      <Line
+        data={proposalData}
+        options={{
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Proposal Analytics',
+            },
+          },
+        }}
+      />
     </DashboardLayout>
   );
 };
