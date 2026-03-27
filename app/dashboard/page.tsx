@@ -140,23 +140,63 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div>
+      <div className="container">
         <h1>Proposal Studio Dashboard</h1>
-        <Line
-          data={proposalData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              title: {
-                display: true,
-                text: 'Proposals Created and Approved',
-              },
-            },
-          }}
-        />
+        <div className="row">
+          <div className="col-md-6">
+            <Line
+              data={proposalData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Proposals Created and Approved',
+                  },
+                },
+              }}
+            />
+          </div>
+          <div className="col-md-6">
+            <Bar
+              data={proposalData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Proposals Created and Approved',
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">
+            <Pie
+              data={proposalData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Proposals Created and Approved',
+                  },
+                },
+              }}
+            />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

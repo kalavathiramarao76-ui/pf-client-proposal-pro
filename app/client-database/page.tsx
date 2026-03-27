@@ -169,8 +169,8 @@ const ClientForm = ({
         value={name}
         onChange={(event) => setName(event.target.value)}
         onBlur={handleBlur}
+        placeholder="Name"
         error={errors.name}
-        placeholder="Client Name"
       />
       <Input
         type="email"
@@ -178,8 +178,8 @@ const ClientForm = ({
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         onBlur={handleBlur}
-        error={errors.email}
         placeholder="Email"
+        error={errors.email}
       />
       <Input
         type="text"
@@ -187,22 +187,20 @@ const ClientForm = ({
         value={phone}
         onChange={(event) => setPhone(event.target.value)}
         onBlur={handleBlur}
+        placeholder="Phone"
         error={errors.phone}
-        placeholder="Phone Number"
       />
       <Select
         name="category"
         value={filter.category}
         onChange={handleCategoryChange}
-        error={errors.category}
         options={categories}
-        placeholder="Select Category"
+        error={errors.category}
       />
       <TagInput
         tags={tags}
         onChange={handleTagsChange}
         error={errors.tags}
-        placeholder="Add Tags"
       />
       <Button type="submit">Submit</Button>
       {errors.form && <div style={{ color: 'red' }}>{errors.form}</div>}
@@ -210,7 +208,7 @@ const ClientForm = ({
   );
 };
 
-const Page = () => {
+const ClientDatabasePage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -249,8 +247,9 @@ const Page = () => {
         isNewClient={isNewClient}
         editedClient={editedClient}
       />
+      <Table />
     </Layout>
   );
 };
 
-export default Page;
+export default ClientDatabasePage;

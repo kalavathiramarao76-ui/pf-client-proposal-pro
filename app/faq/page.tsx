@@ -40,7 +40,7 @@ const schemaMarkup = {
       name: 'How does Proposal Studio help with proposal creation?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a drag-and-drop editor, and real-time collaboration tools. Our software is designed to make it easy for businesses to create professional-looking proposals that win.',
+        text: 'Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a library of pre-built content, and a user-friendly editor that makes it easy to create and customize proposals.',
       },
     },
     {
@@ -48,23 +48,23 @@ const schemaMarkup = {
       name: 'What are the benefits of using Proposal Studio?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The benefits of using Proposal Studio include increased efficiency, improved collaboration, and enhanced proposal quality. Our software helps businesses to streamline their proposal process, reduce the time spent on proposal creation, and increase their chances of winning new clients.',
+        text: 'The benefits of using Proposal Studio include increased efficiency, improved proposal quality, and enhanced collaboration. Our software helps businesses to streamline their proposal process, reduce the time and effort required to create proposals, and improve their chances of winning new clients.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Is Proposal Studio secure?',
+      name: 'Is Proposal Studio suitable for small businesses and freelancers?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Proposal Studio is a secure platform that uses industry-standard encryption and security protocols to protect your data. We take the security of our users seriously and have implemented robust measures to prevent unauthorized access to your proposals and data.',
+        text: 'Yes, Proposal Studio is suitable for small businesses and freelancers. Our software is designed to be user-friendly and accessible, and we offer a range of pricing plans to suit different business needs and budgets.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Can I customize my proposals with Proposal Studio?',
+      name: 'Can I customize the proposal templates in Proposal Studio?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Proposal Studio allows you to customize your proposals with your own branding, logos, and templates. Our software provides a range of customization options, including the ability to add your own images, videos, and other media to your proposals.',
+        text: 'Yes, you can customize the proposal templates in Proposal Studio. Our software allows you to add your own branding, images, and content to the templates, and you can also create your own custom templates from scratch.',
       },
     },
   ],
@@ -91,45 +91,29 @@ const FaqPage = () => {
         <meta name="twitter:image" content={metaTags.metaTwitterImage} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <h1>FAQ</h1>
-      <p>Get answers to frequently asked questions about Proposal Studio.</p>
-      <ul>
-        <li>
-          <Link href="#what-is-proposal-studio">
-            <a>What is Proposal Studio?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#how-does-proposal-studio-help-with-proposal-creation">
-            <a>How does Proposal Studio help with proposal creation?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#what-are-the-benefits-of-using-proposal-studio">
-            <a>What are the benefits of using Proposal Studio?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#is-proposal-studio-secure">
-            <a>Is Proposal Studio secure?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#can-i-customize-my-proposals-with-proposal-studio">
-            <a>Can I customize my proposals with Proposal Studio?</a>
-          </Link>
-        </li>
-      </ul>
-      <h2 id="what-is-proposal-studio">What is Proposal Studio?</h2>
-      <p>Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease. Our proposal management software is designed to streamline the proposal process, making it easier for businesses to win new clients and grow their revenue.</p>
-      <h2 id="how-does-proposal-studio-help-with-proposal-creation">How does Proposal Studio help with proposal creation?</h2>
-      <p>Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a drag-and-drop editor, and real-time collaboration tools. Our software is designed to make it easy for businesses to create professional-looking proposals that win.</p>
-      <h2 id="what-are-the-benefits-of-using-proposal-studio">What are the benefits of using Proposal Studio?</h2>
-      <p>The benefits of using Proposal Studio include increased efficiency, improved collaboration, and enhanced proposal quality. Our software helps businesses to streamline their proposal process, reduce the time spent on proposal creation, and increase their chances of winning new clients.</p>
-      <h2 id="is-proposal-studio-secure">Is Proposal Studio secure?</h2>
-      <p>Yes, Proposal Studio is a secure platform that uses industry-standard encryption and security protocols to protect your data. We take the security of our users seriously and have implemented robust measures to prevent unauthorized access to your proposals and data.</p>
-      <h2 id="can-i-customize-my-proposals-with-proposal-studio">Can I customize my proposals with Proposal Studio?</h2>
-      <p>Yes, Proposal Studio allows you to customize your proposals with your own branding, logos, and templates. Our software provides a range of customization options, including the ability to add your own images, videos, and other media to your proposals.</p>
+      <div className="container">
+        <h1>Frequently Asked Questions</h1>
+        <div className="faq-section">
+          <h2>What is Proposal Studio?</h2>
+          <p>Proposal Studio is a SaaS tool that helps freelancers and creators create, manage, and track proposals with ease. Our proposal management software is designed to streamline the proposal process, making it easier for businesses to win new clients and grow their revenue.</p>
+        </div>
+        <div className="faq-section">
+          <h2>How does Proposal Studio help with proposal creation?</h2>
+          <p>Proposal Studio provides a range of features to help with proposal creation, including customizable proposal templates, a library of pre-built content, and a user-friendly editor that makes it easy to create and customize proposals.</p>
+        </div>
+        <div className="faq-section">
+          <h2>What are the benefits of using Proposal Studio?</h2>
+          <p>The benefits of using Proposal Studio include increased efficiency, improved proposal quality, and enhanced collaboration. Our software helps businesses to streamline their proposal process, reduce the time and effort required to create proposals, and improve their chances of winning new clients.</p>
+        </div>
+        <div className="faq-section">
+          <h2>Is Proposal Studio suitable for small businesses and freelancers?</h2>
+          <p>Yes, Proposal Studio is suitable for small businesses and freelancers. Our software is designed to be user-friendly and accessible, and we offer a range of pricing plans to suit different business needs and budgets.</p>
+        </div>
+        <div className="faq-section">
+          <h2>Can I customize the proposal templates in Proposal Studio?</h2>
+          <p>Yes, you can customize the proposal templates in Proposal Studio. Our software allows you to add your own branding, images, and content to the templates, and you can also create your own custom templates from scratch.</p>
+        </div>
+      </div>
     </div>
   );
 };
