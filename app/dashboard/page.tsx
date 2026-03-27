@@ -36,7 +36,7 @@ const cache = {
   timestamp: null,
 };
 
-const cacheDuration = 1000; // 1 second
+const cacheDuration = 500; // Reduced interval time from 1000 to 500
 
 const socket = io();
 
@@ -130,37 +130,40 @@ const DashboardPage = () => {
   });
   const { realTimeData, loading, error } = useRealTimeData();
 
-  useEffect(() => {
-    if (realTimeData) {
-      setProposalData(realTimeData);
-    }
-  }, [realTimeData]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <DashboardLayout>
-      <Line
-        data={proposalData}
-        options={{
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-            title: {
-              display: true,
-              text: 'Proposal Analytics',
-            },
-          },
-        }}
-      />
+      <div>
+        <h1>Proposal Studio Dashboard</h1>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div>
+            <Line
+              data={proposalData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Proposals Created and Approved',
+                  },
+                },
+              }}
+            />
+            {realTimeData && (
+              <div>
+                <h2>Real-time Data</h2>
+                <p>Proposals Created: {realTimeData.proposalsCreated}</p>
+                <p>Proposals Approved: {realTimeData.proposalsApproved}</p>
+              </div>
+            )}
+            {error && <p>Error: {error.message}</p>}
+          </div>
+        )}
+      </div>
     </DashboardLayout>
   );
 };

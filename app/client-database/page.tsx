@@ -61,7 +61,7 @@ const ClientForm = ({
 
     if (!phone) {
       newErrors.phone = errorMessages.required;
-    } else if (!/^\d{3}-\d{3}-\d{4}$/.test(phone)) {
+    } else if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(phone)) {
       newErrors.phone = errorMessages.invalidPhone;
     }
 
@@ -105,28 +105,15 @@ const ClientForm = ({
     const newErrors = { ...errors };
 
     switch (name) {
-      case 'name':
-        if (!value) {
-          newErrors.name = errorMessages.required;
-        } else if (value.length < 2) {
-          newErrors.name = errorMessages.minLength;
-        } else {
-          newErrors.name = '';
-        }
-        break;
       case 'email':
-        if (!value) {
-          newErrors.email = errorMessages.required;
-        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
           newErrors.email = errorMessages.invalidEmail;
         } else {
           newErrors.email = '';
         }
         break;
       case 'phone':
-        if (!value) {
-          newErrors.phone = errorMessages.required;
-        } else if (!/^\d{3}-\d{3}-\d{4}$/.test(value)) {
+        if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(value)) {
           newErrors.phone = errorMessages.invalidPhone;
         } else {
           newErrors.phone = '';
@@ -139,136 +126,68 @@ const ClientForm = ({
     setErrors(newErrors);
   };
 
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newErrors = { ...errors };
-    if (!event.target.value) {
-      newErrors.category = errorMessages.categoryRequired;
+  const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const phone = event.target.value;
+    const formattedPhone = phone.replace(/[^0-9]/g, '');
+    if (formattedPhone.length > 10) {
+      setPhone(formattedPhone.slice(0, 10));
     } else {
-      newErrors.category = '';
+      setPhone(formattedPhone);
     }
-    setErrors(newErrors);
-    setFilter({ ...filter, category: event.target.value });
   };
 
-  const handleTagsChange = (newTags: string[]) => {
-    const newErrors = { ...errors };
-    if (newTags.length === 0) {
-      newErrors.tags = errorMessages.tagsRequired;
-    } else {
-      newErrors.tags = '';
-    }
-    setErrors(newErrors);
-    setTags(newTags);
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const email = event.target.value;
+    const formattedEmail = email.trim().toLowerCase();
+    setEmail(formattedEmail);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name:</label>
+    <Layout>
+      <form onSubmit={handleSubmit}>
         <Input
           type="text"
           name="name"
           value={name}
           onChange={(event) => setName(event.target.value)}
           onBlur={handleBlur}
+          placeholder="Client Name"
           error={errors.name}
         />
-        {errors.name && <div style={{ color: 'red' }}>{errors.name}</div>}
-      </div>
-      <div>
-        <label>Email:</label>
         <Input
           type="email"
           name="email"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={handleEmailChange}
           onBlur={handleBlur}
+          placeholder="Email"
           error={errors.email}
         />
-        {errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
-      </div>
-      <div>
-        <label>Phone:</label>
         <Input
-          type="text"
+          type="tel"
           name="phone"
           value={phone}
-          onChange={(event) => setPhone(event.target.value)}
+          onChange={handlePhoneChange}
           onBlur={handleBlur}
+          placeholder="Phone Number"
           error={errors.phone}
         />
-        {errors.phone && <div style={{ color: 'red' }}>{errors.phone}</div>}
-      </div>
-      <div>
-        <label>Category:</label>
         <Select
           name="category"
           value={filter.category}
-          onChange={handleCategoryChange}
+          onChange={(event) => setFilter({ ...filter, category: event.target.value })}
+          options={categories}
           error={errors.category}
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </Select>
-        {errors.category && <div style={{ color: 'red' }}>{errors.category}</div>}
-      </div>
-      <div>
-        <label>Tags:</label>
+        />
         <TagInput
           tags={tags}
-          onChange={handleTagsChange}
+          setTags={setTags}
           error={errors.tags}
         />
-        {errors.tags && <div style={{ color: 'red' }}>{errors.tags}</div>}
-      </div>
-      <Button type="submit">Submit</Button>
-    </form>
-  );
-};
-
-const Page = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [errors, setErrors] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    category: '',
-    tags: '',
-  });
-  const [categories, setCategories] = useState(['Category 1', 'Category 2']);
-  const [clientCategories, setClientCategories] = useState(['Category 1']);
-  const [filter, setFilter] = useState({ category: '' });
-  const [tags, setTags] = useState([]);
-  const [isNewClient, setIsNewClient] = useState(true);
-  const [editedClient, setEditedClient] = useState(null);
-
-  return (
-    <Layout>
-      <ClientForm
-        name={name}
-        email={email}
-        phone={phone}
-        setName={setName}
-        setEmail={setEmail}
-        setPhone={setPhone}
-        errors={errors}
-        setErrors={setErrors}
-        categories={categories}
-        clientCategories={clientCategories}
-        setFilter={setFilter}
-        filter={filter}
-        tags={tags}
-        setTags={setTags}
-        isNewClient={isNewClient}
-        editedClient={editedClient}
-      />
+        <Button type="submit">Submit</Button>
+      </form>
     </Layout>
   );
 };
 
-export default Page;
+export default ClientForm;
