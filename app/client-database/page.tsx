@@ -171,8 +171,8 @@ const ClientForm = ({
           value={name}
           onChange={(event) => setName(event.target.value)}
           onBlur={handleBlur}
+          errorMessage={errors.name}
         />
-        {errors.name && <div style={{ color: 'red' }}>{errors.name}</div>}
       </div>
       <div>
         <label>Email:</label>
@@ -182,8 +182,8 @@ const ClientForm = ({
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           onBlur={handleBlur}
+          errorMessage={errors.email}
         />
-        {errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
       </div>
       <div>
         <label>Phone:</label>
@@ -193,8 +193,8 @@ const ClientForm = ({
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
           onBlur={handleBlur}
+          errorMessage={errors.phone}
         />
-        {errors.phone && <div style={{ color: 'red' }}>{errors.phone}</div>}
       </div>
       <div>
         <label>Category:</label>
@@ -202,26 +202,63 @@ const ClientForm = ({
           name="category"
           value={filter.category}
           onChange={handleCategoryChange}
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </Select>
-        {errors.category && <div style={{ color: 'red' }}>{errors.category}</div>}
+          options={categories}
+          errorMessage={errors.category}
+        />
       </div>
       <div>
         <label>Tags:</label>
         <TagInput
           tags={tags}
           onChange={handleTagsChange}
+          errorMessage={errors.tags}
         />
-        {errors.tags && <div style={{ color: 'red' }}>{errors.tags}</div>}
       </div>
       <Button type="submit">Submit</Button>
     </form>
   );
 };
 
-export default ClientForm;
+const Page = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    category: '',
+    tags: '',
+  });
+  const [categories, setCategories] = useState([]);
+  const [clientCategories, setClientCategories] = useState([]);
+  const [filter, setFilter] = useState({ category: '' });
+  const [tags, setTags] = useState([]);
+  const [isNewClient, setIsNewClient] = useState(true);
+  const [editedClient, setEditedClient] = useState(null);
+
+  return (
+    <Layout>
+      <ClientForm
+        name={name}
+        email={email}
+        phone={phone}
+        setName={setName}
+        setEmail={setEmail}
+        setPhone={setPhone}
+        errors={errors}
+        setErrors={setErrors}
+        categories={categories}
+        clientCategories={clientCategories}
+        setFilter={setFilter}
+        filter={filter}
+        tags={tags}
+        setTags={setTags}
+        isNewClient={isNewClient}
+        editedClient={editedClient}
+      />
+    </Layout>
+  );
+};
+
+export default Page;
