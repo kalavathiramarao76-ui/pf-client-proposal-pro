@@ -36,7 +36,7 @@ const cache = {
   timestamp: null,
 };
 
-const cacheDuration = 5000; // increased cache duration to 5 seconds
+const cacheDuration = 5000; 
 
 const socket = io();
 
@@ -121,71 +121,32 @@ const DashboardPage = () => {
         label: 'Proposals Created',
         data: [10, 20, 30, 40, 50],
         borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1,
-      },
-      {
-        label: 'Proposals Approved',
-        data: [20, 40, 60, 80, 100],
-        borderColor: 'rgb(255, 99, 132)',
-        tension: 0.1,
-      },
-    ],
+        tension: 0.1
+      }
+    ]
   });
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
-        <div className="flex flex-wrap justify-center">
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
-            <div className="bg-white rounded shadow-md p-4">
-              <h2 className="text-lg font-bold mb-2">Proposals Created</h2>
-              <Line
-                data={proposalData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: true,
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
-            <div className="bg-white rounded shadow-md p-4">
-              <h2 className="text-lg font-bold mb-2">Proposals Approved</h2>
-              <Bar
-                data={proposalData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: true,
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
-            <div className="bg-white rounded shadow-md p-4">
-              <h2 className="text-lg font-bold mb-2">Proposals by Status</h2>
-              <Pie
-                data={proposalData}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: true,
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
+      {loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div>Error: {error.message}</div>
+      ) : (
+        <div>
+          <Line
+            data={proposalData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  display: true,
+                },
+              },
+            }}
+          />
         </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 };

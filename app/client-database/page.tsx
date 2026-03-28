@@ -134,67 +134,87 @@ const ClientForm = ({
     return { error, suggestion };
   };
 
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const fieldName = event.target.name;
-    const value = event.target.value;
-    const { error, suggestion } = validateField(fieldName, value);
-    const newErrors = { ...errors };
-    newErrors[fieldName] = error;
-    setErrors(newErrors);
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const { error, suggestion } = validateField('name', value);
+    setErrors((prevErrors) => ({ ...prevErrors, name: error }));
+    setName(value);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const isValid = validateForm();
-    if (!isValid) {
-      return;
-    }
-    // Submit form logic here
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const { error, suggestion } = validateField('email', value);
+    setErrors((prevErrors) => ({ ...prevErrors, email: error }));
+    setEmail(value);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const { error, suggestion } = validateField('phone', value);
+    setErrors((prevErrors) => ({ ...prevErrors, phone: error }));
+    setPhone(value);
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    const { error, suggestion } = validateField('category', value);
+    setErrors((prevErrors) => ({ ...prevErrors, category: error }));
+    setFilter((prevFilter) => ({ ...prevFilter, category: value }));
+  };
+
+  const handleTagsChange = (tags: string[]) => {
+    const { error, suggestion } = validateField('tags', tags.join(','));
+    setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
+    setTags(tags);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        name="name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.name}
-      />
-      <Input
-        type="email"
-        name="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.email}
-      />
-      <Input
-        type="text"
-        name="phone"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        onBlur={handleBlur}
-        error={errors.phone}
-      />
-      <Select
-        name="category"
-        value={filter.category}
-        onChange={(event) => setFilter({ ...filter, category: event.target.value })}
-        onBlur={handleBlur}
-        error={errors.category}
-        options={categories}
-      />
-      <TagInput
-        name="tags"
-        value={tags}
-        onChange={(newTags) => setTags(newTags)}
-        onBlur={(event) => handleBlur(event)}
-        error={errors.tags}
-      />
-      <Button type="submit">Submit</Button>
-    </form>
+    <Layout>
+      <form>
+        <Input
+          type="text"
+          label="Name"
+          value={name}
+          onChange={handleNameChange}
+          error={errors.name}
+          suggestion={validateField('name', name).suggestion}
+        />
+        <Input
+          type="email"
+          label="Email"
+          value={email}
+          onChange={handleEmailChange}
+          error={errors.email}
+          suggestion={validateField('email', email).suggestion}
+        />
+        <Input
+          type="text"
+          label="Phone"
+          value={phone}
+          onChange={handlePhoneChange}
+          error={errors.phone}
+          suggestion={validateField('phone', phone).suggestion}
+        />
+        <Select
+          label="Category"
+          value={filter.category}
+          onChange={handleCategoryChange}
+          options={categories}
+          error={errors.category}
+          suggestion={validateField('category', filter.category).suggestion}
+        />
+        <TagInput
+          label="Tags"
+          value={tags}
+          onChange={handleTagsChange}
+          error={errors.tags}
+          suggestion={validateField('tags', tags.join(',')).suggestion}
+        />
+        <Button type="submit" disabled={!validateForm()}>
+          Submit
+        </Button>
+      </form>
+    </Layout>
   );
 };
 
