@@ -153,11 +153,11 @@ const ClientForm = ({
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
-    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+    setFilter((prevFilter) => ({ ...prevFilter, category: value }));
     const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
+    setErrors((prevErrors) => ({ ...prevErrors, category: error }));
   };
 
   const handleTagChange = (tags: string[]) => {
@@ -176,7 +176,6 @@ const ClientForm = ({
           onChange={handleInputChange}
           placeholder="Name"
           error={errors.name}
-          suggestion={validateField('name', name).suggestion}
         />
         <Input
           type="email"
@@ -185,30 +184,26 @@ const ClientForm = ({
           onChange={handleInputChange}
           placeholder="Email"
           error={errors.email}
-          suggestion={validateField('email', email).suggestion}
         />
         <Input
-          type="tel"
+          type="text"
           name="phone"
           value={phone}
           onChange={handleInputChange}
           placeholder="Phone"
           error={errors.phone}
-          suggestion={validateField('phone', phone).suggestion}
         />
         <Select
           name="category"
           value={filter.category}
-          onChange={handleSelectChange}
+          onChange={handleCategoryChange}
           options={categories}
           error={errors.category}
-          suggestion={validateField('category', filter.category).suggestion}
         />
         <TagInput
           tags={tags}
           onChange={handleTagChange}
           error={errors.tags}
-          suggestion={validateField('tags', tags.join(',')).suggestion}
         />
         <Button type="submit" onClick={() => validateForm()}>
           Submit

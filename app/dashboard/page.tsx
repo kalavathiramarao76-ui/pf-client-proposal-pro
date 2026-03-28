@@ -125,8 +125,8 @@ const DashboardPage = () => {
       },
       {
         label: 'Proposals Approved',
-        data: [20, 30, 40, 50, 60],
-        borderColor: 'rgb(53, 162, 235)',
+        data: [20, 40, 60, 80, 100],
+        borderColor: 'rgb(255, 99, 132)',
         tension: 0.1,
       },
     ],
@@ -146,7 +146,7 @@ const DashboardPage = () => {
           {
             label: 'Proposals Approved',
             data: realTimeData.proposalsApproved,
-            borderColor: 'rgb(53, 162, 235)',
+            borderColor: 'rgb(255, 99, 132)',
             tension: 0.1,
           },
         ],

@@ -46,7 +46,7 @@ const schemaMarkup = {
       name: 'How does Proposal Studio help with proposal automation?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio automates the proposal creation process, allowing users to generate professional-looking proposals quickly and efficiently.',
+        text: 'Proposal Studio automates the proposal creation process, allowing users to generate professional-looking proposals quickly and efficiently, saving time and increasing productivity.',
       },
     },
     {
@@ -54,7 +54,7 @@ const schemaMarkup = {
       name: 'What features does Proposal Studio offer for proposal management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio offers a range of features for proposal management, including proposal templates, client relationship management, and proposal tracking and analytics.',
+        text: 'Proposal Studio offers a range of features for proposal management, including proposal templates, client relationship management, proposal tracking, and proposal analytics, helping users to streamline their proposal process and improve their chances of winning deals.',
       },
     },
   ],
@@ -87,15 +87,16 @@ const FaqPage = () => {
         <meta name="tags" content={metaTags.metaTags} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <div>
+      <div className="container">
         <h1>Proposal Studio FAQ</h1>
         <p>Get expert answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.</p>
-        <Link href="/">
+        <Link href="/contact">
           <a>
             <AiOutlineArrowRight />
-            Back to Home
+            Contact Us
           </a>
         </Link>
+        <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />
       </div>
     </div>
   );
