@@ -134,32 +134,36 @@ const ClientForm = ({
     return { error, suggestion };
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+      default:
+        break;
+    }
     const { error, suggestion } = validateField(name, value);
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-    if (name === 'name') {
-      setName(value);
-    } else if (name === 'email') {
-      setEmail(value);
-    } else if (name === 'phone') {
-      setPhone(value);
-    }
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
     const { error, suggestion } = validateField(name, value);
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-    if (name === 'category') {
-      setFilter((prevFilter) => ({ ...prevFilter, category: value }));
-    }
   };
 
   const handleTagChange = (tags: string[]) => {
+    setTags(tags);
     const { error, suggestion } = validateField('tags', tags.join(','));
     setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
-    setTags(tags);
   };
 
   return (
@@ -184,7 +188,7 @@ const ClientForm = ({
           suggestion={validateField('email', email).suggestion}
         />
         <Input
-          type="text"
+          type="tel"
           name="phone"
           value={phone}
           onChange={handleInputChange}
@@ -206,7 +210,7 @@ const ClientForm = ({
           error={errors.tags}
           suggestion={validateField('tags', tags.join(',')).suggestion}
         />
-        <Button type="submit" onClick={validateForm}>
+        <Button type="submit" onClick={() => validateForm()}>
           Submit
         </Button>
       </form>

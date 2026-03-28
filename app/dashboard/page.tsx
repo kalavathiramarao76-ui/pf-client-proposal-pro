@@ -125,27 +125,62 @@ const DashboardPage = () => {
       },
       {
         label: 'Proposals Approved',
-        data: [5, 10, 15, 20, 25],
+        data: [20, 30, 40, 50, 60],
         borderColor: 'rgb(53, 162, 235)',
         tension: 0.1,
       },
     ],
   });
 
+  useEffect(() => {
+    if (realTimeData) {
+      setProposalData({
+        labels: realTimeData.labels,
+        datasets: [
+          {
+            label: 'Proposals Created',
+            data: realTimeData.proposalsCreated,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+          {
+            label: 'Proposals Approved',
+            data: realTimeData.proposalsApproved,
+            borderColor: 'rgb(53, 162, 235)',
+            tension: 0.1,
+          },
+        ],
+      });
+    }
+  }, [realTimeData]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <DashboardLayout>
       <div className="container">
         <h1>Proposal Studio Dashboard</h1>
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : (
-          <div>
-            <Line data={proposalData} />
-            <p>Real-time data: {JSON.stringify(realTimeData)}</p>
-          </div>
-        )}
+        <Line
+          data={proposalData}
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Proposals Created and Approved',
+              },
+            },
+          }}
+        />
       </div>
     </DashboardLayout>
   );

@@ -38,23 +38,23 @@ const schemaMarkup = {
       name: 'What is Proposal Studio and how does it help with proposal management and sales enablement?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement, proposal automation, and revenue growth with innovative proposal management software and sales enablement solutions.',
+        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio improve proposal management and sales enablement?',
+      name: 'How does Proposal Studio help with proposal automation?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio streamlines proposal management and sales enablement by providing a centralized platform for creating, managing, and tracking business proposals, proposal templates, and client relationships, resulting in increased efficiency, productivity, and revenue growth.',
+        text: 'Proposal Studio automates the proposal creation process, allowing users to generate professional-looking proposals quickly and efficiently.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What features does Proposal Studio offer for proposal management and sales enablement?',
+      name: 'What features does Proposal Studio offer for proposal management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio offers a range of features, including proposal templates, proposal automation, proposal tracking, proposal analytics, and client relationship management, all designed to help freelancers and creators create, manage, and track business proposals and client relationships more effectively.',
+        text: 'Proposal Studio offers a range of features for proposal management, including proposal templates, client relationship management, and proposal tracking and analytics.',
       },
     },
   ],
@@ -87,21 +87,15 @@ const FaqPage = () => {
         <meta name="tags" content={metaTags.metaTags} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <div className="container">
+      <div>
         <h1>Proposal Studio FAQ</h1>
         <p>Get expert answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.</p>
-        <div className="faq-section">
-          <h2>What is Proposal Studio and how does it help with proposal management and sales enablement?</h2>
-          <p>Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement, proposal automation, and revenue growth with innovative proposal management software and sales enablement solutions.</p>
-        </div>
-        <div className="faq-section">
-          <h2>How does Proposal Studio improve proposal management and sales enablement?</h2>
-          <p>Proposal Studio streamlines proposal management and sales enablement by providing a centralized platform for creating, managing, and tracking business proposals, proposal templates, and client relationships, resulting in increased efficiency, productivity, and revenue growth.</p>
-        </div>
-        <div className="faq-section">
-          <h2>What features does Proposal Studio offer for proposal management and sales enablement?</h2>
-          <p>Proposal Studio offers a range of features, including proposal templates, proposal automation, proposal tracking, proposal analytics, and client relationship management, all designed to help freelancers and creators create, manage, and track business proposals and client relationships more effectively.</p>
-        </div>
+        <Link href="/">
+          <a>
+            <AiOutlineArrowRight />
+            Back to Home
+          </a>
+        </Link>
       </div>
     </div>
   );
