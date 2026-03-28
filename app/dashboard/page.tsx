@@ -130,11 +130,41 @@ const DashboardPage = () => {
       },
     ],
   });
+
   const { realTimeData, loading, error } = useRealTimeData();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <DashboardLayout>
-      {/* Your dashboard content here */}
+      <div>
+        <h1>Proposal Studio Dashboard</h1>
+        {realTimeData && (
+          <Line
+            data={{
+              labels: proposalData.labels,
+              datasets: proposalData.datasets.map((dataset) => ({
+                ...dataset,
+                data: realTimeData[dataset.label],
+              })),
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  display: true,
+                },
+              },
+            }}
+          />
+        )}
+      </div>
     </DashboardLayout>
   );
 };
