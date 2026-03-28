@@ -113,6 +113,7 @@ const useRealTimeData = () => {
 const DashboardPage = () => {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const { realTimeData, loading, error } = useRealTimeData();
   const [proposalData, setProposalData] = useState({
     labels: ['January', 'February', 'March', 'April', 'May'],
     datasets: [
@@ -131,7 +132,14 @@ const DashboardPage = () => {
     ],
   });
 
-  const { realTimeData, loading, error } = useRealTimeData();
+  useEffect(() => {
+    if (realTimeData) {
+      setProposalData({
+        labels: realTimeData.labels,
+        datasets: realTimeData.datasets,
+      });
+    }
+  }, [realTimeData]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -143,28 +151,21 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div>
-        <h1>Proposal Studio Dashboard</h1>
-        {realTimeData && (
-          <Line
-            data={{
-              labels: proposalData.labels,
-              datasets: proposalData.datasets.map((dataset) => ({
-                ...dataset,
-                data: realTimeData[dataset.label],
-              })),
-            }}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  display: true,
-                },
-              },
-            }}
-          />
-        )}
-      </div>
+      <Line
+        data={proposalData}
+        options={{
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Proposal Analytics',
+            },
+          },
+        }}
+      />
     </DashboardLayout>
   );
 };
