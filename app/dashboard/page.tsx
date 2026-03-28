@@ -132,31 +132,12 @@ const DashboardPage = () => {
     ],
   });
 
-  const handleDataUpdate = (data) => {
-    if (data) {
-      setProposalData({
-        labels: ['January', 'February', 'March', 'April', 'May'],
-        datasets: [
-          {
-            label: 'Proposals Created',
-            data: data.proposalsCreated,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1,
-          },
-          {
-            label: 'Proposals Approved',
-            data: data.proposalsApproved,
-            borderColor: 'rgb(53, 162, 235)',
-            tension: 0.1,
-          },
-        ],
-      });
-    }
-  };
-
   useEffect(() => {
     if (realTimeData) {
-      handleDataUpdate(realTimeData);
+      setProposalData({
+        labels: realTimeData.labels,
+        datasets: realTimeData.datasets,
+      });
     }
   }, [realTimeData]);
 
