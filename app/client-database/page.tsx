@@ -141,12 +141,13 @@ const ClientForm = ({
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newErrors = { ...errors };
-    if (!event.target.value) {
+    if (event.target.value === '') {
       newErrors.category = errorMessages.categoryRequired;
     } else {
       newErrors.category = '';
     }
     setErrors(newErrors);
+    setFilter({ ...filter, category: event.target.value });
   };
 
   const handleTagsChange = (tags: string[]) => {
@@ -157,70 +158,64 @@ const ClientForm = ({
       newErrors.tags = '';
     }
     setErrors(newErrors);
+    setTags(tags);
   };
 
   return (
-    <Layout>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <Input
-            type="text"
-            name="name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            onBlur={handleBlur}
-          />
-          {errors.name && <div style={{ color: 'red' }}>{errors.name}</div>}
-        </div>
-        <div>
-          <label>Email:</label>
-          <Input
-            type="email"
-            name="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            onBlur={handleBlur}
-          />
-          {errors.email && <div style={{ color: 'red' }}>{errors.email}</div>}
-        </div>
-        <div>
-          <label>Phone:</label>
-          <Input
-            type="text"
-            name="phone"
-            value={phone}
-            onChange={(event) => setPhone(event.target.value)}
-            onBlur={handleBlur}
-          />
-          {errors.phone && <div style={{ color: 'red' }}>{errors.phone}</div>}
-        </div>
-        <div>
-          <label>Category:</label>
-          <Select
-            name="category"
-            value={filter.category}
-            onChange={handleCategoryChange}
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </Select>
-          {errors.category && <div style={{ color: 'red' }}>{errors.category}</div>}
-        </div>
-        <div>
-          <label>Tags:</label>
-          <TagInput
-            tags={tags}
-            onChange={handleTagsChange}
-          />
-          {errors.tags && <div style={{ color: 'red' }}>{errors.tags}</div>}
-        </div>
-        <Button type="submit">Submit</Button>
-      </form>
-    </Layout>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Name:</label>
+        <Input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          onBlur={handleBlur}
+          errorMessage={errors.name}
+        />
+      </div>
+      <div>
+        <label>Email:</label>
+        <Input
+          type="email"
+          name="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          onBlur={handleBlur}
+          errorMessage={errors.email}
+        />
+      </div>
+      <div>
+        <label>Phone:</label>
+        <Input
+          type="text"
+          name="phone"
+          value={phone}
+          onChange={(event) => setPhone(event.target.value)}
+          onBlur={handleBlur}
+          errorMessage={errors.phone}
+        />
+      </div>
+      <div>
+        <label>Category:</label>
+        <Select
+          name="category"
+          value={filter.category}
+          onChange={handleCategoryChange}
+          options={categories}
+          errorMessage={errors.category}
+        />
+      </div>
+      <div>
+        <label>Tags:</label>
+        <TagInput
+          tags={tags}
+          onChange={handleTagsChange}
+          errorMessage={errors.tags}
+        />
+      </div>
+      <Button type="submit">Submit</Button>
+    </form>
   );
 };
 
