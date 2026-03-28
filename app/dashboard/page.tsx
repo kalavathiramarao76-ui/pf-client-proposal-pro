@@ -105,7 +105,7 @@ const useRealTimeData = () => {
       socket.off('proposal-analytics');
       clearInterval(intervalId);
     };
-  }, []);
+  }, [realTimeData]);
 
   return { realTimeData, loading, error };
 };
@@ -125,6 +125,23 @@ const DashboardPage = () => {
       }
     ]
   });
+
+  useEffect(() => {
+    if (realTimeData) {
+      const updatedProposalData = {
+        labels: realTimeData.labels,
+        datasets: [
+          {
+            label: 'Proposals Created',
+            data: realTimeData.data,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          }
+        ]
+      };
+      setProposalData(updatedProposalData);
+    }
+  }, [realTimeData]);
 
   return (
     <DashboardLayout>
