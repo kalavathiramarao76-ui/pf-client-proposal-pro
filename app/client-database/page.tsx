@@ -77,6 +77,77 @@ const ClientForm = ({
     return Object.values(newErrors).every((error) => error === '');
   };
 
+  const validateField = (fieldName: string, value: string) => {
+    let error = '';
+    switch (fieldName) {
+      case 'name':
+        if (!value) {
+          error = errorMessages.required;
+        } else if (value.length < 2) {
+          error = errorMessages.minLength;
+        }
+        break;
+      case 'email':
+        if (!value) {
+          error = errorMessages.required;
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+          error = errorMessages.invalidEmail;
+        }
+        break;
+      case 'phone':
+        if (!value) {
+          error = errorMessages.required;
+        } else if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(value)) {
+          error = errorMessages.invalidPhone;
+        }
+        break;
+      case 'category':
+        if (!value) {
+          error = errorMessages.categoryRequired;
+        }
+        break;
+      case 'tags':
+        if (value === '') {
+          error = errorMessages.tagsRequired;
+        }
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const error = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleCategoryChange = (value: string) => {
+    const error = validateField('category', value);
+    setErrors((prevErrors) => ({ ...prevErrors, category: error }));
+    setFilter((prevFilter) => ({ ...prevFilter, category: value }));
+  };
+
+  const handleTagsChange = (tags: string[]) => {
+    const error = validateField('tags', tags.join(','));
+    setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
+    setTags(tags);
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateForm()) {
@@ -102,120 +173,56 @@ const ClientForm = ({
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    const newErrors = { ...errors };
-
-    switch (name) {
-      case 'name':
-        if (!value) {
-          newErrors.name = errorMessages.required;
-        } else if (value.length < 2) {
-          newErrors.name = errorMessages.minLength;
-        } else {
-          newErrors.name = '';
-        }
-        break;
-      case 'email':
-        if (!value) {
-          newErrors.email = errorMessages.required;
-        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
-          newErrors.email = errorMessages.invalidEmail;
-        } else {
-          newErrors.email = '';
-        }
-        break;
-      case 'phone':
-        if (!value) {
-          newErrors.phone = errorMessages.required;
-        } else if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(value)) {
-          newErrors.phone = errorMessages.invalidPhone;
-        } else {
-          newErrors.phone = '';
-        }
-        break;
-      default:
-        break;
-    }
-
-    setErrors(newErrors);
-  };
-
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newErrors = { ...errors };
-    if (event.target.value === '') {
-      newErrors.category = errorMessages.categoryRequired;
-    } else {
-      newErrors.category = '';
-    }
-    setErrors(newErrors);
-    setFilter({ ...filter, category: event.target.value });
-  };
-
-  const handleTagsChange = (tags: string[]) => {
-    const newErrors = { ...errors };
-    if (tags.length === 0) {
-      newErrors.tags = errorMessages.tagsRequired;
-    } else {
-      newErrors.tags = '';
-    }
-    setErrors(newErrors);
-    setTags(tags);
+    const error = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name:</label>
+    <Layout>
+      <form onSubmit={handleSubmit}>
         <Input
           type="text"
           name="name"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={handleInputChange}
           onBlur={handleBlur}
-          errorMessage={errors.name}
+          error={errors.name}
+          placeholder="Name"
         />
-      </div>
-      <div>
-        <label>Email:</label>
         <Input
           type="email"
           name="email"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={handleInputChange}
           onBlur={handleBlur}
-          errorMessage={errors.email}
+          error={errors.email}
+          placeholder="Email"
         />
-      </div>
-      <div>
-        <label>Phone:</label>
         <Input
           type="text"
           name="phone"
           value={phone}
-          onChange={(event) => setPhone(event.target.value)}
+          onChange={handleInputChange}
           onBlur={handleBlur}
-          errorMessage={errors.phone}
+          error={errors.phone}
+          placeholder="Phone"
         />
-      </div>
-      <div>
-        <label>Category:</label>
         <Select
           name="category"
           value={filter.category}
           onChange={handleCategoryChange}
+          error={errors.category}
           options={categories}
-          errorMessage={errors.category}
         />
-      </div>
-      <div>
-        <label>Tags:</label>
         <TagInput
-          tags={tags}
+          name="tags"
+          value={tags}
           onChange={handleTagsChange}
-          errorMessage={errors.tags}
+          error={errors.tags}
         />
-      </div>
-      <Button type="submit">Submit</Button>
-    </form>
+        <Button type="submit">Submit</Button>
+      </form>
+    </Layout>
   );
 };
 

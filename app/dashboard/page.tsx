@@ -96,6 +96,8 @@ const useRealTimeData = () => {
     socket.on('proposal-analytics', (data) => {
       if (data !== realTimeData) {
         setRealTimeData(data);
+        cache.proposalData = data;
+        cache.timestamp = Date.now();
       }
     });
 
@@ -130,34 +132,9 @@ const DashboardPage = () => {
   });
   const { realTimeData, loading, error } = useRealTimeData();
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <DashboardLayout>
-      <div>
-        <h1>Proposal Studio Dashboard</h1>
-        <Line
-          data={proposalData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              title: {
-                display: true,
-                text: 'Proposals Created and Approved',
-              },
-            },
-          }}
-        />
-      </div>
+      {/* Your dashboard content here */}
     </DashboardLayout>
   );
 };
