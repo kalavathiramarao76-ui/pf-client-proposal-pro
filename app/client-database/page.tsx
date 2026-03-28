@@ -109,38 +109,45 @@ const ClientForm = ({
       default:
         break;
     }
-    return error;
+    const newErrors = { ...errors };
+    newErrors[fieldName] = error;
+    setErrors(newErrors);
+    return error === '';
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        setErrors((prevErrors) => ({ ...prevErrors, name: validateField(name, value) }));
-        break;
-      case 'email':
-        setEmail(value);
-        setErrors((prevErrors) => ({ ...prevErrors, email: validateField(name, value) }));
-        break;
-      case 'phone':
-        setPhone(value);
-        setErrors((prevErrors) => ({ ...prevErrors, phone: validateField(name, value) }));
-        break;
-      default:
-        break;
-    }
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setName(value);
+    validateField('name', value);
   };
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    setFilter((prevFilter) => ({ ...prevFilter, category: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, category: validateField(name, value) }));
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    validateField('email', value);
   };
 
-  const handleTagChange = (tags: string[]) => {
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPhone(value);
+    validateField('phone', value);
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setFilter({ ...filter, category: value });
+    validateField('category', value);
+  };
+
+  const handleTagsChange = (tags: string[]) => {
     setTags(tags);
-    setErrors((prevErrors) => ({ ...prevErrors, tags: tags.length === 0 ? errorMessages.tagsRequired : '' }));
+    const newErrors = { ...errors };
+    if (tags.length === 0) {
+      newErrors.tags = errorMessages.tagsRequired;
+    } else {
+      newErrors.tags = '';
+    }
+    setErrors(newErrors);
   };
 
   return (
@@ -148,38 +155,34 @@ const ClientForm = ({
       <form>
         <Input
           type="text"
-          name="name"
           value={name}
-          onChange={handleInputChange}
-          placeholder="Client Name"
+          onChange={handleNameChange}
+          placeholder="Name"
           error={errors.name}
         />
         <Input
           type="email"
-          name="email"
           value={email}
-          onChange={handleInputChange}
+          onChange={handleEmailChange}
           placeholder="Email"
           error={errors.email}
         />
         <Input
           type="text"
-          name="phone"
           value={phone}
-          onChange={handleInputChange}
-          placeholder="Phone Number"
+          onChange={handlePhoneChange}
+          placeholder="Phone"
           error={errors.phone}
         />
         <Select
-          name="category"
           value={filter.category}
-          onChange={handleSelectChange}
+          onChange={handleCategoryChange}
           options={categories}
           error={errors.category}
         />
         <TagInput
           tags={tags}
-          onChange={handleTagChange}
+          onChange={handleTagsChange}
           error={errors.tags}
         />
         <Button type="submit" disabled={!validateForm()}>
