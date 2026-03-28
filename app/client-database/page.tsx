@@ -134,82 +134,67 @@ const ClientForm = ({
     return { error, suggestion };
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'email':
-        setEmail(value);
-        break;
-      case 'phone':
-        setPhone(value);
-        break;
-      default:
-        break;
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const fieldName = event.target.name;
+    const value = event.target.value;
+    const { error, suggestion } = validateField(fieldName, value);
+    const newErrors = { ...errors };
+    newErrors[fieldName] = error;
+    setErrors(newErrors);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const isValid = validateForm();
+    if (!isValid) {
+      return;
     }
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-  };
-
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    setFilter((prevFilter) => ({ ...prevFilter, category: value }));
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, category: error }));
-  };
-
-  const handleTagChange = (tags: string[]) => {
-    setTags(tags);
-    const { error, suggestion } = validateField('tags', tags.join(','));
-    setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
+    // Submit form logic here
   };
 
   return (
-    <Layout>
-      <form>
-        <Input
-          type="text"
-          name="name"
-          value={name}
-          onChange={handleInputChange}
-          placeholder="Name"
-          error={errors.name}
-        />
-        <Input
-          type="email"
-          name="email"
-          value={email}
-          onChange={handleInputChange}
-          placeholder="Email"
-          error={errors.email}
-        />
-        <Input
-          type="text"
-          name="phone"
-          value={phone}
-          onChange={handleInputChange}
-          placeholder="Phone"
-          error={errors.phone}
-        />
-        <Select
-          name="category"
-          value={filter.category}
-          onChange={handleCategoryChange}
-          options={categories}
-          error={errors.category}
-        />
-        <TagInput
-          tags={tags}
-          onChange={handleTagChange}
-          error={errors.tags}
-        />
-        <Button type="submit" onClick={() => validateForm()}>
-          Submit
-        </Button>
-      </form>
-    </Layout>
+    <form onSubmit={handleSubmit}>
+      <Input
+        type="text"
+        name="name"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        onBlur={handleBlur}
+        error={errors.name}
+      />
+      <Input
+        type="email"
+        name="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        onBlur={handleBlur}
+        error={errors.email}
+      />
+      <Input
+        type="text"
+        name="phone"
+        value={phone}
+        onChange={(event) => setPhone(event.target.value)}
+        onBlur={handleBlur}
+        error={errors.phone}
+      />
+      <Select
+        name="category"
+        value={filter.category}
+        onChange={(event) => setFilter({ ...filter, category: event.target.value })}
+        onBlur={handleBlur}
+        error={errors.category}
+        options={categories}
+      />
+      <TagInput
+        name="tags"
+        value={tags}
+        onChange={(newTags) => setTags(newTags)}
+        onBlur={(event) => handleBlur(event)}
+        error={errors.tags}
+      />
+      <Button type="submit">Submit</Button>
+    </form>
   );
 };
 

@@ -85,7 +85,7 @@ const useRealTimeData = () => {
     const intervalId = setInterval(async () => {
       try {
         const data = await getRealTimeData();
-        if (data !== realTimeData) {
+        if (JSON.stringify(data) !== JSON.stringify(realTimeData)) {
           setRealTimeData(data);
         }
       } catch (error) {
@@ -94,7 +94,7 @@ const useRealTimeData = () => {
     }, cacheDuration);
 
     socket.on('proposal-analytics', (data) => {
-      if (data !== realTimeData) {
+      if (JSON.stringify(data) !== JSON.stringify(realTimeData)) {
         setRealTimeData(data);
         cache.proposalData = data;
         cache.timestamp = Date.now();
@@ -105,7 +105,7 @@ const useRealTimeData = () => {
       socket.off('proposal-analytics');
       clearInterval(intervalId);
     };
-  }, [realTimeData]);
+  }, []);
 
   return { realTimeData, loading, error };
 };
@@ -132,55 +132,59 @@ const DashboardPage = () => {
     ],
   });
 
-  useEffect(() => {
-    if (realTimeData) {
-      setProposalData({
-        labels: realTimeData.labels,
-        datasets: [
-          {
-            label: 'Proposals Created',
-            data: realTimeData.proposalsCreated,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1,
-          },
-          {
-            label: 'Proposals Approved',
-            data: realTimeData.proposalsApproved,
-            borderColor: 'rgb(255, 99, 132)',
-            tension: 0.1,
-          },
-        ],
-      });
-    }
-  }, [realTimeData]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
   return (
     <DashboardLayout>
-      <div className="container">
-        <h1>Proposal Studio Dashboard</h1>
-        <Line
-          data={proposalData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'top',
-              },
-              title: {
-                display: true,
-                text: 'Proposals Created and Approved',
-              },
-            },
-          }}
-        />
+      <div className="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24">
+        <div className="flex flex-wrap justify-center">
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+            <div className="bg-white rounded shadow-md p-4">
+              <h2 className="text-lg font-bold mb-2">Proposals Created</h2>
+              <Line
+                data={proposalData}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      display: true,
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+            <div className="bg-white rounded shadow-md p-4">
+              <h2 className="text-lg font-bold mb-2">Proposals Approved</h2>
+              <Bar
+                data={proposalData}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      display: true,
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 xl:w-1/3 p-6">
+            <div className="bg-white rounded shadow-md p-4">
+              <h2 className="text-lg font-bold mb-2">Proposals by Status</h2>
+              <Pie
+                data={proposalData}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      display: true,
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
