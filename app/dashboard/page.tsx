@@ -140,7 +140,7 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="container">
+      <div>
         <h1>Proposal Studio Dashboard</h1>
         <Line
           data={proposalData}

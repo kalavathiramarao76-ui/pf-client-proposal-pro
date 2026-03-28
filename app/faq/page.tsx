@@ -40,31 +40,31 @@ const schemaMarkup = {
       name: 'How does Proposal Studio help with proposal creation?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of features to help with proposal creation, including proposal templates, a proposal builder, and a proposal generator. These tools enable users to create professional-looking proposals quickly and easily.',
+        text: 'Proposal Studio provides a range of features to help with proposal creation, including proposal templates, a proposal builder, and collaboration tools.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What is the benefit of using Proposal Studio for proposal tracking?',
+      name: 'Can I track my proposals with Proposal Studio?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides real-time tracking and analytics, enabling users to monitor the status of their proposals and make data-driven decisions to improve their sales strategy.',
+        text: 'Yes, Proposal Studio provides real-time tracking and analytics to help you monitor the status of your proposals and make data-driven decisions.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio support sales enablement?',
+      name: 'Is Proposal Studio suitable for sales teams?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of sales enablement tools, including proposal templates, sales content management, and analytics. These tools enable sales teams to create and manage effective sales content, and to track the performance of their sales efforts.',
+        text: 'Yes, Proposal Studio is designed to support sales teams with features such as proposal automation, sales enablement, and revenue growth tracking.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Can Proposal Studio be used for collaboration?',
+      name: 'How does Proposal Studio help with client relationships?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Proposal Studio provides features to support collaboration, including real-time commenting, @mentions, and version control. These features enable teams to work together on proposals and sales content, and to track changes and feedback.',
+        text: 'Proposal Studio provides tools to help you manage client relationships, including contact management, proposal tracking, and communication features.',
       },
     },
   ],
@@ -77,7 +77,7 @@ const FaqPage = () => {
         <title>{metaTags.metaTitle}</title>
         <meta name="description" content={metaTags.metaDescription} />
         <meta name="keywords" content={metaTags.metaKeywords} />
-        <link rel="canonical" href={metaTags.metaCanonical} />
+        <meta name="canonical" content={metaTags.metaCanonical} />
         <meta name="robots" content={metaTags.metaRobots} />
         <meta property="og:title" content={metaTags.metaOgTitle} />
         <meta property="og:description" content={metaTags.metaOgDescription} />
@@ -91,45 +91,17 @@ const FaqPage = () => {
         <meta name="twitter:image" content={metaTags.metaTwitterImage} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <h1>Proposal Studio FAQ</h1>
-      <p>Get expert answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.</p>
-      <ul>
-        <li>
-          <Link href="#what-is-proposal-studio">
-            <a>What is Proposal Studio and how does it help with proposal management and sales enablement?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#how-does-proposal-studio-help-with-proposal-creation">
-            <a>How does Proposal Studio help with proposal creation?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#what-is-the-benefit-of-using-proposal-studio-for-proposal-tracking">
-            <a>What is the benefit of using Proposal Studio for proposal tracking?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#how-does-proposal-studio-support-sales-enablement">
-            <a>How does Proposal Studio support sales enablement?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="#can-proposal-studio-be-used-for-collaboration">
-            <a>Can Proposal Studio be used for collaboration?</a>
-          </Link>
-        </li>
-      </ul>
-      <h2 id="what-is-proposal-studio">What is Proposal Studio and how does it help with proposal management and sales enablement?</h2>
-      <p>Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement, proposal automation, and revenue growth with innovative proposal management software and sales enablement solutions.</p>
-      <h2 id="how-does-proposal-studio-help-with-proposal-creation">How does Proposal Studio help with proposal creation?</h2>
-      <p>Proposal Studio provides a range of features to help with proposal creation, including proposal templates, a proposal builder, and a proposal generator. These tools enable users to create professional-looking proposals quickly and easily.</p>
-      <h2 id="what-is-the-benefit-of-using-proposal-studio-for-proposal-tracking">What is the benefit of using Proposal Studio for proposal tracking?</h2>
-      <p>Proposal Studio provides real-time tracking and analytics, enabling users to monitor the status of their proposals and make data-driven decisions to improve their sales strategy.</p>
-      <h2 id="how-does-proposal-studio-support-sales-enablement">How does Proposal Studio support sales enablement?</h2>
-      <p>Proposal Studio provides a range of sales enablement tools, including proposal templates, sales content management, and analytics. These tools enable sales teams to create and manage effective sales content, and to track the performance of their sales efforts.</p>
-      <h2 id="can-proposal-studio-be-used-for-collaboration">Can Proposal Studio be used for collaboration?</h2>
-      <p>Yes, Proposal Studio provides features to support collaboration, including real-time commenting, @mentions, and version control. These features enable teams to work together on proposals and sales content, and to track changes and feedback.</p>
+      <div>
+        <h1>Proposal Studio FAQ</h1>
+        <p>Get expert answers to frequently asked questions about Proposal Studio.</p>
+        <Link href="/">
+          <a>
+            <AiOutlineArrowRight />
+            Back to Home
+          </a>
+        </Link>
+        <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />
+      </div>
     </div>
   );
 };
