@@ -126,18 +126,37 @@ const DashboardPage = () => {
       {
         label: 'Proposals Approved',
         data: [5, 10, 15, 20, 25],
-        borderColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(53, 162, 235)',
         tension: 0.1,
       },
     ],
   });
 
+  const handleDataUpdate = (data) => {
+    if (data) {
+      setProposalData({
+        labels: ['January', 'February', 'March', 'April', 'May'],
+        datasets: [
+          {
+            label: 'Proposals Created',
+            data: data.proposalsCreated,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+          },
+          {
+            label: 'Proposals Approved',
+            data: data.proposalsApproved,
+            borderColor: 'rgb(53, 162, 235)',
+            tension: 0.1,
+          },
+        ],
+      });
+    }
+  };
+
   useEffect(() => {
     if (realTimeData) {
-      setProposalData({
-        labels: realTimeData.labels,
-        datasets: realTimeData.datasets,
-      });
+      handleDataUpdate(realTimeData);
     }
   }, [realTimeData]);
 
@@ -151,21 +170,10 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <Line
-        data={proposalData}
-        options={{
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top',
-            },
-            title: {
-              display: true,
-              text: 'Proposal Analytics',
-            },
-          },
-        }}
-      />
+      <div className="container">
+        <h1>Proposal Studio Dashboard</h1>
+        <Line data={proposalData} />
+      </div>
     </DashboardLayout>
   );
 };
