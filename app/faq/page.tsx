@@ -43,18 +43,18 @@ const schemaMarkup = {
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio help with proposal creation?',
+      name: 'How does Proposal Studio help with proposal creation and management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a range of features to help with proposal creation, including proposal templates, a proposal builder, and collaboration tools.',
+        text: 'Proposal Studio provides a comprehensive platform for creating, managing, and tracking business proposals, including proposal templates, client relationships, and sales enablement tools.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What are the benefits of using Proposal Studio for proposal management?',
+      name: 'What are the benefits of using Proposal Studio for proposal management and sales enablement?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The benefits of using Proposal Studio for proposal management include increased efficiency, improved organization, and enhanced collaboration, all of which contribute to driving sales enablement and revenue growth.',
+        text: 'The benefits of using Proposal Studio include streamlined proposal creation and management, improved sales enablement, enhanced client relationships, and increased revenue growth.',
       },
     },
   ],
@@ -92,8 +92,7 @@ const FaqPage = () => {
         <p>Get expert answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.</p>
         <Link href="/">
           <a>
-            <AiOutlineArrowRight />
-            Back to Home
+            <AiOutlineArrowRight /> Back to Home
           </a>
         </Link>
         <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />

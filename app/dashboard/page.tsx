@@ -143,27 +143,20 @@ const DashboardPage = () => {
     }
   }, [realTimeData]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <DashboardLayout>
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div>Error: {error.message}</div>
-      ) : (
-        <div>
-          <Line
-            data={proposalData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  display: true,
-                },
-              },
-            }}
-          />
-        </div>
-      )}
+      <div>
+        <h1>Proposal Studio Dashboard</h1>
+        <Line data={proposalData} />
+      </div>
     </DashboardLayout>
   );
 };

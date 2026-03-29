@@ -134,10 +134,8 @@ const ClientForm = ({
     return { error, suggestion };
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     switch (name) {
       case 'name':
         setName(value);
@@ -151,19 +149,21 @@ const ClientForm = ({
       default:
         break;
     }
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
     const { error, suggestion } = validateField(name, value);
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+    const { error, suggestion } = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
   const handleTagChange = (tags: string[]) => {
+    setTags(tags);
     const { error, suggestion } = validateField('tags', tags.join(','));
     setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
-    setTags(tags);
   };
 
   return (
@@ -174,40 +174,38 @@ const ClientForm = ({
           name="name"
           value={name}
           onChange={handleInputChange}
+          placeholder="Name"
           error={errors.name}
-          suggestion={validateField('name', name).suggestion}
         />
         <Input
           type="email"
           name="email"
           value={email}
           onChange={handleInputChange}
+          placeholder="Email"
           error={errors.email}
-          suggestion={validateField('email', email).suggestion}
         />
         <Input
           type="text"
           name="phone"
           value={phone}
           onChange={handleInputChange}
+          placeholder="Phone"
           error={errors.phone}
-          suggestion={validateField('phone', phone).suggestion}
         />
         <Select
           name="category"
           value={filter.category}
           onChange={handleSelectChange}
-          error={errors.category}
-          suggestion={validateField('category', filter.category).suggestion}
           options={categories}
+          error={errors.category}
         />
         <TagInput
           tags={tags}
           onChange={handleTagChange}
           error={errors.tags}
-          suggestion={validateField('tags', tags.join(',')).suggestion}
         />
-        <Button type="submit" disabled={!validateForm()}>
+        <Button type="submit" onClick={validateForm}>
           Submit
         </Button>
       </form>
