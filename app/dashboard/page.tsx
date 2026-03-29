@@ -138,25 +138,7 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      <div>
-        <h1>Proposal Studio Dashboard</h1>
-        {realTimeData && (
-          <div>
-            <Line
-              data={{
-                labels: realTimeData.labels,
-                datasets: realTimeData.datasets,
-              }}
-              options={{
-                title: {
-                  display: true,
-                  text: 'Proposal Analytics',
-                },
-              }}
-            />
-          </div>
-        )}
-      </div>
+      {/* Your dashboard content here */}
     </DashboardLayout>
   );
 };

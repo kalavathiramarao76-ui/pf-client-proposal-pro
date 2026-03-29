@@ -38,23 +38,23 @@ const schemaMarkup = {
       name: 'What is Proposal Studio and how does it help with proposal management and sales enablement?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.',
+        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement, proposal automation, and revenue growth.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio help with proposal automation?',
+      name: 'How does Proposal Studio improve proposal management and sales enablement?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio automates the proposal creation process, allowing users to generate professional-looking proposals quickly and efficiently.',
+        text: 'Proposal Studio streamlines proposal creation, management, and tracking, enabling users to focus on high-value tasks and drive business growth.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What features does Proposal Studio offer for proposal management?',
+      name: 'What features does Proposal Studio offer?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio offers a range of features for proposal management, including proposal creation, proposal tracking, proposal analytics, and proposal collaboration.',
+        text: 'Proposal Studio offers a range of features, including proposal templates, client relationship management, proposal tracking, and analytics, to help users create, manage, and track business proposals effectively.',
       },
     },
   ],
@@ -89,9 +89,36 @@ const FaqPage = () => {
       </Head>
       <div>
         <h1>Proposal Studio FAQ</h1>
-        <p>Get expert answers to frequently asked questions about Proposal Studio.</p>
-        <Link href="/"><AiOutlineArrowRight /> Back to Home</Link>
-        <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />
+        <p>Get expert answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.</p>
+        <ul>
+          <li>
+            <Link href="#what-is-proposal-studio">
+              <a>What is Proposal Studio and how does it help with proposal management and sales enablement?</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="#how-does-proposal-studio-improve-proposal-management-and-sales-enablement">
+              <a>How does Proposal Studio improve proposal management and sales enablement?</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="#what-features-does-proposal-studio-offer">
+              <a>What features does Proposal Studio offer?</a>
+            </Link>
+          </li>
+        </ul>
+        <div id="what-is-proposal-studio">
+          <h2>What is Proposal Studio and how does it help with proposal management and sales enablement?</h2>
+          <p>Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement, proposal automation, and revenue growth.</p>
+        </div>
+        <div id="how-does-proposal-studio-improve-proposal-management-and-sales-enablement">
+          <h2>How does Proposal Studio improve proposal management and sales enablement?</h2>
+          <p>Proposal Studio streamlines proposal creation, management, and tracking, enabling users to focus on high-value tasks and drive business growth.</p>
+        </div>
+        <div id="what-features-does-proposal-studio-offer">
+          <h2>What features does Proposal Studio offer?</h2>
+          <p>Proposal Studio offers a range of features, including proposal templates, client relationship management, proposal tracking, and analytics, to help users create, manage, and track business proposals effectively.</p>
+        </div>
       </div>
     </div>
   );
