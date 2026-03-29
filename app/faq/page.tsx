@@ -38,23 +38,23 @@ const schemaMarkup = {
       name: 'What is Proposal Studio and how does it help with proposal management and sales enablement?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.',
+        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement, proposal automation, and revenue growth.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio help with proposal automation?',
+      name: 'What features does Proposal Studio offer?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio automates the proposal creation process, allowing users to easily generate and customize proposals, and track their progress in real-time.',
+        text: 'Proposal Studio offers a range of features, including proposal creation, proposal tracking, proposal analytics, proposal writing, proposal design, proposal development, proposal strategy, proposal optimization, and proposal collaboration.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What features does Proposal Studio offer for sales teams?',
+      name: 'How does Proposal Studio help with sales enablement?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio offers a range of features for sales teams, including proposal tracking, proposal analytics, and proposal optimization, to help them close more deals and drive revenue growth.',
+        text: 'Proposal Studio helps with sales enablement by providing a platform for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving revenue growth and sales success.',
       },
     },
   ],
@@ -87,14 +87,15 @@ const FaqPage = () => {
         <meta name="tags" content={metaTags.metaTags} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </Head>
-      <div className="container">
+      <div>
         <h1>Proposal Studio FAQ</h1>
         <p>Get expert answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.</p>
         <Link href="/contact">
-          <a>Contact Us</a>
+          <a>
+            Contact Us <AiOutlineArrowRight />
+          </a>
         </Link>
         <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />
-        <AiOutlineArrowRight size={24} />
       </div>
     </div>
   );

@@ -134,8 +134,8 @@ const ClientForm = ({
     return { error, suggestion };
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     switch (name) {
       case 'name':
         setName(value);
@@ -153,8 +153,8 @@ const ClientForm = ({
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
     const { error, suggestion } = validateField(name, value);
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
@@ -174,24 +174,24 @@ const ClientForm = ({
           name="name"
           value={name}
           onChange={handleInputChange}
+          placeholder="Name"
           error={errors.name}
-          suggestion={suggestions.name}
         />
         <Input
           type="email"
           name="email"
           value={email}
           onChange={handleInputChange}
+          placeholder="Email"
           error={errors.email}
-          suggestion={suggestions.email}
         />
         <Input
           type="text"
           name="phone"
           value={phone}
           onChange={handleInputChange}
+          placeholder="Phone"
           error={errors.phone}
-          suggestion={suggestions.phone}
         />
         <Select
           name="category"
@@ -199,14 +199,11 @@ const ClientForm = ({
           onChange={handleSelectChange}
           options={categories}
           error={errors.category}
-          suggestion={suggestions.category}
         />
         <TagInput
-          name="tags"
-          value={tags}
+          tags={tags}
           onChange={handleTagChange}
           error={errors.tags}
-          suggestion={suggestions.tags}
         />
         <Button type="submit" onClick={validateForm}>
           Submit

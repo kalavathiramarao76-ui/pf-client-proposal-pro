@@ -140,7 +140,6 @@ const DashboardPage = () => {
     <DashboardLayout>
       <div>
         <h1>Proposal Studio Dashboard</h1>
-        <p>Welcome to the Proposal Studio dashboard.</p>
         {realTimeData && (
           <div>
             <Line
