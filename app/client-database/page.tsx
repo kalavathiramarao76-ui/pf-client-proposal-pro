@@ -134,8 +134,8 @@ const ClientForm = ({
     return { error, suggestion };
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
     switch (name) {
       case 'name':
         setName(value);
@@ -153,13 +153,14 @@ const ClientForm = ({
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter((prevFilter) => ({ ...prevFilter, category: e.target.value }));
-    const { error, suggestion } = validateField('category', e.target.value);
-    setErrors((prevErrors) => ({ ...prevErrors, category: error }));
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+    const { error, suggestion } = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
-  const handleTagsChange = (tags: string[]) => {
+  const handleTagChange = (tags: string[]) => {
     setTags(tags);
     const { error, suggestion } = validateField('tags', tags.join(','));
     setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
@@ -173,7 +174,6 @@ const ClientForm = ({
           name="name"
           value={name}
           onChange={handleInputChange}
-          placeholder="Name"
           error={errors.name}
           suggestion={suggestions.name}
         />
@@ -182,7 +182,6 @@ const ClientForm = ({
           name="email"
           value={email}
           onChange={handleInputChange}
-          placeholder="Email"
           error={errors.email}
           suggestion={suggestions.email}
         />
@@ -191,21 +190,21 @@ const ClientForm = ({
           name="phone"
           value={phone}
           onChange={handleInputChange}
-          placeholder="Phone"
           error={errors.phone}
           suggestion={suggestions.phone}
         />
         <Select
           name="category"
           value={filter.category}
-          onChange={handleCategoryChange}
+          onChange={handleSelectChange}
           options={categories}
           error={errors.category}
           suggestion={suggestions.category}
         />
         <TagInput
-          tags={tags}
-          onChange={handleTagsChange}
+          name="tags"
+          value={tags}
+          onChange={handleTagChange}
           error={errors.tags}
           suggestion={suggestions.tags}
         />

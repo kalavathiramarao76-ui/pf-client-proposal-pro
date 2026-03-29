@@ -126,7 +126,7 @@ const useOptimizedRealTimeData = () => {
 
 const DashboardPage = () => {
   const router = useRouter();
-  const { realTimeData, loading, error } = useRealTimeData();
+  const { realTimeData, loading, error } = useOptimizedRealTimeData();
 
   if (loading) {
     return <div>Loading...</div>;
@@ -138,7 +138,26 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      {/* Your dashboard content here */}
+      <div>
+        <h1>Proposal Studio Dashboard</h1>
+        <p>Welcome to the Proposal Studio dashboard.</p>
+        {realTimeData && (
+          <div>
+            <Line
+              data={{
+                labels: realTimeData.labels,
+                datasets: realTimeData.datasets,
+              }}
+              options={{
+                title: {
+                  display: true,
+                  text: 'Proposal Analytics',
+                },
+              }}
+            />
+          </div>
+        )}
+      </div>
     </DashboardLayout>
   );
 };
