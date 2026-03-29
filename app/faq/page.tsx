@@ -43,18 +43,18 @@ const schemaMarkup = {
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio help with proposal creation and management?',
+      name: 'How does Proposal Studio improve proposal management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio provides a comprehensive platform for creating, managing, and tracking business proposals, including proposal templates, client relationships, and sales enablement tools.',
+        text: 'Proposal Studio streamlines proposal management by providing a centralized platform for creating, managing, and tracking business proposals, proposal templates, and client relationships.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What are the benefits of using Proposal Studio for proposal management and sales enablement?',
+      name: 'What are the benefits of using Proposal Studio?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The benefits of using Proposal Studio include streamlined proposal creation and management, improved sales enablement, enhanced client relationships, and increased revenue growth.',
+        text: 'The benefits of using Proposal Studio include improved proposal management, increased sales enablement, enhanced collaboration, and data-driven insights to drive revenue growth.',
       },
     },
   ],
@@ -89,12 +89,9 @@ const FaqPage = () => {
       </Head>
       <div>
         <h1>Proposal Studio FAQ</h1>
-        <p>Get expert answers to frequently asked questions about Proposal Studio, a cutting-edge SaaS tool for freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.</p>
-        <Link href="/">
-          <a>
-            <AiOutlineArrowRight /> Back to Home
-          </a>
-        </Link>
+        <p>Get expert answers to frequently asked questions about Proposal Studio.</p>
+        <Link href="/"><a>Back to Home</a></Link>
+        <AiOutlineArrowRight />
         <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />
       </div>
     </div>

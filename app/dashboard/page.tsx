@@ -110,10 +110,24 @@ const useRealTimeData = () => {
   return { realTimeData, loading, error };
 };
 
+const useOptimizedRealTimeData = () => {
+  const { realTimeData, loading, error } = useRealTimeData();
+  const [optimizedData, setOptimizedData] = useState(null);
+
+  useEffect(() => {
+    if (realTimeData) {
+      const optimizedData = JSON.parse(JSON.stringify(realTimeData));
+      setOptimizedData(optimizedData);
+    }
+  }, [realTimeData]);
+
+  return { optimizedData, loading, error };
+};
+
 const DashboardPage = () => {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const { realTimeData, loading, error } = useRealTimeData();
+  const { optimizedData, loading, error } = useOptimizedRealTimeData();
   const [proposalData, setProposalData] = useState({
     labels: ['January', 'February', 'March', 'April', 'May'],
     datasets: [
@@ -125,23 +139,6 @@ const DashboardPage = () => {
       }
     ]
   });
-
-  useEffect(() => {
-    if (realTimeData) {
-      const updatedProposalData = {
-        labels: realTimeData.labels,
-        datasets: [
-          {
-            label: 'Proposals Created',
-            data: realTimeData.data,
-            borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1
-          }
-        ]
-      };
-      setProposalData(updatedProposalData);
-    }
-  }, [realTimeData]);
 
   if (loading) {
     return <div>Loading...</div>;
