@@ -134,8 +134,10 @@ const ClientForm = ({
     return { error, suggestion };
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const { error, suggestion } = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
     switch (name) {
       case 'name':
         setName(value);
@@ -149,21 +151,19 @@ const ClientForm = ({
       default:
         break;
     }
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    const { error, suggestion } = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
-  const handleTagChange = (tags: string[]) => {
-    setTags(tags);
+  const handleTagsChange = (tags: string[]) => {
     const { error, suggestion } = validateField('tags', tags.join(','));
     setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
+    setTags(tags);
   };
 
   return (
@@ -196,16 +196,17 @@ const ClientForm = ({
         <Select
           name="category"
           value={filter.category}
-          onChange={handleSelectChange}
+          onChange={handleCategoryChange}
           options={categories}
           error={errors.category}
         />
         <TagInput
-          tags={tags}
-          onChange={handleTagChange}
+          name="tags"
+          value={tags}
+          onChange={handleTagsChange}
           error={errors.tags}
         />
-        <Button type="submit" onClick={validateForm}>
+        <Button type="submit" onClick={() => validateForm()}>
           Submit
         </Button>
       </form>

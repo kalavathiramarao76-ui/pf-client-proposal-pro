@@ -126,7 +126,7 @@ const useOptimizedRealTimeData = () => {
 
 const DashboardPage = () => {
   const router = useRouter();
-  const { realTimeData, loading, error } = useOptimizedRealTimeData();
+  const { realTimeData, loading, error } = useRealTimeData();
 
   if (loading) {
     return <div>Loading...</div>;
