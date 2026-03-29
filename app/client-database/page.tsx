@@ -99,6 +99,14 @@ const ClientForm = ({
   isNewClient,
   editedClient,
 }) => {
+  const [formErrors, setFormErrors] = useState({
+    name: { error: '', suggestion: '' },
+    email: { error: '', suggestion: '' },
+    phone: { error: '', suggestion: '' },
+    category: { error: '', suggestion: '' },
+    tags: { error: '', suggestion: '' },
+  });
+
   const validateField = (field: string, value: string | string[]) => {
     const rules = validationRules[field];
     let error = '';
@@ -115,100 +123,112 @@ const ClientForm = ({
   };
 
   const validateForm = () => {
-    const newErrors: { [key: string]: string } = {
-      name: '',
-      email: '',
-      phone: '',
-      category: '',
-      tags: '',
-    };
+    const newErrors = { ...formErrors };
 
     Object.keys(validationRules).forEach((field) => {
-      let value: string | string[] = '';
-      switch (field) {
-        case 'name':
-          value = name;
-          break;
-        case 'email':
-          value = email;
-          break;
-        case 'phone':
-          value = phone;
-          break;
-        case 'category':
-          value = clientCategories;
-          break;
-        case 'tags':
-          value = tags;
-          break;
-        default:
-          break;
-      }
+      const value = {
+        name: name,
+        email: email,
+        phone: phone,
+        category: clientCategories,
+        tags: tags,
+      }[field];
 
       const { error, suggestion } = validateField(field, value);
-      if (error) {
-        newErrors[field] = error;
-      }
+
+      newErrors[field] = { error, suggestion };
     });
 
-    setErrors(newErrors);
+    setFormErrors(newErrors);
   };
 
-  const handleBlur = (field: string, value: string | string[]) => {
-    const { error, suggestion } = validateField(field, value);
-    if (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, [field]: error }));
+  const handleInputChange = (field: string, value: string) => {
+    switch (field) {
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+      default:
+        break;
     }
-  };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
     validateForm();
   };
 
+  const handleSelectChange = (field: string, value: string) => {
+    switch (field) {
+      case 'category':
+        setFilter(value);
+        break;
+      default:
+        break;
+    }
+
+    validateForm();
+  };
+
+  const handleTagChange = (field: string, value: string[]) => {
+    switch (field) {
+      case 'tags':
+        setTags(value);
+        break;
+      default:
+        break;
+    }
+
+    validateForm();
+  };
+
+  useEffect(() => {
+    validateForm();
+  }, [name, email, phone, clientCategories, tags]);
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Input
-        type="text"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        onBlur={() => handleBlur('name', name)}
-        error={errors.name}
-      />
-      <Input
-        type="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        onBlur={() => handleBlur('email', email)}
-        error={errors.email}
-      />
-      <Input
-        type="text"
-        value={phone}
-        onChange={(event) => setPhone(event.target.value)}
-        onBlur={() => handleBlur('phone', phone)}
-        error={errors.phone}
-      />
-      <Select
-        value={clientCategories}
-        onChange={(event) => setFilter(event.target.value)}
-        onBlur={() => handleBlur('category', clientCategories)}
-        error={errors.category}
-      >
-        {categories.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </Select>
-      <TagInput
-        value={tags}
-        onChange={(newTags) => setTags(newTags)}
-        onBlur={() => handleBlur('tags', tags)}
-        error={errors.tags}
-      />
-      <Button type="submit">Submit</Button>
-    </form>
+    <Layout>
+      <div>
+        <Input
+          label="Name"
+          value={name}
+          onChange={(e) => handleInputChange('name', e.target.value)}
+          error={formErrors.name.error}
+          suggestion={formErrors.name.suggestion}
+        />
+        <Input
+          label="Email"
+          value={email}
+          onChange={(e) => handleInputChange('email', e.target.value)}
+          error={formErrors.email.error}
+          suggestion={formErrors.email.suggestion}
+        />
+        <Input
+          label="Phone"
+          value={phone}
+          onChange={(e) => handleInputChange('phone', e.target.value)}
+          error={formErrors.phone.error}
+          suggestion={formErrors.phone.suggestion}
+        />
+        <Select
+          label="Category"
+          value={clientCategories}
+          onChange={(e) => handleSelectChange('category', e.target.value)}
+          options={categories}
+          error={formErrors.category.error}
+          suggestion={formErrors.category.suggestion}
+        />
+        <TagInput
+          label="Tags"
+          value={tags}
+          onChange={(e) => handleTagChange('tags', e)}
+          error={formErrors.tags.error}
+          suggestion={formErrors.tags.suggestion}
+        />
+      </div>
+    </Layout>
   );
 };
 
