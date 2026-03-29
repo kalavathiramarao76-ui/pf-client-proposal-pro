@@ -99,6 +99,21 @@ const ClientForm = ({
   isNewClient,
   editedClient,
 }) => {
+  const validateField = (field: string, value: string | string[]) => {
+    const rules = validationRules[field];
+    let error = '';
+    let suggestion = '';
+
+    rules.forEach((rule) => {
+      if (!rule.rule(value)) {
+        error = rule.error;
+        suggestion = rule.suggestion;
+      }
+    });
+
+    return { error, suggestion };
+  };
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {
       name: '',
@@ -109,59 +124,91 @@ const ClientForm = ({
     };
 
     Object.keys(validationRules).forEach((field) => {
-      const rules = validationRules[field];
-      let error = '';
-      let suggestion = '';
+      let value: string | string[] = '';
+      switch (field) {
+        case 'name':
+          value = name;
+          break;
+        case 'email':
+          value = email;
+          break;
+        case 'phone':
+          value = phone;
+          break;
+        case 'category':
+          value = clientCategories;
+          break;
+        case 'tags':
+          value = tags;
+          break;
+        default:
+          break;
+      }
 
-      rules.forEach((rule) => {
-        if (!rule.rule(getFieldValue(field))) {
-          error = rule.error;
-          suggestion = rule.suggestion;
-        }
-      });
-
+      const { error, suggestion } = validateField(field, value);
       if (error) {
         newErrors[field] = error;
       }
     });
 
     setErrors(newErrors);
-    return Object.values(newErrors).every((error) => error === '');
   };
 
-  const validateField = (fieldName: string, value: string) => {
-    let error = '';
-    let suggestion = '';
-
-    validationRules[fieldName].forEach((rule) => {
-      if (!rule.rule(value)) {
-        error = rule.error;
-        suggestion = rule.suggestion;
-      }
-    });
-
-    return { error, suggestion };
-  };
-
-  const getFieldValue = (field: string) => {
-    switch (field) {
-      case 'name':
-        return name;
-      case 'email':
-        return email;
-      case 'phone':
-        return phone;
-      case 'category':
-        return filter.category;
-      case 'tags':
-        return tags;
-      default:
-        return '';
+  const handleBlur = (field: string, value: string | string[]) => {
+    const { error, suggestion } = validateField(field, value);
+    if (error) {
+      setErrors((prevErrors) => ({ ...prevErrors, [field]: error }));
     }
   };
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    validateForm();
+  };
+
   return (
-    // existing JSX code
+    <form onSubmit={handleSubmit}>
+      <Input
+        type="text"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        onBlur={() => handleBlur('name', name)}
+        error={errors.name}
+      />
+      <Input
+        type="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        onBlur={() => handleBlur('email', email)}
+        error={errors.email}
+      />
+      <Input
+        type="text"
+        value={phone}
+        onChange={(event) => setPhone(event.target.value)}
+        onBlur={() => handleBlur('phone', phone)}
+        error={errors.phone}
+      />
+      <Select
+        value={clientCategories}
+        onChange={(event) => setFilter(event.target.value)}
+        onBlur={() => handleBlur('category', clientCategories)}
+        error={errors.category}
+      >
+        {categories.map((category) => (
+          <option key={category} value={category}>
+            {category}
+          </option>
+        ))}
+      </Select>
+      <TagInput
+        value={tags}
+        onChange={(newTags) => setTags(newTags)}
+        onBlur={() => handleBlur('tags', tags)}
+        error={errors.tags}
+      />
+      <Button type="submit">Submit</Button>
+    </form>
   );
 };
 

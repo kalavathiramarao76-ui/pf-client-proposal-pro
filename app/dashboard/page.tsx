@@ -138,7 +138,10 @@ const DashboardPage = () => {
 
   return (
     <DashboardLayout>
-      {/* Your dashboard content here */}
+      <div>
+        <h1>Proposal Studio Dashboard</h1>
+        <p>Real-time data: {JSON.stringify(realTimeData)}</p>
+      </div>
     </DashboardLayout>
   );
 };
