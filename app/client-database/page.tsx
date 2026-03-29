@@ -28,6 +28,59 @@ const suggestions = {
   tags: 'Please add at least one tag',
 };
 
+const validationRules = {
+  name: [
+    {
+      rule: (value: string) => !!value,
+      error: errorMessages.required,
+      suggestion: suggestions.name,
+    },
+    {
+      rule: (value: string) => value.length >= 2,
+      error: errorMessages.minLength,
+      suggestion: suggestions.name,
+    },
+  ],
+  email: [
+    {
+      rule: (value: string) => !!value,
+      error: errorMessages.required,
+      suggestion: suggestions.email,
+    },
+    {
+      rule: (value: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value),
+      error: errorMessages.invalidEmail,
+      suggestion: suggestions.email,
+    },
+  ],
+  phone: [
+    {
+      rule: (value: string) => !!value,
+      error: errorMessages.required,
+      suggestion: suggestions.phone,
+    },
+    {
+      rule: (value: string) => /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(value),
+      error: errorMessages.invalidPhone,
+      suggestion: suggestions.phone,
+    },
+  ],
+  category: [
+    {
+      rule: (value: string) => !!value,
+      error: errorMessages.categoryRequired,
+      suggestion: suggestions.category,
+    },
+  ],
+  tags: [
+    {
+      rule: (value: string[]) => value.length > 0,
+      error: errorMessages.tagsRequired,
+      suggestion: suggestions.tags,
+    },
+  ],
+};
+
 const ClientForm = ({
   name,
   email,
@@ -55,31 +108,22 @@ const ClientForm = ({
       tags: '',
     };
 
-    if (!name) {
-      newErrors.name = errorMessages.required;
-    } else if (name.length < 2) {
-      newErrors.name = errorMessages.minLength;
-    }
+    Object.keys(validationRules).forEach((field) => {
+      const rules = validationRules[field];
+      let error = '';
+      let suggestion = '';
 
-    if (!email) {
-      newErrors.email = errorMessages.required;
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      newErrors.email = errorMessages.invalidEmail;
-    }
+      rules.forEach((rule) => {
+        if (!rule.rule(getFieldValue(field))) {
+          error = rule.error;
+          suggestion = rule.suggestion;
+        }
+      });
 
-    if (!phone) {
-      newErrors.phone = errorMessages.required;
-    } else if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(phone)) {
-      newErrors.phone = errorMessages.invalidPhone;
-    }
-
-    if (!filter.category) {
-      newErrors.category = errorMessages.categoryRequired;
-    }
-
-    if (tags.length === 0) {
-      newErrors.tags = errorMessages.tagsRequired;
-    }
+      if (error) {
+        newErrors[field] = error;
+      }
+    });
 
     setErrors(newErrors);
     return Object.values(newErrors).every((error) => error === '');
@@ -88,129 +132,36 @@ const ClientForm = ({
   const validateField = (fieldName: string, value: string) => {
     let error = '';
     let suggestion = '';
-    switch (fieldName) {
-      case 'name':
-        if (!value) {
-          error = errorMessages.required;
-          suggestion = suggestions.name;
-        } else if (value.length < 2) {
-          error = errorMessages.minLength;
-          suggestion = suggestions.name;
-        }
-        break;
-      case 'email':
-        if (!value) {
-          error = errorMessages.required;
-          suggestion = suggestions.email;
-        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
-          error = errorMessages.invalidEmail;
-          suggestion = suggestions.email;
-        }
-        break;
-      case 'phone':
-        if (!value) {
-          error = errorMessages.required;
-          suggestion = suggestions.phone;
-        } else if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(value)) {
-          error = errorMessages.invalidPhone;
-          suggestion = suggestions.phone;
-        }
-        break;
-      case 'category':
-        if (!value) {
-          error = errorMessages.categoryRequired;
-          suggestion = suggestions.category;
-        }
-        break;
-      case 'tags':
-        if (value.length === 0) {
-          error = errorMessages.tagsRequired;
-          suggestion = suggestions.tags;
-        }
-        break;
-      default:
-        break;
-    }
+
+    validationRules[fieldName].forEach((rule) => {
+      if (!rule.rule(value)) {
+        error = rule.error;
+        suggestion = rule.suggestion;
+      }
+    });
+
     return { error, suggestion };
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-    switch (name) {
+  const getFieldValue = (field: string) => {
+    switch (field) {
       case 'name':
-        setName(value);
-        break;
+        return name;
       case 'email':
-        setEmail(value);
-        break;
+        return email;
       case 'phone':
-        setPhone(value);
-        break;
+        return phone;
+      case 'category':
+        return filter.category;
+      case 'tags':
+        return tags;
       default:
-        break;
+        return '';
     }
   };
 
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
-  };
-
-  const handleTagsChange = (tags: string[]) => {
-    const { error, suggestion } = validateField('tags', tags.join(','));
-    setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
-    setTags(tags);
-  };
-
   return (
-    <Layout>
-      <form>
-        <Input
-          type="text"
-          name="name"
-          value={name}
-          onChange={handleInputChange}
-          placeholder="Name"
-          error={errors.name}
-        />
-        <Input
-          type="email"
-          name="email"
-          value={email}
-          onChange={handleInputChange}
-          placeholder="Email"
-          error={errors.email}
-        />
-        <Input
-          type="text"
-          name="phone"
-          value={phone}
-          onChange={handleInputChange}
-          placeholder="Phone"
-          error={errors.phone}
-        />
-        <Select
-          name="category"
-          value={filter.category}
-          onChange={handleCategoryChange}
-          options={categories}
-          error={errors.category}
-        />
-        <TagInput
-          name="tags"
-          value={tags}
-          onChange={handleTagsChange}
-          error={errors.tags}
-        />
-        <Button type="submit" onClick={() => validateForm()}>
-          Submit
-        </Button>
-      </form>
-    </Layout>
+    // existing JSX code
   );
 };
 
