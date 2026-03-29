@@ -136,8 +136,6 @@ const ClientForm = ({
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
     switch (name) {
       case 'name':
         setName(value);
@@ -151,19 +149,27 @@ const ClientForm = ({
       default:
         break;
     }
-  };
-
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = event.target;
     const { error, suggestion } = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
+    const newErrors = { ...errors };
+    newErrors[name] = error;
+    setErrors(newErrors);
   };
 
-  const handleTagChange = (tags: string[]) => {
-    const { error, suggestion } = validateField('tags', tags.join(','));
-    setErrors((prevErrors) => ({ ...prevErrors, tags: error }));
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilter({ ...filter, category: value });
+    const { error, suggestion } = validateField(name, value);
+    const newErrors = { ...errors };
+    newErrors[name] = error;
+    setErrors(newErrors);
+  };
+
+  const handleTagsChange = (tags: string[]) => {
     setTags(tags);
+    const { error, suggestion } = validateField('tags', tags.join(','));
+    const newErrors = { ...errors };
+    newErrors['tags'] = error;
+    setErrors(newErrors);
   };
 
   return (
@@ -188,7 +194,7 @@ const ClientForm = ({
           suggestion={validateField('email', email).suggestion}
         />
         <Input
-          type="text"
+          type="tel"
           name="phone"
           value={phone}
           onChange={handleInputChange}
@@ -199,14 +205,15 @@ const ClientForm = ({
         <Select
           name="category"
           value={filter.category}
-          onChange={handleSelectChange}
+          onChange={handleCategoryChange}
           options={categories}
           error={errors.category}
           suggestion={validateField('category', filter.category).suggestion}
         />
         <TagInput
-          tags={tags}
-          onChange={handleTagChange}
+          name="tags"
+          value={tags}
+          onChange={handleTagsChange}
           error={errors.tags}
           suggestion={validateField('tags', tags.join(',')).suggestion}
         />

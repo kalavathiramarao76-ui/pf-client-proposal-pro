@@ -126,19 +126,7 @@ const useOptimizedRealTimeData = () => {
 
 const DashboardPage = () => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const { optimizedData, loading, error } = useOptimizedRealTimeData();
-  const [proposalData, setProposalData] = useState({
-    labels: ['January', 'February', 'March', 'April', 'May'],
-    datasets: [
-      {
-        label: 'Proposals Created',
-        data: [10, 20, 30, 40, 50],
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-      }
-    ]
-  });
+  const { realTimeData, loading, error } = useRealTimeData();
 
   if (loading) {
     return <div>Loading...</div>;
@@ -152,7 +140,22 @@ const DashboardPage = () => {
     <DashboardLayout>
       <div>
         <h1>Proposal Studio Dashboard</h1>
-        <Line data={proposalData} />
+        {realTimeData && (
+          <div>
+            <Line
+              data={{
+                labels: realTimeData.labels,
+                datasets: realTimeData.datasets,
+              }}
+              options={{
+                title: {
+                  display: true,
+                  text: 'Proposal Analytics',
+                },
+              }}
+            />
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

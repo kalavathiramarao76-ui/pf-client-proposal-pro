@@ -38,23 +38,23 @@ const schemaMarkup = {
       name: 'What is Proposal Studio and how does it help with proposal management and sales enablement?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement, proposal automation, and revenue growth.',
+        text: 'Proposal Studio is a SaaS tool that empowers freelancers and creators to create, manage, and track business proposals, proposal templates, and client relationships, driving sales enablement and revenue growth.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How does Proposal Studio improve proposal management?',
+      name: 'How does Proposal Studio help with proposal automation?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Proposal Studio streamlines proposal management by providing a centralized platform for creating, managing, and tracking business proposals, proposal templates, and client relationships.',
+        text: 'Proposal Studio automates the proposal creation process, allowing users to generate professional-looking proposals quickly and efficiently.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What are the benefits of using Proposal Studio?',
+      name: 'What features does Proposal Studio offer for proposal management?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'The benefits of using Proposal Studio include improved proposal management, increased sales enablement, enhanced collaboration, and data-driven insights to drive revenue growth.',
+        text: 'Proposal Studio offers a range of features for proposal management, including proposal creation, proposal tracking, proposal analytics, and proposal collaboration.',
       },
     },
   ],
@@ -90,8 +90,7 @@ const FaqPage = () => {
       <div>
         <h1>Proposal Studio FAQ</h1>
         <p>Get expert answers to frequently asked questions about Proposal Studio.</p>
-        <Link href="/"><a>Back to Home</a></Link>
-        <AiOutlineArrowRight />
+        <Link href="/"><AiOutlineArrowRight /> Back to Home</Link>
         <Image src="/images/proposal-studio-logo.png" alt="Proposal Studio Logo" width={100} height={100} />
       </div>
     </div>
